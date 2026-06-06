@@ -1,0 +1,16 @@
+# Netlify configuration — ONE site, ONE codebase, 12 routes, ONE HubSpot backend.
+#
+# To later run extra per-vertical DOMAINS from this SAME repo (Option C upgrade),
+# create additional Netlify sites pointed at this repo and set SITE_VERTICAL in
+# each site's environment (see README "Future: multiple domains").
+
+[build]
+  command = "npm run build"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# The official Next.js runtime. Netlify auto-installs it; declared here explicitly
+# so server Route Handlers (app/api/lead) deploy as serverless functions.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
