@@ -30,8 +30,14 @@ export default function SiteFooter() {
           </div>
         </div>
 
-        <div className="mt-10">
-          <DisclaimerBlock compact />
+        <nav className="mt-10 flex flex-wrap gap-x-6 gap-y-2 text-sm" aria-label="Legal">
+          <Link href="/privacy" className="text-slate-600 hover:text-brand-700">Privacy Policy</Link>
+          <Link href="/terms" className="text-slate-600 hover:text-brand-700">Terms of Service</Link>
+          <Link href="/disclosures" className="text-slate-600 hover:text-brand-700">Disclosures</Link>
+        </nav>
+
+        <div className="mt-4">
+          <DisclaimerBlock variant="line" />
         </div>
 
         <p className="mt-6 text-xs text-slate-400">

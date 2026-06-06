@@ -150,6 +150,16 @@ function buildContactProps(lead: LeadData, score: LeadScore): Props {
   setProp(p, CONTACT.utmCampaign, lead.utm?.utm_campaign);
   setProp(p, CONTACT.utmContent, lead.utm?.utm_content);
   setProp(p, CONTACT.utmTerm, lead.utm?.utm_term);
+
+  // Lifecycle (optional HubSpot props; auto-dropped if not created yet — safe).
+  const now = Date.now();
+  setProp(p, CONTACT.capturedAt, now);
+  setProp(p, CONTACT.lastFormActivityDate, now);
+  setProp(p, CONTACT.leadCaptureStage, lead.partial ? "partial" : "full_submission");
+  if (lead.marketingConsent) {
+    setProp(p, CONTACT.consentTimestamp, now);
+    setProp(p, CONTACT.consentSourcePage, lead.sourcePage);
+  }
   return p;
 }
 
@@ -221,41 +231,72 @@ function buildDealProps(lead: LeadData, score: LeadScore): Props {
 
 /* ── object upserts ─────────────────────────────────────────────────────── */
 
+/** Pull invalid property names out of a HubSpot 400 validation body. */
+function extractInvalidProps(text: string): string[] {
+  const names = new Set<string>();
+  const re = /"name"\s*:\s*"([^"]+)"/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text))) names.add(m[1]);
+  return [...names];
+}
+
+/**
+ * Run a property-bearing request; if HubSpot rejects unknown properties
+ * (PROPERTY_DOESNT_EXIST), drop just those and retry once. This makes the
+ * integration resilient to custom properties that haven't been created yet.
+ */
+async function requestWithRetry(
+  makeRequest: (props: Props) => Promise<Response>,
+  props: Props,
+): Promise<Response> {
+  const res = await makeRequest(props);
+  if (res.status !== 400) return res;
+  const text = await res.clone().text();
+  if (!/PROPERTY_DOESNT_EXIST|does not exist/i.test(text)) return res;
+  const bad = extractInvalidProps(text).filter((n) => n in props);
+  if (!bad.length) return res;
+  const cleaned: Props = { ...props };
+  for (const n of bad) delete cleaned[n];
+  // eslint-disable-next-line no-console
+  console.warn("[hubspot] dropping unknown propert(ies):", bad.join(", "));
+  return makeRequest(cleaned);
+}
+
 async function upsertContact(props: Props, email?: string): Promise<string> {
-  if (email) {
-    const res = await hsFetch("/crm/v3/objects/contacts/batch/upsert", "POST", {
-      inputs: [{ idProperty: "email", id: email, properties: props }],
-    });
-    if (!res.ok) throw new Error(await readError(res));
-    const json = (await res.json()) as { results: { id: string }[] };
-    return json.results[0].id;
-  }
-  // No email — create by phone (best effort; HubSpot has no phone upsert key).
-  const res = await hsFetch("/crm/v3/objects/contacts", "POST", { properties: props });
+  const make = (p: Props) =>
+    email
+      ? hsFetch("/crm/v3/objects/contacts/batch/upsert", "POST", {
+          inputs: [{ idProperty: "email", id: email, properties: p }],
+        })
+      : hsFetch("/crm/v3/objects/contacts", "POST", { properties: p });
+  const res = await requestWithRetry(make, props);
   if (!res.ok) throw new Error(await readError(res));
-  const json = (await res.json()) as { id: string };
-  return json.id;
+  const json = await res.json();
+  return email
+    ? (json as { results: { id: string }[] }).results[0].id
+    : (json as { id: string }).id;
 }
 
 async function upsertCompany(props: Props): Promise<string | null> {
   if (!props[COMPANY.name]) return null;
   const domain = props[COMPANY.domain];
-  if (domain) {
-    const res = await hsFetch("/crm/v3/objects/companies/batch/upsert", "POST", {
-      inputs: [{ idProperty: "domain", id: domain, properties: props }],
-    });
-    if (!res.ok) throw new Error(await readError(res));
-    const json = (await res.json()) as { results: { id: string }[] };
-    return json.results[0].id;
-  }
-  const res = await hsFetch("/crm/v3/objects/companies", "POST", { properties: props });
+  const make = (p: Props) =>
+    domain
+      ? hsFetch("/crm/v3/objects/companies/batch/upsert", "POST", {
+          inputs: [{ idProperty: "domain", id: domain, properties: p }],
+        })
+      : hsFetch("/crm/v3/objects/companies", "POST", { properties: p });
+  const res = await requestWithRetry(make, props);
   if (!res.ok) throw new Error(await readError(res));
-  const json = (await res.json()) as { id: string };
-  return json.id;
+  const json = await res.json();
+  return domain
+    ? (json as { results: { id: string }[] }).results[0].id
+    : (json as { id: string }).id;
 }
 
 async function createDeal(props: Props): Promise<string> {
-  const res = await hsFetch("/crm/v3/objects/deals", "POST", { properties: props });
+  const make = (p: Props) => hsFetch("/crm/v3/objects/deals", "POST", { properties: p });
+  const res = await requestWithRetry(make, props);
   if (!res.ok) throw new Error(await readError(res));
   const json = (await res.json()) as { id: string };
   return json.id;

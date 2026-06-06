@@ -43,6 +43,14 @@ export const CONTACT = {
   utmCampaign: "utm_campaign",
   utmContent: "utm_content",
   utmTerm: "utm_term",
+  // ── Lifecycle (optional). Create these in HubSpot to power nurture/win-back
+  //    workflows. If a property doesn't exist yet, the integration silently
+  //    drops it (see safe-retry in hubspot.ts) — it will NOT break submissions.
+  capturedAt: "captured_at", // datetime
+  leadCaptureStage: "lead_capture_stage", // e.g. full_submission | partial
+  lastFormActivityDate: "last_form_activity_date", // datetime
+  consentTimestamp: "consent_timestamp", // datetime
+  consentSourcePage: "consent_source_page", // text
 } as const;
 
 /* ── COMPANY properties ─────────────────────────────────────────────────── */
@@ -156,7 +164,7 @@ export const CHANNEL_VALUE: Record<string, "email" | "phone" | "social_media" | 
 /** Representative numeric value (USD/mo) for monthly_gross_revenue. */
 export const REVENUE_NUMERIC: Record<string, number> = {
   under_10k: 7500,
-  "10k_20k": 15000,
+  "10k_20k": 17500, // band midpoint (was 15000 — the bottom of the band)
   "20k_50k": 35000,
   "50k_150k": 100000,
   "150k_plus": 200000,

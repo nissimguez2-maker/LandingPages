@@ -7,7 +7,7 @@ import DisclaimerBlock from "./DisclaimerBlock";
  * Neutral thank-you page. NEVER shows rejection language — every visitor gets the
  * same calm confirmation regardless of internal lead band.
  */
-export default function ThankYou() {
+export default function ThankYou({ verticalTitle }: { verticalTitle?: string }) {
   return (
     <>
       <SiteHeader />
@@ -18,7 +18,8 @@ export default function ThankYou() {
               <path fillRule="evenodd" d="M16.704 5.29a1 1 0 010 1.42l-7.5 7.5a1 1 0 01-1.42 0l-3.5-3.5a1 1 0 111.42-1.42l2.79 2.79 6.79-6.79a1 1 0 011.42 0z" clipRule="evenodd" />
             </svg>
           </div>
-          <h1 className="mt-6 text-3xl font-bold tracking-tight text-brand-900">
+          <p className="eyebrow mt-6">{verticalTitle ? `${verticalTitle} • ` : ""}Prequalification received</p>
+          <h1 className="mt-2 text-3xl font-bold tracking-tight text-brand-900">
             Thanks — your information was received.
           </h1>
           <p className="mt-4 max-w-xl text-lg leading-relaxed text-slate-600">

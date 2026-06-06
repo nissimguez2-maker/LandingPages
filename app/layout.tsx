@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
 import { SITE_NAME, SITE_TAGLINE, getSiteUrl } from "@/lib/site";
+import { buildOrganizationJsonLd } from "@/lib/structuredData";
 
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
@@ -17,7 +18,13 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body className="font-sans">{children}</body>
+      <body className="font-sans">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(buildOrganizationJsonLd()) }}
+        />
+        {children}
+      </body>
     </html>
   );
 }

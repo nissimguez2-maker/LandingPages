@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 import type {
   LeadData,
@@ -35,11 +36,11 @@ import { track } from "@/lib/analytics";
 import { getStoredUtm } from "@/lib/utm";
 import { scoreLead, bandEvent } from "@/lib/leadScoring";
 import { computeCompleteness } from "@/lib/completeness";
+import { SITE_NAME } from "@/lib/site";
 
 import ProgressIndicator from "./ProgressIndicator";
 import FormStep from "./FormStep";
-import { RadioCards, TextField, TextArea, Checkbox } from "./Fields";
-import DisclaimerBlock from "../DisclaimerBlock";
+import { RadioCards, TextField, TextArea } from "./Fields";
 
 const STEPS = [
   { id: 1, label: "Business" },
@@ -48,19 +49,35 @@ const STEPS = [
   { id: 4, label: "Optional" },
 ];
 
+const PREFILL_KEY = "mca_prefill";
+
 const emailOk = (v?: string) => !!v && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 const phoneOk = (v?: string) => !!v && v.replace(/\D/g, "").length >= 10;
 
 export default function PrequalificationFlow({ vertical }: { vertical: VerticalConfig }) {
   const router = useRouter();
   const [step, setStep] = useState(1);
-  const [lead, setLead] = useState<LeadData>({});
+  // Seed from the funding calculator's prefill, if present.
+  const [lead, setLead] = useState<LeadData>(() => {
+    if (typeof window === "undefined") return {};
+    try {
+      const raw = window.sessionStorage.getItem(PREFILL_KEY);
+      if (raw) {
+        window.sessionStorage.removeItem(PREFILL_KEY);
+        return JSON.parse(raw) as LeadData;
+      }
+    } catch {
+      /* ignore */
+    }
+    return {};
+  });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
 
   const startedRef = useRef(false);
   const submittedRef = useRef(false);
   const partialSavedRef = useRef(false);
+  const summaryRef = useRef<HTMLDivElement>(null);
 
   const set = useCallback(
     <K extends keyof LeadData>(key: K, value: LeadData[K]) => {
@@ -74,7 +91,6 @@ export default function PrequalificationFlow({ vertical }: { vertical: VerticalC
     [vertical.slug],
   );
 
-  /** Assemble the full payload with attribution + meta. */
   const buildPayload = useCallback(
     (partial: boolean): LeadData => ({
       ...lead,
@@ -95,7 +111,6 @@ export default function PrequalificationFlow({ vertical }: { vertical: VerticalC
     [vertical.slug],
   );
 
-  /** Background partial save — never blocks the UI. */
   const savePartial = useCallback(async () => {
     const payload = buildPayload(true);
     if (!payload.email && !payload.phone) return;
@@ -111,12 +126,11 @@ export default function PrequalificationFlow({ vertical }: { vertical: VerticalC
         keepalive: true,
       });
     } catch {
-      /* non-fatal — best-effort capture */
+      /* best-effort */
     }
   }, [buildPayload, fireBandEvent, vertical.slug]);
 
-  // Safety net: if the visitor leaves after giving contact info but before
-  // submitting, fire a beacon so the partial lead is still captured.
+  // Safety net: capture a partial if the visitor leaves after giving contact info.
   useEffect(() => {
     const handler = () => {
       if (submittedRef.current || partialSavedRef.current) return;
@@ -136,39 +150,43 @@ export default function PrequalificationFlow({ vertical }: { vertical: VerticalC
   function validateStep(current: number): boolean {
     const e: Record<string, string> = {};
     if (current === 1) {
-      if (!lead.monthlyRevenue) e.monthlyRevenue = "Please choose an option.";
-      if (!lead.timeInBusiness) e.timeInBusiness = "Please choose an option.";
-      if (!lead.amountNeeded) e.amountNeeded = "Please choose an option.";
-      if (!lead.urgency) e.urgency = "Please choose an option.";
+      if (!lead.monthlyRevenue) e.monthlyRevenue = "Choose your average monthly revenue.";
+      if (!lead.timeInBusiness) e.timeInBusiness = "Choose how long you've been in business.";
+      if (!lead.amountNeeded) e.amountNeeded = "Choose how much you're looking for.";
+      if (!lead.urgency) e.urgency = "Choose how soon you need it.";
     } else if (current === 2) {
-      if (!lead.existingDebt) e.existingDebt = "Please choose an option.";
-      if (!lead.recentNsfs) e.recentNsfs = "Please choose an option.";
-      if (!lead.useOfFunds) e.useOfFunds = "Please choose an option.";
-      if (!lead.canProvideBankStatements) e.canProvideBankStatements = "Please choose an option.";
+      if (!lead.existingDebt) e.existingDebt = "Tell us about existing financing.";
+      if (!lead.recentNsfs) e.recentNsfs = "Choose an option for recent NSFs.";
+      if (!lead.useOfFunds) e.useOfFunds = "Choose a primary use of funds.";
+      if (!lead.canProvideBankStatements) e.canProvideBankStatements = "Let us know about bank statements.";
     } else if (current === 3) {
-      if (!lead.firstName?.trim()) e.firstName = "Required";
-      if (!lead.lastName?.trim()) e.lastName = "Required";
-      if (!lead.businessName?.trim()) e.businessName = "Required";
+      if (!lead.firstName?.trim()) e.firstName = "First name is required.";
+      if (!lead.lastName?.trim()) e.lastName = "Last name is required.";
+      if (!lead.businessName?.trim()) e.businessName = "Business name is required.";
       if (!phoneOk(lead.phone)) e.phone = "Enter a valid phone number.";
       if (!emailOk(lead.email)) e.email = "Enter a valid email.";
-      if (!lead.state?.trim()) e.state = "Required";
+      if (!lead.state?.trim()) e.state = "State is required.";
     }
     setErrors(e);
-    return Object.keys(e).length === 0;
+    if (Object.keys(e).length) {
+      track("prequal_validation_error", { vertical: vertical.slug, step: current, fields: Object.keys(e) });
+      requestAnimationFrame(() => summaryRef.current?.focus());
+      return false;
+    }
+    return true;
   }
 
   async function handleNext() {
     if (!validateStep(step)) return;
     track("prequal_step_completed", { vertical: vertical.slug, step });
-
-    if (step === 3) {
-      track("prequal_contact_captured", { vertical: vertical.slug });
-      void savePartial(); // capture the lead now, before the optional step
-    }
+    if (step === 3) track("prequal_contact_captured", { vertical: vertical.slug });
+    // Save a partial as soon as we have a contact channel (covers later drop-off).
+    if (lead.email || lead.phone) void savePartial();
     setStep((s) => Math.min(s + 1, STEPS.length));
   }
 
   function handleBack() {
+    track("prequal_step_abandoned", { vertical: vertical.slug, step, direction: "back" });
     setStep((s) => Math.max(s - 1, 1));
   }
 
@@ -186,17 +204,31 @@ export default function PrequalificationFlow({ vertical }: { vertical: VerticalC
         body: JSON.stringify(payload),
       });
     } catch {
-      // Lead was already captured as a partial at step 3 — proceed to thank-you.
+      /* lead already captured as partial at step 3 */
     }
-    router.push("/thank-you");
+    router.push(`/thank-you?v=${vertical.slug}`);
   }
 
+  const errorList = Object.values(errors).filter(Boolean);
+  const errorSummary =
+    errorList.length > 0 ? (
+      <div
+        ref={summaryRef}
+        tabIndex={-1}
+        role="alert"
+        className="rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-800 focus:outline-none focus:ring-2 focus:ring-red-300"
+      >
+        <p className="font-semibold">Please fix the following:</p>
+        <ul className="mt-1 list-disc pl-5">
+          {errorList.map((msg, i) => (
+            <li key={i}>{msg}</li>
+          ))}
+        </ul>
+      </div>
+    ) : null;
+
   const backBtn = (
-    <button
-      type="button"
-      onClick={handleBack}
-      className="text-sm font-medium text-slate-500 hover:text-slate-800"
-    >
+    <button type="button" onClick={handleBack} className="text-sm font-medium text-slate-500 hover:text-slate-800">
       ← Back
     </button>
   );
@@ -204,6 +236,7 @@ export default function PrequalificationFlow({ vertical }: { vertical: VerticalC
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-card sm:p-8">
       <ProgressIndicator steps={STEPS} current={step} />
+      <div aria-live="polite" className="sr-only">{`Step ${step} of ${STEPS.length}: ${STEPS[step - 1].label}`}</div>
 
       <div className="mt-7">
         {step === 1 && (
@@ -214,58 +247,36 @@ export default function PrequalificationFlow({ vertical }: { vertical: VerticalC
               <>
                 <span />
                 <button type="button" onClick={handleNext} className="btn-primary">
-                  Continue
+                  Next: your financials
                 </button>
               </>
             }
           >
-            <RadioCards
-              legend="Average monthly revenue"
-              options={REVENUE_OPTIONS}
-              value={lead.monthlyRevenue}
-              onChange={(v: RevenueValue) => set("monthlyRevenue", v)}
-              error={errors.monthlyRevenue}
-            />
-            <RadioCards
-              legend="Time in business"
-              options={TIME_IN_BUSINESS_OPTIONS}
-              value={lead.timeInBusiness}
-              onChange={(v: TimeInBusinessValue) => set("timeInBusiness", v)}
-              error={errors.timeInBusiness}
-            />
-            <RadioCards
-              legend="How much are you looking for?"
-              options={AMOUNT_OPTIONS}
-              value={lead.amountNeeded}
-              onChange={(v: AmountValue) => set("amountNeeded", v)}
-              error={errors.amountNeeded}
-            />
-            <RadioCards
-              legend="How soon do you need it?"
-              options={URGENCY_OPTIONS}
-              value={lead.urgency}
-              onChange={(v: UrgencyValue) => set("urgency", v)}
-              columns={2}
-              error={errors.urgency}
-            />
+            {errorSummary}
+            <RadioCards legend="Average monthly revenue" options={REVENUE_OPTIONS} value={lead.monthlyRevenue} onChange={(v: RevenueValue) => set("monthlyRevenue", v)} error={errors.monthlyRevenue} />
+            <RadioCards legend="Time in business" options={TIME_IN_BUSINESS_OPTIONS} value={lead.timeInBusiness} onChange={(v: TimeInBusinessValue) => set("timeInBusiness", v)} error={errors.timeInBusiness} />
+            <RadioCards legend="How much are you looking for?" options={AMOUNT_OPTIONS} value={lead.amountNeeded} onChange={(v: AmountValue) => set("amountNeeded", v)} error={errors.amountNeeded} />
+            <RadioCards legend="How soon do you need it?" options={URGENCY_OPTIONS} value={lead.urgency} onChange={(v: UrgencyValue) => set("urgency", v)} columns={2} error={errors.urgency} />
           </FormStep>
         )}
 
         {step === 2 && (
           <FormStep
             title="A few underwriting details"
-            description="Honest answers help match you to the right options. 'Prefer to discuss' is always okay."
+            description="Honest answers help match you to the right options. Where offered, “Prefer to discuss” is always okay."
             footer={
               <>
                 {backBtn}
                 <button type="button" onClick={handleNext} className="btn-primary">
-                  Continue
+                  Next: your contact details
                 </button>
               </>
             }
           >
+            {errorSummary}
             <RadioCards
-              legend="Existing business loans or advances?"
+              legend="Existing loans or merchant cash advances (MCAs)?"
+              help="Include any business loans, MCAs, or credit lines you're currently repaying."
               options={EXISTING_DEBT_OPTIONS}
               value={lead.existingDebt}
               onChange={(v: ExistingDebtValue) => set("existingDebt", v)}
@@ -273,12 +284,14 @@ export default function PrequalificationFlow({ vertical }: { vertical: VerticalC
             />
             <RadioCards
               legend="Current daily/weekly payments on existing financing"
+              help="Roughly what you pay out each week on current loans or advances."
               options={PAYMENT_BURDEN_OPTIONS}
               value={lead.paymentBurden}
               onChange={(v: PaymentBurdenValue) => set("paymentBurden", v)}
             />
             <RadioCards
               legend="Recent NSFs or negative balance days?"
+              help="NSFs are bounced payments from insufficient funds — estimate the last 90 days."
               options={NSF_OPTIONS}
               value={lead.recentNsfs}
               onChange={(v: NsfValue) => set("recentNsfs", v)}
@@ -295,6 +308,7 @@ export default function PrequalificationFlow({ vertical }: { vertical: VerticalC
             />
             <RadioCards
               legend="Can you provide 3–4 months of business bank statements?"
+              help="Recent statements help a specialist review your cash flow faster."
               options={BANK_STATEMENTS_OPTIONS}
               value={lead.canProvideBankStatements}
               onChange={(v: BankStatementsValue) => set("canProvideBankStatements", v)}
@@ -312,11 +326,12 @@ export default function PrequalificationFlow({ vertical }: { vertical: VerticalC
               <>
                 {backBtn}
                 <button type="button" onClick={handleNext} className="btn-primary">
-                  Continue
+                  Next: optional details
                 </button>
               </>
             }
           >
+            {errorSummary}
             <div className="grid gap-5 sm:grid-cols-2">
               <TextField label="First name" value={lead.firstName || ""} onChange={(v) => set("firstName", v)} autoComplete="given-name" error={errors.firstName} />
               <TextField label="Last name" value={lead.lastName || ""} onChange={(v) => set("lastName", v)} autoComplete="family-name" error={errors.lastName} />
@@ -329,25 +344,24 @@ export default function PrequalificationFlow({ vertical }: { vertical: VerticalC
             <div className="grid gap-5 sm:grid-cols-2">
               <TextField label="State" value={lead.state || ""} onChange={(v) => set("state", v)} autoComplete="address-level1" error={errors.state} />
             </div>
-            <RadioCards
-              legend="Best time to reach you (optional)"
-              options={CONTACT_TIME_OPTIONS}
-              value={lead.preferredContactTime}
-              onChange={(v: ContactTimeValue) => set("preferredContactTime", v)}
-              columns={4}
-            />
-            <RadioCards
-              legend="Preferred contact method (optional)"
-              options={CHANNEL_OPTIONS}
-              value={lead.preferredChannel}
-              onChange={(v: ChannelValue) => set("preferredChannel", v)}
-              columns={3}
-            />
-            <Checkbox
-              label="I agree to be contacted by phone, email, or text about my inquiry. Message/data rates may apply. Consent is not a condition of any service."
-              checked={!!lead.marketingConsent}
-              onChange={(v) => set("marketingConsent", v)}
-            />
+            <label className="flex cursor-pointer items-start gap-3 text-xs leading-relaxed text-slate-600">
+              <input
+                type="checkbox"
+                checked={!!lead.marketingConsent}
+                onChange={(e) => set("marketingConsent", e.target.checked)}
+                className="mt-0.5 h-5 w-5 flex-none rounded border-slate-300 text-brand-600 focus:ring-brand-500"
+              />
+              <span>
+                By submitting, I authorize {SITE_NAME} and its funding partners to contact me about my
+                inquiry by phone, email, and text — including autodialed or prerecorded messages — at the
+                number provided. Consent isn&apos;t a condition of any service; message/data rates may apply;
+                reply STOP to opt out. See our{" "}
+                <Link href="/privacy" className="underline hover:text-slate-800">
+                  Privacy Policy
+                </Link>
+                .
+              </span>
+            </label>
           </FormStep>
         )}
 
@@ -364,13 +378,26 @@ export default function PrequalificationFlow({ vertical }: { vertical: VerticalC
               </>
             }
           >
+            <RadioCards
+              legend="Best time to reach you (optional)"
+              options={CONTACT_TIME_OPTIONS}
+              value={lead.preferredContactTime}
+              onChange={(v: ContactTimeValue) => set("preferredContactTime", v)}
+              columns={4}
+            />
+            <RadioCards
+              legend="Preferred contact method (optional)"
+              options={CHANNEL_OPTIONS}
+              value={lead.preferredChannel}
+              onChange={(v: ChannelValue) => set("preferredChannel", v)}
+              columns={3}
+            />
             <TextField label="Business website (optional)" type="url" inputMode="url" value={lead.website || ""} onChange={(v) => set("website", v)} placeholder="https://" />
             <div className="grid gap-5 sm:grid-cols-2">
               <TextField label="Current funder, if any (optional)" value={lead.currentFunderName || ""} onChange={(v) => set("currentFunderName", v)} />
               <TextField label="Current balance owed, if known (optional)" inputMode="numeric" value={lead.currentBalanceOwed || ""} onChange={(v) => set("currentBalanceOwed", v)} placeholder="$" />
             </div>
             <TextArea label="Anything we should know? (optional)" value={lead.notes || ""} onChange={(v) => set("notes", v)} />
-            <DisclaimerBlock compact />
           </FormStep>
         )}
       </div>

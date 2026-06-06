@@ -23,17 +23,25 @@ body {
     @apply mx-auto w-full max-w-content px-5 sm:px-6 lg:px-8;
   }
 
-  /* Primary CTA — emerald, used sparingly for the main action. */
+  /* Primary CTA — emerald, used sparingly for the main action. min-h keeps a 44px+ tap target. */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-accent-600 px-6 py-3.5
+    @apply inline-flex min-h-[48px] items-center justify-center gap-2 rounded-lg bg-accent-600 px-6 py-4
       text-base font-semibold text-white shadow-card transition
       hover:bg-accent-700 focus-visible:outline-accent-600 disabled:cursor-not-allowed disabled:opacity-60;
   }
 
   /* Secondary CTA — navy outline. */
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-brand-200 bg-white px-6 py-3.5
+    @apply inline-flex min-h-[48px] items-center justify-center gap-2 rounded-lg border border-brand-200 bg-white px-6 py-4
       text-base font-semibold text-brand-800 transition hover:border-brand-300 hover:bg-brand-50;
+  }
+
+  /* Skip-to-form link — visible only when focused (keyboard users). */
+  .skip-link {
+    @apply sr-only;
+  }
+  .skip-link:focus {
+    @apply not-sr-only fixed left-4 top-4 z-50 rounded-md bg-brand-900 px-4 py-2 text-sm font-semibold text-white;
   }
 
   .eyebrow {

@@ -178,7 +178,46 @@ export interface LeadData {
 
 export interface FAQItem {
   question: string;
+  /** Canonical, complete-sentence answer. Used for visible copy AND FAQ JSON-LD. */
   answer: string;
+  /** Optional scannable bullets shown in the UI only (never in JSON-LD). */
+  bullets?: string[];
+}
+
+/** A media slot. `src` empty/undefined → MediaFigure renders a branded placeholder. */
+export interface MediaAsset {
+  src?: string;
+  alt: string;
+  width?: number;
+  height?: number;
+}
+
+/** Compliant, factual trust signal (NOT a fabricated stat). */
+export interface TrustSignal {
+  icon: "lock" | "shield" | "user-check" | "eye" | "scale" | "clock";
+  title: string;
+  description: string;
+}
+
+/** Real testimonial — only populated with owner-provided, truthful data. */
+export interface Testimonial {
+  quote: string;
+  attribution: string;
+  detail?: string;
+}
+
+/** Real stat — only populated with owner-provided, truthful data. */
+export interface Stat {
+  value: string;
+  label: string;
+}
+
+/** Funding-estimate calculator config. Produces an ESTIMATE RANGE, never an offer. */
+export interface CalculatorConfig {
+  lowFactor: number;
+  highFactor: number;
+  minMonthly: number;
+  maxMonthly: number;
 }
 
 export interface FitRow {
@@ -216,4 +255,21 @@ export interface VerticalConfig {
   industryFocus?: "technology" | "healthcare" | "finance" | "retail";
   /** Free-text tag stored for segmentation / future campaign routing. */
   campaignTag: string;
+
+  // ── Narrative (optional) ──
+  /** One-line, vertical-specific pain framing shown lightly before reassurance. */
+  painPoint?: string;
+
+  // ── Imagery slots (render placeholder until real `src` provided) ──
+  heroImage?: MediaAsset;
+  /** Icon keys aligned to useCases[] order; falls back to numbered badges. */
+  useCaseIcons?: string[];
+
+  // ── Social proof slots (render ONLY when populated with REAL data) ──
+  testimonials?: Testimonial[];
+  stats?: Stat[];
+  logos?: MediaAsset[];
+
+  // ── Optional per-vertical calculator override ──
+  calculator?: Partial<CalculatorConfig>;
 }

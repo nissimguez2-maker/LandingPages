@@ -1,23 +1,26 @@
 import type { VerticalConfig } from "@/lib/types";
 import CTAButton from "./CTAButton";
+import MediaFigure from "./MediaFigure";
 
 /**
  * Above-the-fold hero. Passes the 5-second test: what this is, who it's for,
- * and the next action — all visible without scrolling.
+ * and the next action — all visible without scrolling. Now includes a vertical
+ * image slot + a light pain-point line before the reassuring value prop.
  */
 export default function HeroSection({ vertical }: { vertical: VerticalConfig }) {
   return (
     <section className="relative overflow-hidden bg-brand-900 text-white">
       <div className="absolute inset-0 bg-gradient-to-br from-brand-900 via-brand-900 to-brand-800" aria-hidden="true" />
-      <div className="container-content relative grid gap-10 py-16 lg:grid-cols-12 lg:py-24">
-        <div className="lg:col-span-7">
+      <div className="container-content relative grid gap-10 py-16 lg:grid-cols-12 lg:py-20">
+        <div className="lg:col-span-6">
           <p className="eyebrow text-accent-300">Fast working-capital review</p>
           <h1 className="mt-3 text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
             {vertical.heroHeadline}
           </h1>
-          <p className="mt-5 max-w-xl text-lg leading-relaxed text-brand-100">
-            {vertical.heroSubheadline}
-          </p>
+          {vertical.painPoint && (
+            <p className="mt-4 text-base text-brand-200">{vertical.painPoint}</p>
+          )}
+          <p className="mt-3 max-w-xl text-lg leading-relaxed text-brand-100">{vertical.heroSubheadline}</p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <CTAButton label={vertical.cta.primary} location="hero" vertical={vertical.slug} />
@@ -26,7 +29,7 @@ export default function HeroSection({ vertical }: { vertical: VerticalConfig }) 
               location="hero"
               vertical={vertical.slug}
               variant="secondary"
-              className="!border-white/30 !bg-white/5 !text-white hover:!bg-white/10"
+              className="!border-white/50 !bg-white/10 !text-white hover:!bg-white/20"
             />
           </div>
 
@@ -43,12 +46,13 @@ export default function HeroSection({ vertical }: { vertical: VerticalConfig }) 
           </p>
         </div>
 
-        {/* Readiness preview card — a low-friction commitment device. */}
-        <div className="lg:col-span-5">
-          <div className="rounded-2xl bg-white p-6 text-slate-800 shadow-lift sm:p-8">
-            <h2 className="text-lg font-semibold text-brand-900">Check your funding readiness</h2>
+        {/* Image slot + readiness card (commitment device). */}
+        <div className="space-y-5 lg:col-span-6">
+          <MediaFigure asset={vertical.heroImage} aspect="hero" className="hidden sm:block" />
+          <div className="rounded-2xl bg-white p-6 text-slate-800 shadow-lift sm:p-7">
+            <p className="text-lg font-semibold text-brand-900">Check your funding readiness</p>
             <p className="mt-1 text-sm text-slate-500">About 2 minutes. No obligation.</p>
-            <ul className="mt-5 space-y-3 text-sm">
+            <ul className="mt-4 space-y-2.5 text-sm">
               {[
                 "Reviewed on revenue & bank activity",
                 "Share 3–4 months of statements if the file looks viable",
@@ -62,12 +66,7 @@ export default function HeroSection({ vertical }: { vertical: VerticalConfig }) 
                 </li>
               ))}
             </ul>
-            <CTAButton
-              label={vertical.cta.primary}
-              location="hero_card"
-              vertical={vertical.slug}
-              className="mt-6 w-full"
-            />
+            <CTAButton label={vertical.cta.primary} location="hero_card" vertical={vertical.slug} className="mt-6 w-full" />
           </div>
         </div>
       </div>

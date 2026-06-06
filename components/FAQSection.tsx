@@ -22,6 +22,13 @@ export default function FAQSection({ faqs }: { faqs: FAQItem[] }) {
                 </svg>
               </summary>
               <p className="mt-3 text-sm leading-relaxed text-slate-600">{faq.answer}</p>
+              {faq.bullets && faq.bullets.length > 0 && (
+                <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-600">
+                  {faq.bullets.map((b) => (
+                    <li key={b}>{b}</li>
+                  ))}
+                </ul>
+              )}
             </details>
           ))}
         </div>

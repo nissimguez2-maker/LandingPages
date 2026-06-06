@@ -93,13 +93,15 @@ export function scoreLead(lead: LeadData): LeadScore {
   }
 
   // ── Hard rules ──────────────────────────────────────────────────────────
-  const hasContact = Boolean(lead.email) && Boolean(lead.phone);
+  // Reachable if we have at least one channel (email OR phone) — a strong file
+  // shouldn't be capped just because phone was left blank.
+  const hasContact = Boolean(lead.email) || Boolean(lead.phone);
   let band = bandFor(score);
 
-  // Missing contact details => cannot be Green.
+  // No way to reach the lead => cannot be Green.
   if (!hasContact && band === "green") {
     band = "yellow";
-    reasons.push("⚠ capped at Yellow: missing contact details");
+    reasons.push("⚠ capped at Yellow: no contact channel");
   }
 
   // Refuses key documents => downgrade one band.

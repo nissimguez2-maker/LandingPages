@@ -15,9 +15,12 @@ export type AnalyticsEventName =
   | "cta_clicked"
   | "prequal_form_started"
   | "prequal_step_completed"
+  | "prequal_step_abandoned"
+  | "prequal_validation_error"
   | "prequal_contact_captured"
   | "prequal_form_submitted"
   | "partial_lead_saved"
+  | "calculator_used"
   | "green_lead"
   | "yellow_lead"
   | "red_lead";
@@ -30,10 +33,30 @@ declare global {
   }
 }
 
+const SESSION_KEY = "mca_session_id";
+
+/** Stable per-session id for funnel stitching + conversion-API dedup later. */
+export function getSessionId(): string {
+  if (typeof window === "undefined") return "";
+  try {
+    let id = window.sessionStorage.getItem(SESSION_KEY);
+    if (!id) {
+      id =
+        typeof crypto !== "undefined" && "randomUUID" in crypto
+          ? crypto.randomUUID()
+          : `s_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+      window.sessionStorage.setItem(SESSION_KEY, id);
+    }
+    return id;
+  } catch {
+    return "";
+  }
+}
+
 export function track(event: AnalyticsEventName, payload: AnalyticsPayload = {}): void {
   if (typeof window === "undefined") return;
 
-  const data = { event, ...payload, ts: Date.now() };
+  const data = { event, session_id: getSessionId(), ...payload, ts: Date.now() };
 
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push(data);

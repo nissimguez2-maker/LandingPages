@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import LandingPageTemplate from "@/components/LandingPageTemplate";
 import { getVerticalBySlug, getActiveVerticals } from "@/content/landingPagesConfig";
 import { getSiteUrl } from "@/lib/site";
+import { buildFaqJsonLd, buildBreadcrumbJsonLd } from "@/lib/structuredData";
 
 // Only the configured verticals exist; unknown slugs 404.
 export const dynamicParams = false;
@@ -45,22 +46,15 @@ export default async function VerticalPage({
   const v = getVerticalBySlug(slug);
   if (!v) notFound();
 
-  // FAQ structured data for rich results.
-  const faqJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: v.faqs.map((f) => ({
-      "@type": "Question",
-      name: f.question,
-      acceptedAnswer: { "@type": "Answer", text: f.answer },
-    })),
-  };
-
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildFaqJsonLd(v.faqs)) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildBreadcrumbJsonLd(v.title, v.slug)) }}
       />
       <LandingPageTemplate vertical={v} />
     </>

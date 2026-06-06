@@ -14,68 +14,96 @@
  *      funding specialist may contact you" · "Clean files can move faster"
  *   ❌ guaranteed/instant approval · cheap money · lowest rates · no risk ·
  *      bank loan · everyone qualifies · no documents needed
+ *
+ *   Use cases describe what capital is FOR (a use), never a guaranteed OUTCOME.
+ *   Social-proof slots (testimonials/stats/logos) stay empty until REAL data
+ *   is supplied — never fabricate.
  */
 
-import type { VerticalConfig, FAQItem, FitRow } from "@/lib/types";
+import type {
+  VerticalConfig,
+  FAQItem,
+  FitRow,
+  TrustSignal,
+  CalculatorConfig,
+} from "@/lib/types";
 
 /** Standard "What we look at" section — shared across every vertical. */
 export const WHAT_WE_LOOK_AT: { title: string; description: string }[] = [
-  {
-    title: "Monthly deposits",
-    description: "Consistent deposits show the business can support payments that fit cash flow.",
-  },
-  {
-    title: "Time in business",
-    description: "A longer operating history generally supports a stronger review.",
-  },
-  {
-    title: "Bank activity",
-    description: "Healthy day-to-day banking often matters more than any single number.",
-  },
+  { title: "Monthly deposits", description: "Steady deposits show the business can support new payments." },
+  { title: "Time in business", description: "More operating history strengthens a review." },
+  { title: "Bank activity", description: "Healthy day-to-day banking often matters more than one number." },
   {
     title: "Existing debt / advances",
-    description: "Current advances and how they're stacked affect what's realistic.",
+    description: "Current loans or advances — and how many run at once (“stacked”) — affect what's realistic.",
   },
   {
     title: "Recent NSFs / negative days",
-    description: "Frequent negative days can make a file harder to place.",
+    description: "Frequent NSFs (bounced payments) or negative-balance days can make a file harder to place.",
+  },
+  { title: "Use of funds", description: "A clear, productive use of funds strengthens the file." },
+  { title: "Document readiness", description: "Files with statements ready can be reviewed sooner." },
+];
+
+/** Compliant, factual trust signals (NOT fabricated stats). Shared across verticals. */
+export const DEFAULT_TRUST_SIGNALS: TrustSignal[] = [
+  { icon: "lock", title: "Secure submission", description: "Your details are sent over an encrypted connection." },
+  { icon: "user-check", title: "Reviewed by a specialist", description: "A real funding specialist reviews your file — not an instant algorithm." },
+  { icon: "scale", title: "Revenue-first review", description: "Files are weighed on revenue and bank activity, not credit alone." },
+  { icon: "eye", title: "No obligation", description: "Prequalifying doesn't obligate you to accept any offer." },
+];
+
+/** Funding-estimate calculator defaults (estimate range, never an offer). */
+export const DEFAULT_CALCULATOR: CalculatorConfig = {
+  lowFactor: 0.5,
+  highFactor: 1.0,
+  minMonthly: 5000,
+  maxMonthly: 500000,
+};
+
+/** Single source for the 3-step process (used by Timeline + any card view). */
+export const HOW_IT_WORKS_STEPS = [
+  {
+    title: "Complete a quick prequalification",
+    description: "Answer a few questions about your business. About two minutes, no obligation.",
   },
   {
-    title: "Use of funds",
-    description: "A clear, productive use of funds strengthens the file.",
+    title: "Share recent bank statements if the file looks viable",
+    description: "If the basics line up, share 3–4 months of business bank statements for a proper review.",
   },
   {
-    title: "Document readiness",
-    description: "Clean files with statements ready can move faster.",
+    title: "Review available options if underwriting supports the file",
+    description: "A funding specialist may contact you to review options. Approval depends on underwriting.",
   },
 ];
 
-/** Shared, compliance-safe FAQs. Each vertical prepends 1–2 specific ones. */
+/** Shared, compliance-safe FAQs (shortened + scannable). Verticals prepend 1–2 specific ones. */
 const baseFaqs = (): FAQItem[] => [
   {
     question: "How much funding could my business qualify for?",
     answer:
-      "It depends on underwriting. Any amount is based on business revenue, bank activity, time in business, and existing obligations. You may qualify for a range once a funding specialist reviews your file. Approval depends on underwriting.",
+      "It depends on underwriting — amounts are based on your revenue, bank activity, time in business, and existing obligations. A specialist reviews your file to find a range.",
+    bullets: ["Business revenue & deposits", "Time in business", "Bank activity & existing obligations"],
   },
   {
     question: "What do I need to get started?",
     answer:
-      "Just a quick prequalification to begin. If the file looks viable, recent business bank statements (typically 3–4 months) help move it forward. Clean files can move faster.",
+      "Just a quick prequalification. If the file looks viable, recent business bank statements (usually 3–4 months) help move it forward.",
   },
   {
     question: "Will checking my readiness affect my credit?",
     answer:
-      "Starting a prequalification doesn't require a hard credit check. A review of available options is based primarily on business revenue and bank activity. Approval depends on underwriting and documentation.",
+      "Starting a prequalification doesn't trigger a hard credit check. Options are reviewed mainly on business revenue and bank activity; credit is considered, but it isn't the only factor.",
   },
   {
     question: "How fast can funding happen?",
     answer:
-      "Timing depends on your file and documentation. Clean files with complete statements can move faster. There is no guarantee of approval or timing.",
+      "Timing depends on your file and documentation. Complete statements help a review move along. There's no guaranteed approval or timing.",
   },
   {
     question: "Is there any obligation?",
     answer:
-      "No. Submitting your information is no obligation to accept an offer. A funding specialist may contact you to review whether the file is worth pursuing, and any payments must fit your cash flow.",
+      "None. Submitting your information doesn't obligate you to accept an offer, and any payments must fit your cash flow. A specialist may contact you to review your inquiry.",
   },
 ];
 
@@ -110,13 +138,16 @@ export const landingPages: VerticalConfig[] = [
     title: "Restaurant Business Funding",
     seoTitle: "Restaurant Business Funding — Fast Working-Capital Review",
     seoDescription:
-      "Working capital for restaurants and food service, reviewed fast based on revenue and bank activity. You may qualify. Approval depends on underwriting.",
+      "Working capital for restaurants, reviewed on revenue and bank activity. You may qualify. Approval depends on underwriting.",
     heroHeadline: "Working Capital for Restaurants, Reviewed Fast",
     heroSubheadline:
-      "A fast working-capital review for restaurants and food-service businesses — based on your revenue, bank activity, and time in business. You may qualify.",
-    heroHighlights: ["Based on deposits, not just credit", "Built for daily-batch cash flow", "No obligation to accept an offer"],
+      "Working capital for restaurants — reviewed on your deposits and bank activity, not credit alone.",
+    heroHighlights: ["Reviewed on revenue & bank activity", "Built for daily card-batch cash flow", "Seasonality is expected, not penalized"],
+    painPoint: "Equipment fails, suppliers want paying, and a slow month can hit — sometimes all at once.",
+    heroImage: { alt: "A busy restaurant kitchen during service" },
+    useCaseIcons: ["tools", "inventory", "payroll", "expand", "marketing"],
     useCases: [
-      { title: "Kitchen equipment", description: "Repair or replace ovens, refrigeration, and line equipment without stalling service." },
+      { title: "Kitchen equipment", description: "Repair or replace ovens, refrigeration, and line equipment when capital is in place." },
       { title: "Inventory & suppliers", description: "Cover food and supplier orders ahead of busy weekends and events." },
       { title: "Payroll through slow seasons", description: "Keep your team paid during predictable seasonal dips." },
       { title: "New location or patio", description: "Fund a build-out, patio, or second location when the timing is right." },
@@ -130,7 +161,7 @@ export const landingPages: VerticalConfig[] = [
       {
         question: "Does seasonality hurt my chances?",
         answer:
-          "Not on its own. Underwriting expects seasonal swings in food service and looks at your overall deposit pattern and bank activity, not a single slow month.",
+          "Not on its own. Underwriting expects seasonal swings in food service and looks at your overall deposit pattern, not a single slow month.",
       },
       ...baseFaqs(),
     ],
@@ -145,11 +176,14 @@ export const landingPages: VerticalConfig[] = [
       "Working capital for owner-operators and fleets, reviewed on revenue and bank activity. You may qualify. Approval depends on underwriting.",
     heroHeadline: "Keep Your Trucks Moving with Fast Working Capital",
     heroSubheadline:
-      "A fast working-capital review for owner-operators and fleets — based on revenue, bank activity, and time in business. You may qualify.",
-    heroHighlights: ["Reviewed on deposits and settlements", "For owner-operators and fleets", "No obligation to accept an offer"],
+      "Working capital for owner-operators and fleets — reviewed on deposits and settlements, not credit alone.",
+    heroHighlights: ["Reviewed on deposits & settlements", "For owner-operators and fleets", "Fuel & repair gaps in mind"],
+    painPoint: "Fuel, repairs, and slow-paying brokers can squeeze cash before the next settlement clears.",
+    heroImage: { alt: "A semi truck driver beside their rig" },
+    useCaseIcons: ["vehicle", "tools", "expand", "scale", "payroll"],
     useCases: [
       { title: "Fuel & maintenance", description: "Smooth out fuel costs and routine maintenance between settlements." },
-      { title: "Truck & trailer repairs", description: "Cover unexpected repairs so a down truck doesn't stop your revenue." },
+      { title: "Truck & trailer repairs", description: "Cover unexpected repairs and maintenance when capital is in place." },
       { title: "Equipment down payment", description: "Put money down on another truck or trailer to grow capacity." },
       { title: "Bridge slow-paying freight", description: "Cover the gap while brokers and shippers pay invoices." },
       { title: "Driver payroll", description: "Keep drivers paid on time during slower freight weeks." },
@@ -177,8 +211,11 @@ export const landingPages: VerticalConfig[] = [
       "Working capital for contractors and subcontractors, reviewed on revenue and bank activity. You may qualify. Approval depends on underwriting.",
     heroHeadline: "Funding to Bridge Jobs and Payroll for Contractors",
     heroSubheadline:
-      "A fast working-capital review for contractors and subcontractors — based on revenue, bank activity, and time in business. You may qualify.",
-    heroHighlights: ["Built around draw schedules", "For GCs and subs", "No obligation to accept an offer"],
+      "Working capital for contractors and subs — reviewed on deposits and bank activity, not credit alone.",
+    heroHighlights: ["Built around draw schedules", "For GCs and subcontractors", "Lumpy cash flow is expected"],
+    painPoint: "Materials and payroll come due long before the draw or final check arrives.",
+    heroImage: { alt: "A contractor reviewing plans on a job site" },
+    useCaseIcons: ["inventory", "payroll", "tools", "expand", "spark"],
     useCases: [
       { title: "Materials upfront", description: "Buy materials before a draw or final payment comes in." },
       { title: "Payroll between draws", description: "Keep crews working while you wait on progress billing." },
@@ -209,8 +246,11 @@ export const landingPages: VerticalConfig[] = [
       "Inventory and growth capital for online sellers, reviewed on processor volume and bank activity. You may qualify. Approval depends on underwriting.",
     heroHeadline: "Inventory Funding for Growing E-commerce Brands",
     heroSubheadline:
-      "A fast working-capital review for online sellers — based on revenue, processor volume, and bank activity. You may qualify.",
-    heroHighlights: ["Reviewed on processor volume", "Built for peak-season stocking", "No obligation to accept an offer"],
+      "Working capital for online sellers — reviewed on revenue, processor volume, and bank activity.",
+    heroHighlights: ["Reviewed on processor & deposit volume", "Built for peak-season stocking", "Marketplace sellers welcome"],
+    painPoint: "Peak season rewards the sellers who can stock up before demand spikes.",
+    heroImage: { alt: "An e-commerce owner packing orders in a warehouse" },
+    useCaseIcons: ["cart", "inventory", "marketing", "scale", "expand"],
     useCases: [
       { title: "Bulk inventory", description: "Buy inventory ahead of peak season at better unit costs." },
       { title: "Restock best-sellers", description: "Keep top SKUs in stock so you never miss a sale." },
@@ -242,8 +282,11 @@ export const landingPages: VerticalConfig[] = [
       "Working capital for auto repair shops, reviewed on revenue and bank activity. You may qualify. Approval depends on underwriting.",
     heroHeadline: "Working Capital for Auto Repair Shops",
     heroSubheadline:
-      "A fast working-capital review for auto repair and service shops — based on revenue, bank activity, and time in business. You may qualify.",
-    heroHighlights: ["Reviewed on shop deposits", "For independents and chains", "No obligation to accept an offer"],
+      "Working capital for auto repair and service shops — reviewed on deposits and bank activity.",
+    heroHighlights: ["Reviewed on shop deposits", "For independents and chains", "Parts & equipment cash flow in mind"],
+    painPoint: "Parts, equipment, and technician payroll don't wait for a slow week to end.",
+    heroImage: { alt: "A technician working in an auto repair bay" },
+    useCaseIcons: ["tools", "inventory", "payroll", "expand", "marketing"],
     useCases: [
       { title: "Diagnostic & lift equipment", description: "Add or repair lifts, scanners, and diagnostic tools." },
       { title: "Parts inventory", description: "Stock common parts to cut turnaround and win more tickets." },
@@ -267,8 +310,11 @@ export const landingPages: VerticalConfig[] = [
       "Working capital for medical practices, reviewed on revenue and bank activity. You may qualify. Approval depends on underwriting.",
     heroHeadline: "Funding for Medical Practices, Reviewed Quickly",
     heroSubheadline:
-      "A fast working-capital review for medical practices — based on revenue, bank activity, and time in business. You may qualify.",
-    heroHighlights: ["Built for reimbursement cycles", "For solo and group practices", "No obligation to accept an offer"],
+      "Working capital for medical practices — reviewed on deposits and bank activity, with reimbursement timing in mind.",
+    heroHighlights: ["Built for reimbursement cycles", "For solo & group practices", "Insurance lag is expected"],
+    painPoint: "Payroll and equipment costs don't pause while insurance reimbursements catch up.",
+    heroImage: { alt: "A physician in a modern medical practice" },
+    useCaseIcons: ["tools", "payroll", "expand", "scale", "spark"],
     useCases: [
       { title: "Equipment", description: "Add or upgrade diagnostic and treatment equipment." },
       { title: "Hire staff", description: "Bring on clinical or front-office staff to grow capacity." },
@@ -300,8 +346,11 @@ export const landingPages: VerticalConfig[] = [
       "Working capital for dental practices, reviewed on revenue and bank activity. You may qualify. Approval depends on underwriting.",
     heroHeadline: "Working Capital for Dental Practices",
     heroSubheadline:
-      "A fast working-capital review for dental practices — based on revenue, bank activity, and time in business. You may qualify.",
-    heroHighlights: ["Built for production cycles", "For solo and group practices", "No obligation to accept an offer"],
+      "Working capital for dental practices — reviewed on collections and bank activity, not credit alone.",
+    heroHighlights: ["Built for production cycles", "For solo & group practices", "Reviewed on collections, not credit alone"],
+    painPoint: "Growing a practice often means paying for chairs and staff before collections rise.",
+    heroImage: { alt: "A dentist in a modern dental operatory" },
+    useCaseIcons: ["tools", "payroll", "expand", "spark", "marketing"],
     useCases: [
       { title: "Chairs & imaging", description: "Add operatories, chairs, or imaging technology." },
       { title: "Hire hygienists", description: "Expand your team to see more patients." },
@@ -326,8 +375,11 @@ export const landingPages: VerticalConfig[] = [
       "Working capital for salons and med spas, reviewed on revenue and bank activity. You may qualify. Approval depends on underwriting.",
     heroHeadline: "Funding for Beauty Salons and Med Spas",
     heroSubheadline:
-      "A fast working-capital review for salons and med spas — based on revenue, bank activity, and time in business. You may qualify.",
-    heroHighlights: ["Built for appointment-driven revenue", "For salons and med spas", "No obligation to accept an offer"],
+      "Working capital for salons and med spas — reviewed on deposits and bank activity, not credit alone.",
+    heroHighlights: ["Built for appointment-driven revenue", "For salons and med spas", "Seasonal swings are expected"],
+    painPoint: "Equipment, inventory, and staffing costs rise before the calendar fills up.",
+    heroImage: { alt: "A stylist in a modern salon" },
+    useCaseIcons: ["tools", "inventory", "expand", "payroll", "marketing"],
     useCases: [
       { title: "Equipment", description: "Add chairs, lasers, or treatment devices." },
       { title: "Retail inventory", description: "Stock retail products and treatment supplies." },
@@ -352,8 +404,11 @@ export const landingPages: VerticalConfig[] = [
       "Working capital for retail stores, reviewed on revenue and bank activity. You may qualify. Approval depends on underwriting.",
     heroHeadline: "Inventory and Working Capital for Retail Stores",
     heroSubheadline:
-      "A fast working-capital review for retail businesses — based on revenue, bank activity, and time in business. You may qualify.",
-    heroHighlights: ["Built for seasonal inventory", "For single and multi-location", "No obligation to accept an offer"],
+      "Working capital for retail businesses — reviewed on sales, deposits, and bank activity.",
+    heroHighlights: ["Built for seasonal inventory", "Single or multi-location", "Reviewed on sales & deposits"],
+    painPoint: "The busy season rewards stores that can stock and staff up beforehand.",
+    heroImage: { alt: "A shop owner at the counter of their retail store" },
+    useCaseIcons: ["inventory", "expand", "tools", "payroll", "marketing"],
     useCases: [
       { title: "Seasonal inventory", description: "Stock up ahead of your busiest selling season." },
       { title: "Store expansion", description: "Fund a build-out, remodel, or new location." },
@@ -378,8 +433,11 @@ export const landingPages: VerticalConfig[] = [
       "Working capital for HVAC and plumbing businesses, reviewed on revenue and bank activity. You may qualify. Approval depends on underwriting.",
     heroHeadline: "Working Capital for HVAC and Plumbing Businesses",
     heroSubheadline:
-      "A fast working-capital review for HVAC and plumbing contractors — based on revenue, bank activity, and time in business. You may qualify.",
-    heroHighlights: ["Built for seasonal demand", "For service and install crews", "No obligation to accept an offer"],
+      "Working capital for HVAC and plumbing contractors — reviewed on deposits and bank activity.",
+    heroHighlights: ["Built for seasonal demand", "For service & install crews", "Reviewed on deposits, not credit alone"],
+    painPoint: "Peak-season demand can spike faster than cash flow keeps up.",
+    heroImage: { alt: "An HVAC technician servicing a unit" },
+    useCaseIcons: ["vehicle", "inventory", "payroll", "expand", "marketing"],
     useCases: [
       { title: "Trucks & equipment", description: "Add or repair service trucks and field equipment." },
       { title: "Parts for peak season", description: "Stock parts and units ahead of summer and winter rushes." },
@@ -403,8 +461,11 @@ export const landingPages: VerticalConfig[] = [
       "Working capital for cleaning businesses, reviewed on revenue and bank activity. You may qualify. Approval depends on underwriting.",
     heroHeadline: "Working Capital for Cleaning Businesses",
     heroSubheadline:
-      "A fast working-capital review for residential and commercial cleaning businesses — based on revenue, bank activity, and time in business. You may qualify.",
-    heroHighlights: ["Built for contract receivables", "For residential and commercial", "No obligation to accept an offer"],
+      "Working capital for residential and commercial cleaning businesses — reviewed on deposits and bank activity.",
+    heroHighlights: ["Built for recurring contracts", "Residential & commercial", "Net-30/60 receivables in mind"],
+    painPoint: "Crews and supplies get paid weekly while commercial contracts pay on net-30/60.",
+    heroImage: { alt: "A cleaning crew member at work in a commercial space" },
+    useCaseIcons: ["tools", "payroll", "vehicle", "scale", "expand"],
     useCases: [
       { title: "Equipment & supplies", description: "Buy equipment and supplies to take on more accounts." },
       { title: "Crew payroll", description: "Keep crews paid while invoices are outstanding." },
@@ -425,11 +486,14 @@ export const landingPages: VerticalConfig[] = [
     title: "Bad Credit Business Funding",
     seoTitle: "Bad Credit Business Funding — Reviewed on Revenue",
     seoDescription:
-      "Funding options that focus on business revenue and bank activity, not just credit score. You may qualify. Approval depends on underwriting.",
+      "Funding options that weigh business revenue and bank activity, not just credit score. You may qualify. Approval depends on underwriting.",
     heroHeadline: "Business Funding Options When Credit Isn't Perfect",
     heroSubheadline:
-      "A working-capital review that looks at business revenue and bank activity — not just your credit score. You may qualify; approval depends on underwriting.",
-    heroHighlights: ["Reviewed on revenue, not just credit", "Past issues don't auto-disqualify", "No obligation to accept an offer"],
+      "A review that weighs your business revenue and bank activity — credit is considered, but it isn't the whole story.",
+    heroHighlights: ["Reviewed on revenue, not just credit", "Past issues don't auto-disqualify", "Reviewed by a real specialist"],
+    painPoint: "A rough credit stretch shouldn't freeze a business that's still bringing in revenue.",
+    heroImage: { alt: "A small-business owner reviewing finances" },
+    useCaseIcons: ["scale", "clock", "shield", "payroll", "spark"],
     useCases: [
       { title: "Working capital", description: "Access working capital even when credit isn't perfect." },
       { title: "Cover a cash crunch", description: "Bridge a short-term gap so operations keep running." },
@@ -438,7 +502,7 @@ export const landingPages: VerticalConfig[] = [
       { title: "Fund growth", description: "Invest in inventory, equipment, or marketing to recover and grow." },
     ],
     qualificationNotes: [
-      "Underwriting weighs business revenue and bank activity heavily, so past credit issues don't automatically disqualify a file.",
+      "Underwriting weighs business revenue and bank activity heavily, so past credit issues don't automatically disqualify a file. Credit is still considered.",
     ],
     goodFitCriteria: [
       "Steady monthly deposits despite credit history",
@@ -452,12 +516,12 @@ export const landingPages: VerticalConfig[] = [
       {
         question: "Can I qualify with bad credit?",
         answer:
-          "Possibly. The review focuses on business revenue and bank activity, so past credit issues don't automatically disqualify you. There is no guaranteed approval — approval depends on underwriting.",
+          "Possibly. The review weighs business revenue and bank activity, so past credit issues don't automatically disqualify you. Credit is still considered, and there's no guaranteed approval.",
       },
       {
         question: "Do you only look at my credit score?",
         answer:
-          "No. Business revenue, bank activity, time in business, and existing obligations all matter. Many files are placed primarily on the strength of revenue and banking.",
+          "No. Business revenue, bank activity, time in business, and existing obligations all matter — many files are placed largely on the strength of revenue and banking.",
       },
       ...baseFaqs(),
     ],

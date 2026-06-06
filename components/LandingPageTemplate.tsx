@@ -5,31 +5,42 @@ import SiteHeader from "./SiteHeader";
 import SiteFooter from "./SiteFooter";
 import HeroSection from "./HeroSection";
 import TrustBar from "./TrustBar";
+import SocialProofSection from "./SocialProofSection";
 import UseCasesSection from "./UseCasesSection";
-import HowItWorksSection from "./HowItWorksSection";
+import Timeline from "./Timeline";
 import QualificationCriteriaSection from "./QualificationCriteriaSection";
 import FitComparisonTable from "./FitComparisonTable";
+import Testimonials from "./Testimonials";
+import FundingCalculator from "./FundingCalculator";
 import FAQSection from "./FAQSection";
 import CTASection from "./CTASection";
 import DisclaimerBlock from "./DisclaimerBlock";
+import StickyCTA from "./StickyCTA";
 import PrequalificationFlow from "./prequal/PrequalificationFlow";
 
 /**
  * The single template every vertical renders through. Section order follows the
- * conversion sequence: hook → relevance → process → expectations → fit → act → FAQ.
+ * conversion sequence: hook → trust → relevance → process → expectations → fit →
+ * proof → estimate → act → FAQ.
  */
 export default function LandingPageTemplate({ vertical }: { vertical: VerticalConfig }) {
   return (
     <>
+      <a href="#prequalify" className="skip-link">
+        Skip to prequalification form
+      </a>
       <PageViewTracker vertical={vertical.slug} />
       <SiteHeader vertical={vertical} />
       <main>
         <HeroSection vertical={vertical} />
         <TrustBar items={vertical.heroHighlights} />
+        <SocialProofSection vertical={vertical} />
         <UseCasesSection vertical={vertical} />
-        <HowItWorksSection />
+        <Timeline />
         <QualificationCriteriaSection vertical={vertical} />
         <FitComparisonTable vertical={vertical} />
+        <Testimonials vertical={vertical} />
+        <FundingCalculator vertical={vertical} />
 
         <section id="prequalify" className="scroll-mt-20 bg-brand-50/50 py-16 sm:py-20">
           <div className="container-content max-w-3xl">
@@ -55,6 +66,7 @@ export default function LandingPageTemplate({ vertical }: { vertical: VerticalCo
         <CTASection vertical={vertical} />
       </main>
       <SiteFooter />
+      <StickyCTA vertical={vertical.slug} label={vertical.cta.primary} />
     </>
   );
 }

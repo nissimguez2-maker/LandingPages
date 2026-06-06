@@ -16,7 +16,7 @@ export default function FormStep({
 }) {
   return (
     <div>
-      <h3 className="text-xl font-bold tracking-tight text-brand-900">{title}</h3>
+      <h2 className="text-xl font-bold tracking-tight text-brand-900">{title}</h2>
       {description && <p className="mt-1.5 text-sm text-slate-500">{description}</p>}
       <div className="mt-6 space-y-6">{children}</div>
       <div className="mt-8 flex items-center justify-between gap-3">{footer}</div>

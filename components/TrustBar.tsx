@@ -1,7 +1,7 @@
 const DEFAULT_ITEMS = [
   "Reviewed on revenue & bank activity",
   "Real funding specialists",
-  "No obligation to accept an offer",
+  "Secure, encrypted submission",
 ];
 
 /** Thin reassurance strip — keeps trust signals above the fold (Cialdini). */
