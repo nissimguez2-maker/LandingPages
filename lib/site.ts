@@ -13,7 +13,16 @@ export const SITE_TAGLINE = "Fast working-capital reviews for real operating bus
  * https://cal.com/... URL). When empty and no env var is set, the booking button
  * is hidden and the "a specialist will reach out" fallback shows instead.
  */
-export const CALCOM_LINK = "";
+export const CALCOM_LINK = "fundvella-specialist/discover-call";
+
+/**
+ * Analytics (all free). Leave a value empty to keep that tool off.
+ * PostHog host: US = https://us.i.posthog.com, EU = https://eu.i.posthog.com.
+ * Clarity id comes from clarity.microsoft.com -> Get tracking code.
+ */
+export const POSTHOG_KEY = "phc_nHPq7EJxXC6aCybaqS3o3xj3L4HfA5VNgWti3GnM9PVu";
+export const POSTHOG_HOST = "https://us.i.posthog.com";
+export const CLARITY_ID = "";
 
 export function getSiteUrl(): string {
   // Priority: explicit override -> Netlify's automatic build URL -> localhost.

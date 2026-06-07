@@ -78,6 +78,14 @@ export function track(event: AnalyticsEventName, payload: AnalyticsPayload = {})
 
   window.dispatchEvent(new CustomEvent("analytics", { detail: data }));
 
+  // Forward to PostHog + Microsoft Clarity when they are loaded (see Analytics.tsx).
+  const w = window as unknown as {
+    posthog?: { capture: (e: string, p?: Record<string, unknown>) => void };
+    clarity?: (...args: unknown[]) => void;
+  };
+  w.posthog?.capture(event, payload);
+  w.clarity?.("event", event);
+
   if (process.env.NODE_ENV === "development") {
     // eslint-disable-next-line no-console
     console.debug("[analytics]", event, payload);

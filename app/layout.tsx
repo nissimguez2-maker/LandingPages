@@ -4,6 +4,7 @@ import { Inter, Sora } from "next/font/google";
 import "./globals.css";
 import { SITE_NAME, SITE_TAGLINE, getSiteUrl } from "@/lib/site";
 import { buildOrganizationJsonLd } from "@/lib/structuredData";
+import Analytics from "@/components/analytics/Analytics";
 
 // Self-hosted at build time, no runtime fetch, no layout shift.
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(buildOrganizationJsonLd()) }}
         />
         {children}
+        <Analytics />
       </body>
     </html>
   );
