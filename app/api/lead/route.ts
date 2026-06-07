@@ -17,16 +17,27 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request): Promise<NextResponse> {
-  let lead: LeadData;
+  let body: LeadData & { honeypot?: string };
   try {
-    lead = (await req.json()) as LeadData;
+    body = (await req.json()) as LeadData & { honeypot?: string };
   } catch {
     return NextResponse.json({ ok: false, error: "invalid_json" }, { status: 400 });
   }
 
+  // Honeypot: real users never fill the hidden field; bots do. Silently accept
+  // (so bots don't learn) but drop the submission.
+  if (typeof body.honeypot === "string" && body.honeypot.trim() !== "") {
+    return NextResponse.json({ ok: true });
+  }
+  const lead: LeadData = body;
+
   // Don't persist anonymous noise — require at least one way to reach the lead.
   if (!lead.email && !lead.phone) {
     return NextResponse.json({ ok: false, error: "missing_contact" }, { status: 422 });
+  }
+  // Reject malformed emails server-side (don't store junk that will bounce).
+  if (lead.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(lead.email)) {
+    return NextResponse.json({ ok: false, error: "invalid_email" }, { status: 422 });
   }
 
   // Authoritative completeness (never trust the client's numbers).

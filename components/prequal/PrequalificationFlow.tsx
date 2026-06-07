@@ -78,6 +78,7 @@ export default function PrequalificationFlow({ vertical }: { vertical: VerticalC
   const submittedRef = useRef(false);
   const partialSavedRef = useRef(false);
   const summaryRef = useRef<HTMLDivElement>(null);
+  const hpRef = useRef(""); // honeypot — stays empty for real users
 
   const set = useCallback(
     <K extends keyof LeadData>(key: K, value: LeadData[K]) => {
@@ -92,13 +93,14 @@ export default function PrequalificationFlow({ vertical }: { vertical: VerticalC
   );
 
   const buildPayload = useCallback(
-    (partial: boolean): LeadData => ({
+    (partial: boolean): LeadData & { honeypot?: string } => ({
       ...lead,
       industry: vertical.slug,
       verticalTitle: vertical.title,
       sourcePage: typeof window !== "undefined" ? window.location.href : undefined,
       utm: getStoredUtm(),
       partial,
+      honeypot: hpRef.current,
     }),
     [lead, vertical.slug, vertical.title],
   );
@@ -235,6 +237,19 @@ export default function PrequalificationFlow({ vertical }: { vertical: VerticalC
 
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-card sm:p-8">
+      {/* Honeypot — hidden from real users; bots that fill it are silently dropped server-side. */}
+      <input
+        type="text"
+        name="company_website"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        defaultValue=""
+        onChange={(e) => {
+          hpRef.current = e.target.value;
+        }}
+        style={{ position: "absolute", left: "-9999px", width: "1px", height: "1px", opacity: 0 }}
+      />
       <ProgressIndicator steps={STEPS} current={step} />
       <div aria-live="polite" className="sr-only">{`Step ${step} of ${STEPS.length}: ${STEPS[step - 1].label}`}</div>
 

@@ -88,6 +88,7 @@ async function hsFetch(path: string, method: string, body?: unknown): Promise<Re
       "Content-Type": "application/json",
     },
     body: body ? JSON.stringify(body) : undefined,
+    signal: AbortSignal.timeout(8000),
   });
 }
 
@@ -96,21 +97,24 @@ async function readError(res: Response): Promise<string> {
   return `HubSpot ${res.status}: ${text.slice(0, 500)}`;
 }
 
-/** Create the default association between two records (no numeric typeId needed). */
+/** Create the default association between two records (retries once; non-fatal). */
 async function associateDefault(
   fromType: string,
   fromId: string,
   toType: string,
   toId: string,
 ): Promise<void> {
-  const res = await hsFetch(
-    `/crm/v4/objects/${fromType}/${fromId}/associations/default/${toType}/${toId}`,
-    "PUT",
-  );
-  if (!res.ok) {
-    // Non-fatal: the records exist; association can be repaired in HubSpot.
-    // eslint-disable-next-line no-console
-    console.error("[hubspot] association failed:", await readError(res));
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const res = await hsFetch(
+      `/crm/v4/objects/${fromType}/${fromId}/associations/default/${toType}/${toId}`,
+      "PUT",
+    );
+    if (res.ok) return;
+    if (attempt === 1) {
+      // Non-fatal: the records exist; association can be repaired in HubSpot.
+      // eslint-disable-next-line no-console
+      console.error("[hubspot] association failed:", await readError(res));
+    }
   }
 }
 
@@ -335,6 +339,24 @@ async function createDeal(props: Props): Promise<string> {
   return json.id;
 }
 
+/** Find an existing deal already associated with a contact (avoids duplicate deals on resubmit). */
+async function findDealIdForContact(contactId: string): Promise<string | null> {
+  const res = await hsFetch(`/crm/v4/objects/contacts/${contactId}/associations/deals`, "GET");
+  if (!res.ok) return null;
+  const json = (await res.json()) as { results?: { toObjectId?: string | number; id?: string }[] };
+  const first = json.results?.[0];
+  const id = first?.toObjectId ?? first?.id;
+  return id != null ? String(id) : null;
+}
+
+async function patchDeal(id: string, props: Props): Promise<void> {
+  const res = await requestWithRetry(
+    (p: Props) => hsFetch(`/crm/v3/objects/deals/${id}`, "PATCH", { properties: p }),
+    props,
+  );
+  if (!res.ok) throw new Error(await readError(res));
+}
+
 /* ── public entrypoint ──────────────────────────────────────────────────── */
 
 export async function submitLeadToHubSpot(lead: LeadData): Promise<CrmResult> {
@@ -360,9 +382,18 @@ export async function submitLeadToHubSpot(lead: LeadData): Promise<CrmResult> {
       return { ok: true, contactId, companyId: companyId ?? undefined, band: score.band, score: score.score };
     }
 
-    const dealId = await createDeal(buildDealProps(lead, score));
-    await associateDefault("deals", dealId, "contacts", contactId);
-    if (companyId) await associateDefault("deals", dealId, "companies", companyId);
+    // Idempotent: update the existing deal (refresh score/stage) instead of
+    // creating a duplicate when a lead resubmits.
+    const existingDealId = await findDealIdForContact(contactId);
+    let dealId: string;
+    if (existingDealId) {
+      await patchDeal(existingDealId, buildDealProps(lead, score));
+      dealId = existingDealId;
+    } else {
+      dealId = await createDeal(buildDealProps(lead, score));
+      await associateDefault("deals", dealId, "contacts", contactId);
+      if (companyId) await associateDefault("deals", dealId, "companies", companyId);
+    }
 
     return { ok: true, contactId, companyId: companyId ?? undefined, dealId, band: score.band, score: score.score };
   } catch (err) {

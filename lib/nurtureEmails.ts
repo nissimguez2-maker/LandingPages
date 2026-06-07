@@ -92,6 +92,11 @@ export const COLD_EMAILS: NurtureEmail[] = [
   },
 ];
 
+// CAN-SPAM requires a physical postal address in every marketing email.
+// Set BUSINESS_ADDRESS in Netlify before sending to real leads.
+const BUSINESS_ADDRESS =
+  process.env.BUSINESS_ADDRESS || "FundVella · [set BUSINESS_ADDRESS env to your mailing address]";
+
 function escapeHtml(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
@@ -109,9 +114,10 @@ export function renderEmail(email: NurtureEmail, v: RenderVars): { html: string;
       <p style="color:#64748b;font-size:13px">Approval depends on underwriting, and there's no obligation to proceed.</p>
       <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0">
       <p style="color:#94a3b8;font-size:12px">You're receiving this because you asked about business funding. <a href="${v.unsubUrl}" style="color:#94a3b8">Unsubscribe</a>.</p>
+      <p style="color:#94a3b8;font-size:12px">${escapeHtml(BUSINESS_ADDRESS)}</p>
     </div>
   </div></body></html>`;
-  const text = `${greet}\n\n${email.paragraphs.join("\n\n")}\n\n${email.ctaLabel}: ${v.ctaUrl}\n\nApproval depends on underwriting; no obligation.\n\nUnsubscribe: ${v.unsubUrl}`;
+  const text = `${greet}\n\n${email.paragraphs.join("\n\n")}\n\n${email.ctaLabel}: ${v.ctaUrl}\n\nApproval depends on underwriting; no obligation.\n\nUnsubscribe: ${v.unsubUrl}\n${BUSINESS_ADDRESS}`;
   return { html, text };
 }
 

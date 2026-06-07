@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { verifyUnsub } from "@/lib/unsubscribe";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -28,6 +29,7 @@ async function optOut(email: string): Promise<void> {
       properties: ["email"],
       limit: 1,
     }),
+    signal: AbortSignal.timeout(8000),
   });
   if (!s.ok) return;
   const json = (await s.json()) as { results?: { id: string }[] };
@@ -37,22 +39,14 @@ async function optOut(email: string): Promise<void> {
     method: "PATCH",
     headers,
     body: JSON.stringify({ properties: { marketing_consent_status: "opted_out" } }),
+    signal: AbortSignal.timeout(8000),
   });
 }
 
-function decodeEmail(e: string | null): string | null {
-  if (!e) return null;
-  try {
-    const email = Buffer.from(e, "base64url").toString("utf8");
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? email : null;
-  } catch {
-    return null;
-  }
-}
-
 export async function GET(req: Request): Promise<NextResponse> {
-  const email = decodeEmail(new URL(req.url).searchParams.get("e"));
-  if (!email) return page("Invalid unsubscribe link.");
+  // Accept the signed token (?u=) or a raw email is rejected.
+  const email = verifyUnsub(new URL(req.url).searchParams.get("u"));
+  if (!email) return page("Invalid or expired unsubscribe link.");
   try {
     await optOut(email);
   } catch {
@@ -61,9 +55,9 @@ export async function GET(req: Request): Promise<NextResponse> {
   return page("You've been unsubscribed.");
 }
 
-// One-click unsubscribe (RFC 8058) support.
+// One-click unsubscribe (RFC 8058).
 export async function POST(req: Request): Promise<NextResponse> {
-  const email = decodeEmail(new URL(req.url).searchParams.get("e"));
+  const email = verifyUnsub(new URL(req.url).searchParams.get("u"));
   if (email) {
     try {
       await optOut(email);
