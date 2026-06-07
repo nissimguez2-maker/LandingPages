@@ -101,12 +101,16 @@ export default function SwipePoll({
 
   return (
     <div>
-      <p className="text-xs font-medium text-slate-500">
-        Quick gut check. {idx + 1} of {cards.length}.
-      </p>
-      <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
-        <div className="h-full rounded-full bg-accent-500 transition-[width] duration-300" style={{ width: `${(idx / cards.length) * 100}%` }} />
-      </div>
+      {cards.length > 1 && (
+        <>
+          <p className="text-xs font-medium text-slate-500">
+            Quick gut check. {idx + 1} of {cards.length}.
+          </p>
+          <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+            <div className="h-full rounded-full bg-accent-500 transition-[width] duration-300" style={{ width: `${(idx / cards.length) * 100}%` }} />
+          </div>
+        </>
+      )}
 
       <div
         className="relative mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-card"

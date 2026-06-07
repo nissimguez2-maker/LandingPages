@@ -1,52 +1,46 @@
 /**
- * Cash-Flow Stress Test copy and config. Four questions: a drag-to-rank, a swipe
- * poll (three signals in one screen), and two quick taps. Plain, easy English.
- * No em-dashes. Compliance-locked (no approval/guarantee, factor rate is not an
- * APR, payments fit cash flow, estimate not an offer).
+ * Cash-Flow Stress Test copy and config. Five quick questions: tap buttons plus
+ * one swipe (the debt question). The read measures FUNDING STRENGTH, so a strong
+ * business sees a high number and a reason to act, never "you are fine." Plain,
+ * easy English. No em-dashes. Compliance-locked (no approval/guarantee, factor
+ * rate is not an APR, payments fit cash flow, estimate not an offer).
  */
 
-import type { Option, UseOfFundsValue, RevenueValue, TimeInBusinessValue } from "@/lib/types";
+import type { Option, UseOfFundsValue, RevenueValue, TimeInBusinessValue, UrgencyValue } from "@/lib/types";
 import type { SwipeCard } from "@/components/stresstest/SwipePoll";
 import type { ExposureTier, FitKey } from "@/lib/stressTest";
 
 export const STRESS_INTRO = {
-  eyebrow: "2-minute cash-flow check",
-  headline: "How would your business handle a slow week?",
+  eyebrow: "60-second funding check",
+  headline: "See how much capital your business could put to work.",
   subhead:
-    "Four quick questions. No credit check. You will see where your money runs short, and what can help.",
+    "A few quick questions. No credit check. You get an instant read on your funding strength, plus the smartest next move.",
   startLabel: "Start the check",
 };
 
-/* Q1 drag-to-rank: top card sets use of funds. No neutral option in a forced rank. */
-export const RANK_OPTIONS = [
-  { value: "inventory", label: "Buying stock or supplies" },
-  { value: "payroll", label: "Making payroll" },
-  { value: "equipment", label: "Fixing or buying equipment" },
-  { value: "expansion", label: "Growing or taking a bigger job" },
-  { value: "debt_refinance", label: "Paying down what I already owe" },
+/* Q1 tap: what they would put money toward (sets use of funds). */
+export const USE_OPTIONS = [
+  { value: "expansion", label: "Take on a bigger job or order" },
+  { value: "inventory", label: "Buy stock or supplies" },
+  { value: "equipment", label: "Fix or buy equipment" },
+  { value: "payroll", label: "Cover payroll or a slow stretch" },
+  { value: "debt_refinance", label: "Clean up what I already owe" },
 ] as const satisfies readonly Option<UseOfFundsValue>[];
 
-export const RANK_MIRROR: Record<string, string> = {
-  inventory: "So growth waits on money you do not have yet. That is timing, not your sales.",
-  payroll: "Payroll should never be the thing you sweat. That is a timing problem, not a you problem.",
+export const USE_MIRROR: Record<string, string> = {
+  expansion: "That is the costliest no there is. The work is there, the cash just is not in yet.",
+  inventory: "Buy right and you sell more. That is timing, not your sales.",
   equipment: "Every repair you put off ends up costing more than the fix.",
-  expansion: "You are turning down work you could win, because the cash is not in yet. That is the costliest no there is.",
+  payroll: "Payroll should never be the thing you sweat. That is a timing problem, not a you problem.",
   debt_refinance: "Stacked payments pull from every deposit. A better setup beats piling on more.",
 };
 
-/* Q2 swipe poll: three signals captured on one screen. */
+/* The one swipe question: existing debt, with a one vs more follow-up. */
 export const SWIPE_CARDS: SwipeCard[] = [
-  {
-    id: "nsfs",
-    prompt: "In the last 3 months, did your account go negative or bounce a payment?",
-    help: "This is normal for many owners. An honest answer helps us help you.",
-    yes: "a_few",
-    no: "none",
-    skip: "not_sure",
-  },
   {
     id: "debt",
     prompt: "Are you already paying back a business loan or cash advance?",
+    help: "A straight answer helps us find the smartest setup for you.",
     yes: "one",
     no: "none",
     skip: "not_sure",
@@ -55,13 +49,6 @@ export const SWIPE_CARDS: SwipeCard[] = [
       left: { label: "Just one", value: "one" },
       right: { label: "Two or more", value: "multiple" },
     },
-  },
-  {
-    id: "urgency",
-    prompt: "Do you need this money soon, not someday?",
-    yes: "this_week",
-    no: "exploring",
-    skip: "this_month",
   },
 ];
 
@@ -105,26 +92,45 @@ export const TIME_STEP = {
   } as Record<string, string>,
 };
 
+const URGENCY_OPTS = [
+  { value: "immediately", label: "Right now, it is urgent" },
+  { value: "this_week", label: "This week" },
+  { value: "this_month", label: "This month" },
+  { value: "exploring", label: "Just looking for now" },
+] as const satisfies readonly Option<UrgencyValue>[];
+
+export const URGENCY_STEP = {
+  prompt: "How soon would you put the money to work?",
+  help: "There is no wrong answer. It just helps us line up the right next step.",
+  options: URGENCY_OPTS,
+  mirror: {
+    immediately: "Then every day counts. The fastest path is a quick call.",
+    this_week: "Soon. Good. The owners who move first get the best terms.",
+    this_month: "A clear window. Lining it up now beats scrambling later.",
+    exploring: "Smart. The best time to set up funding is before you need it.",
+  } as Record<string, string>,
+};
+
 export const STRESS_TEASER = {
-  eyebrow: "Your cash-flow read",
-  meterLabel: "How much a slow week would hurt",
+  eyebrow: "Your funding read",
+  meterLabel: "Your funding strength",
 };
 
 export const TIER_REVEAL: Record<ExposureTier, { label: string; headline: string; body: string }> = {
   resilient: {
-    label: "Steady",
-    headline: "Your cash flow looks steady",
-    body: "You hold up most weeks. But most weeks is not every week. The owners who stay steady are the ones who line up funding before the slow week, not during it.",
+    label: "Strong",
+    headline: "You qualify for the most right now. That is exactly when to move.",
+    body: "Your numbers are the kind lenders compete for, so the best terms and the most room are on the table for you today. Not because you are desperate, but because you are not. The catch is simple. Money sitting still does not grow. Put it to work now and you set the terms instead of taking them.",
   },
   exposed: {
-    label: "Running short",
-    headline: "A slow week would hurt right now",
-    body: "Your business works hard. The money just comes in slower than the bills go out. Close that gap and you grow with less stress.",
+    label: "Room to grow",
+    headline: "You are strong enough to grow faster than you are.",
+    body: "Your sales can carry more than your cash flow is letting you take on. That gap is the bigger job you pass on, or the stock you buy at full price later instead of at a discount now. Lined up the right way, that growth pays for itself.",
   },
   stretched: {
     label: "Tight on cash",
-    headline: "Money is tight right now",
-    body: "You carry more than you should have to, and you feel it. The good part is that naming the problem is the hard part, and you just did it.",
+    headline: "Money is tight, and there is a clean way out of the squeeze.",
+    body: "Too much is pulling from the same deposits, and you feel it every week. Here is the good part. The squeeze is the most fixable thing there is, and you just took the first step by naming it. A specialist can show you how to ease the pressure fast.",
   },
 };
 
@@ -155,16 +161,16 @@ export const FIT_COPY: Record<FitKey, { title: string; rationale: string }> = {
 export const PAYBACK_CLOSE = {
   title: "How owners who get ahead think about it",
   points: [
-    "The gap costs you money either way. Late fees. Missed orders. Nights doing math instead of running your shop.",
-    "You see the full payback before you start. It is one set price, called a factor rate, not an APR. No surprises.",
-    "So ask one question. What is one filled order, one covered payroll, or one fixed machine worth to you?",
+    "Standing still is not free. Every week you wait is stock you did not buy, a job you did not take, or a customer a faster shop got first.",
+    "The best time to line up capital is before you are desperate for it. That is when you qualify for the most and pay the least for it.",
+    "You see the full payback up front. It is one set price, called a factor rate, not an APR. No surprises.",
   ],
 };
 
 /* The gate. Confident, not needy. The component adds a 1-line summary of their own answers. */
 export const STRESS_CONTACT = {
   headline: "See your full plan",
-  sub: "Tell us where to send it. A specialist reviews the files worth pursuing and reaches out.",
+  sub: "Tell us where to send it. A specialist pulls the options worth pursuing for a business like yours and reaches out.",
   fields: {
     firstName: { label: "First name", help: "So we know who we are talking to." },
     businessName: { label: "Business name", help: "The name on your sales or deposits." },

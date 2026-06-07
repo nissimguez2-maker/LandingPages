@@ -29,13 +29,14 @@ export interface StressAnswers {
 export type ExposureTier = "resilient" | "exposed" | "stretched";
 
 export interface StressResult {
-  exposure: number; // 0–100, higher = more exposed (more pain)
+  exposure: number; // 0 to 100, higher = more exposed (more pain), internal scoring
+  strength: number; // 0 to 100, higher = stronger funding position, this is what the meter shows
   tier: ExposureTier;
   pressurePoints: string[];
   fitKey: FitKey;
 }
 
-/** Exposure points per signal — higher means MORE exposed to a bad week. */
+/** Exposure points per signal. Higher means MORE exposed to a bad week. */
 export function computeExposure(a: StressAnswers): number {
   let x = 0;
   switch (a.monthlyRevenue) {
@@ -55,7 +56,7 @@ export function computeExposure(a: StressAnswers): number {
     case "a_few": x += 14; break;
     case "not_sure": x += 8; break;
     case "none": x += 0; break;
-    default: x += 10;
+    default: x += 0; // not asked in the short flow -> neutral, do not penalize
   }
   switch (a.existingDebt) {
     case "multiple": x += 22; break;
@@ -79,26 +80,41 @@ export function tierFor(exposure: number): ExposureTier {
   return "resilient";
 }
 
-/** Diagnostic findings worded as PAIN (never "boost your range"). Top 3. */
-export function pressurePoints(a: StressAnswers): string[] {
+/**
+ * Read bullets, tuned to the tier so no one is ever told they are fine. Strong
+ * shops get opportunity and cost-of-waiting points (a reason to act from
+ * strength); weaker shops get honest pressure and relief. Top 3.
+ */
+export function pressurePoints(a: StressAnswers, tier: ExposureTier): string[] {
   const out: string[] = [];
-  if (a.monthlyRevenue === "under_10k" || a.monthlyRevenue === "10k_20k")
-    out.push("Thin deposits leave little room when a week comes in slow.");
-  if (a.timeInBusiness === "under_3m" || a.timeInBusiness === "3_12m")
-    out.push("You are still early. There is not much cushion yet, so timing hits harder.");
-  if (a.recentNsfs === "several")
-    out.push("Tight days keep happening. One surprise could push the account negative.");
-  else if (a.recentNsfs === "a_few")
-    out.push("A few tight days mean your room for error is small.");
-  if (a.existingDebt === "multiple")
-    out.push("Two or more payments are pulling from the same deposits.");
-  else if (a.existingDebt === "one")
-    out.push("One payment is already pulling from every deposit.");
-  if (a.urgency === "immediately" || a.urgency === "this_week")
-    out.push("You said this is urgent. Every week you wait, it gets tighter.");
-  // Everyone leaves with at least one finding (even strong shops).
-  if (out.length === 0)
-    out.push("Even strong shops get caught by timing. One big surprise can still hurt.");
+
+  if (tier === "resilient") {
+    // Strong: opportunity, not pain. The reason to move is leverage, not fear.
+    if (a.monthlyRevenue === "20k_50k" || a.monthlyRevenue === "50k_150k" || a.monthlyRevenue === "150k_plus")
+      out.push("Strong deposits mean you likely qualify for a bigger amount and better terms.");
+    if (a.timeInBusiness === "1_2y" || a.timeInBusiness === "2y_plus")
+      out.push("Your track record opens the best terms, but the widest window is while you are strong.");
+    out.push("The day you actually need cash is the day good terms shrink. Move while you hold the cards.");
+    out.push("Every strong month you do not use is growth you could have funded and did not.");
+  } else if (tier === "exposed") {
+    out.push("You may be turning down work, or buying at full price, because the cash is not in yet.");
+    out.push("Your sales can carry more than your cash flow is letting you take on today.");
+    if (a.existingDebt === "one")
+      out.push("One payment is already pulling from every deposit. A better setup beats piling on more.");
+    if (a.urgency === "immediately" || a.urgency === "this_week")
+      out.push("You said this is soon. Good terms follow strong numbers, so line it up now.");
+    out.push("Line up funding before the next slow week, not during it, and the math moves your way.");
+  } else {
+    if (a.existingDebt === "multiple")
+      out.push("Two or more payments are pulling from the same deposits, and it tightens every week.");
+    else if (a.existingDebt === "one")
+      out.push("One payment is already pulling from every deposit.");
+    out.push("Waiting until you are out of cash means fewer options. Acting now keeps you in control.");
+    if (a.urgency === "immediately" || a.urgency === "this_week")
+      out.push("You said this is urgent. Every week you wait, the squeeze costs you more.");
+    out.push("A cushion built to fit your cash flow means a bad week does not become a missed payroll.");
+  }
+
   return out.slice(0, 3);
 }
 
@@ -143,5 +159,12 @@ export function fixFirst(a: StressAnswers): string {
 
 export function runStressTest(a: StressAnswers): StressResult {
   const exposure = computeExposure(a);
-  return { exposure, tier: tierFor(exposure), pressurePoints: pressurePoints(a), fitKey: fitFor(a.useOfFunds) };
+  const tier = tierFor(exposure);
+  return {
+    exposure,
+    strength: 100 - exposure,
+    tier,
+    pressurePoints: pressurePoints(a, tier),
+    fitKey: fitFor(a.useOfFunds),
+  };
 }

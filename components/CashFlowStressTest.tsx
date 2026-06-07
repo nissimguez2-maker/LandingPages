@@ -6,11 +6,12 @@ import { AMOUNT_OPTIONS, BANK_STATEMENTS_OPTIONS } from "@/lib/types";
 import { runStressTest, buildPrefill, fixFirst, type StressAnswers } from "@/lib/stressTest";
 import {
   STRESS_INTRO,
-  RANK_OPTIONS,
-  RANK_MIRROR,
+  USE_OPTIONS,
+  USE_MIRROR,
   SWIPE_CARDS,
   REVENUE_STEP,
   TIME_STEP,
+  URGENCY_STEP,
   STRESS_TEASER,
   TIER_REVEAL,
   FIT_COPY,
@@ -28,7 +29,6 @@ import { RadioCards, TextField } from "./prequal/Fields";
 import AnimatedNumber from "./motion/AnimatedNumber";
 import Reveal from "./motion/Reveal";
 import DisclaimerBlock from "./DisclaimerBlock";
-import PriorityRank from "./stresstest/PriorityRank";
 import SwipePoll from "./stresstest/SwipePoll";
 import { CALCOM_ENABLED, CALCOM_HANDLE, CALCOM_NAMESPACE, getCalNs } from "@/lib/calcom";
 import BookCallInline from "./BookCallInline";
@@ -42,7 +42,7 @@ const METER: Record<string, string> = {
   exposed: "bg-amber-400",
   stretched: "bg-rose-400",
 };
-const STEPS = 4;
+const STEPS = 5;
 
 type Phase = "intro" | "step" | "result";
 interface Contact {
@@ -57,7 +57,6 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
   const [phase, setPhase] = useState<Phase>("intro");
   const [stepIdx, setStepIdx] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [order, setOrder] = useState<string[]>(() => RANK_OPTIONS.map((o) => o.value));
   const [pollResponses, setPollResponses] = useState<Record<string, string>>({});
 
   const [unlocked, setUnlocked] = useState(false);
@@ -105,11 +104,10 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
       phone: contact.phone.trim() || undefined,
       email: contact.email.trim() || undefined,
       marketingConsent: contact.marketingConsent,
-      priorities: order,
       pollResponses,
       ...extra,
     }),
-    [contact, order, pollResponses],
+    [contact, pollResponses],
   );
 
   const buildPayload = useCallback(
@@ -224,16 +222,11 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
     setStepIdx((i) => Math.max(0, i - 1));
   };
 
-  // rank
-  const confirmRank = () => {
-    setAnswers((a) => ({ ...a, useOfFunds: order[0] }));
-    nextFrom("pressure", order[0]);
-  };
-  // swipe
+  // swipe (the one debt question)
   const onSwipeComplete = (resp: Record<string, string>) => {
     setPollResponses(resp);
-    setAnswers((a) => ({ ...a, recentNsfs: resp.nsfs, existingDebt: resp.debt, urgency: resp.urgency }));
-    track("stresstest_step", { vertical: vertical.slug, step: "signals" });
+    setAnswers((a) => ({ ...a, existingDebt: resp.debt }));
+    track("stresstest_step", { vertical: vertical.slug, step: "debt" });
     if (stepIdx < STEPS - 1) setStepIdx((i) => i + 1);
     else goToResult();
   };
@@ -301,10 +294,10 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
 
   const errorList = Object.values(errors).filter(Boolean);
   const progress = Math.round((stepIdx / STEPS) * 100);
-  const calNotes = `${vertical.title} | ${reveal.label} | needs: ${labelFor(RANK_OPTIONS, order[0]) ?? ""}`;
+  const calNotes = `${vertical.title} | ${reveal.label} | needs: ${labelFor(USE_OPTIONS, answers.useOfFunds) ?? ""}`;
 
   const summaryLine = (() => {
-    const pain = labelFor(RANK_OPTIONS, answers.useOfFunds)?.toLowerCase();
+    const pain = labelFor(USE_OPTIONS, answers.useOfFunds)?.toLowerCase();
     const rev = labelFor(REVENUE_STEP.options, answers.monthlyRevenue);
     const time = labelFor(TIME_STEP.options, answers.timeInBusiness);
     const parts: string[] = [];
@@ -351,7 +344,7 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
                 <div className="h-full rounded-full bg-accent-500 transition-[width] duration-500 ease-out" style={{ width: `${progress}%` }} />
               </div>
 
-              {/* Q1 rank */}
+              {/* Q1 use of funds (tap) */}
               {stepIdx === 0 && (
                 <div className="mt-6">
                   {vertical.cashFlowSignature && (
@@ -360,37 +353,18 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
                       <blockquote className="mt-1 text-sm italic leading-relaxed text-slate-700">&ldquo;{vertical.cashFlowSignature}&rdquo;</blockquote>
                     </figure>
                   )}
-                  <h2 ref={headingRef} tabIndex={-1} className="text-lg font-semibold text-brand-900 focus:outline-none">
-                    When money gets tight, what hurts first? Drag the worst to the top.
-                  </h2>
-                  <div className="mt-4">
-                    <PriorityRank legend="Rank these, worst at the top" help="Use the arrows or drag the handle." options={RANK_OPTIONS as unknown as { value: string; label: string }[]} order={order} onChange={setOrder} />
-                  </div>
-                  <p className="mt-4 min-h-[1.5rem] text-sm font-medium text-brand-800">{RANK_MIRROR[order[0]]}</p>
+                  <h2 ref={headingRef} tabIndex={-1} className="sr-only focus:outline-none">If you had more cash this week, where would it go first?</h2>
+                  <RadioCards legend="If you had more cash this week, where would it go first?" options={USE_OPTIONS as readonly Option[]} value={answers.useOfFunds} onChange={(v: string) => choose("useOfFunds", v)} columns={1} />
+                  <p className="mt-4 min-h-[1.5rem] text-sm font-medium text-brand-800">{answers.useOfFunds && USE_MIRROR[answers.useOfFunds]}</p>
                   <div className="mt-4 flex items-center justify-between">
                     <span />
-                    <button type="button" onClick={confirmRank} className="btn-primary">Next</button>
+                    <button type="button" onClick={() => nextFrom("use", answers.useOfFunds)} disabled={!answers.useOfFunds} className="btn-primary">Next</button>
                   </div>
                 </div>
               )}
 
-              {/* Q2 swipe */}
+              {/* Q2 revenue (tap) */}
               {stepIdx === 1 && (
-                <div className="mt-6">
-                  <h2 ref={headingRef} tabIndex={-1} className="text-lg font-semibold text-brand-900 focus:outline-none">
-                    A few quick yes or no questions
-                  </h2>
-                  <div className="mt-4">
-                    <SwipePoll cards={SWIPE_CARDS} onComplete={onSwipeComplete} />
-                  </div>
-                  <div className="mt-4">
-                    <button type="button" onClick={back} className="inline-flex min-h-[44px] items-center text-sm font-medium text-slate-500 hover:text-slate-800">← Back</button>
-                  </div>
-                </div>
-              )}
-
-              {/* Q3 revenue */}
-              {stepIdx === 2 && (
                 <div className="mt-6">
                   <h2 ref={headingRef} tabIndex={-1} className="sr-only focus:outline-none">{REVENUE_STEP.prompt}</h2>
                   <RadioCards legend={REVENUE_STEP.prompt} help={REVENUE_STEP.help} options={REVENUE_STEP.options as readonly Option[]} value={answers.monthlyRevenue} onChange={(v: string) => choose("monthlyRevenue", v)} columns={1} />
@@ -402,15 +376,41 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
                 </div>
               )}
 
-              {/* Q4 time */}
-              {stepIdx === 3 && (
+              {/* Q3 time (tap) */}
+              {stepIdx === 2 && (
                 <div className="mt-6">
                   <h2 ref={headingRef} tabIndex={-1} className="sr-only focus:outline-none">{TIME_STEP.prompt}</h2>
                   <RadioCards legend={TIME_STEP.prompt} help={TIME_STEP.help} options={TIME_STEP.options as readonly Option[]} value={answers.timeInBusiness} onChange={(v: string) => choose("timeInBusiness", v)} columns={2} />
                   <p className="mt-4 min-h-[1.5rem] text-sm font-medium text-brand-800">{answers.timeInBusiness && TIME_STEP.mirror[answers.timeInBusiness]}</p>
                   <div className="mt-4 flex items-center justify-between">
                     <button type="button" onClick={back} className="inline-flex min-h-[44px] items-center text-sm font-medium text-slate-500 hover:text-slate-800">← Back</button>
-                    <button type="button" onClick={() => nextFrom("time", answers.timeInBusiness)} disabled={!answers.timeInBusiness} className="btn-primary">See my read</button>
+                    <button type="button" onClick={() => nextFrom("time", answers.timeInBusiness)} disabled={!answers.timeInBusiness} className="btn-primary">Next</button>
+                  </div>
+                </div>
+              )}
+
+              {/* Q4 existing debt (the one swipe) */}
+              {stepIdx === 3 && (
+                <div className="mt-6">
+                  <h2 ref={headingRef} tabIndex={-1} className="text-lg font-semibold text-brand-900 focus:outline-none">One quick yes or no</h2>
+                  <div className="mt-4">
+                    <SwipePoll cards={SWIPE_CARDS} onComplete={onSwipeComplete} />
+                  </div>
+                  <div className="mt-4">
+                    <button type="button" onClick={back} className="inline-flex min-h-[44px] items-center text-sm font-medium text-slate-500 hover:text-slate-800">← Back</button>
+                  </div>
+                </div>
+              )}
+
+              {/* Q5 urgency (tap) */}
+              {stepIdx === 4 && (
+                <div className="mt-6">
+                  <h2 ref={headingRef} tabIndex={-1} className="sr-only focus:outline-none">{URGENCY_STEP.prompt}</h2>
+                  <RadioCards legend={URGENCY_STEP.prompt} help={URGENCY_STEP.help} options={URGENCY_STEP.options as readonly Option[]} value={answers.urgency} onChange={(v: string) => choose("urgency", v)} columns={2} />
+                  <p className="mt-4 min-h-[1.5rem] text-sm font-medium text-brand-800">{answers.urgency && URGENCY_STEP.mirror[answers.urgency]}</p>
+                  <div className="mt-4 flex items-center justify-between">
+                    <button type="button" onClick={back} className="inline-flex min-h-[44px] items-center text-sm font-medium text-slate-500 hover:text-slate-800">← Back</button>
+                    <button type="button" onClick={() => nextFrom("urgency", answers.urgency)} disabled={!answers.urgency} className="btn-primary">See my read</button>
                   </div>
                 </div>
               )}
@@ -429,10 +429,10 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
                 <div className="mt-6">
                   <div className="flex items-center justify-between text-sm">
                     <span className="font-semibold">{STRESS_TEASER.meterLabel}</span>
-                    <span className="text-brand-200"><AnimatedNumber value={result.exposure} /> / 100</span>
+                    <span className="text-brand-200"><AnimatedNumber value={result.strength} /> / 100</span>
                   </div>
                   <div className="mt-2 h-3 w-full overflow-hidden rounded-full bg-white/15">
-                    <div className={`h-full rounded-full transition-[width] duration-700 ease-out ${METER[result.tier]}`} style={{ width: `${Math.max(result.exposure, 6)}%` }} />
+                    <div className={`h-full rounded-full transition-[width] duration-700 ease-out ${METER[result.tier]}`} style={{ width: `${Math.max(result.strength, 6)}%` }} />
                   </div>
                 </div>
                 <ul className="mt-6 space-y-2.5">
