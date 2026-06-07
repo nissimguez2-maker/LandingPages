@@ -3,7 +3,7 @@ import type { FAQItem } from "@/lib/types";
 /** Accessible accordion using native <details> (works without JS). */
 export default function FAQSection({ faqs }: { faqs: FAQItem[] }) {
   return (
-    <section className="bg-white py-16 sm:py-20">
+    <section className="bg-white py-10 sm:py-14">
       <div className="container-content max-w-3xl">
         <p className="eyebrow">Questions</p>
         <h2 className="mt-2 text-3xl font-bold tracking-tight text-brand-900">Frequently asked</h2>

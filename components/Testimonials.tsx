@@ -9,7 +9,7 @@ export default function Testimonials({ vertical }: { vertical: VerticalConfig })
   if (!items.length) return null;
 
   return (
-    <section className="bg-white py-16 sm:py-20">
+    <section className="bg-white py-10 sm:py-14">
       <div className="container-content">
         <p className="eyebrow">In their words</p>
         <h2 className="mt-2 text-3xl font-bold tracking-tight text-brand-900">What business owners say</h2>

@@ -14,9 +14,7 @@ import DayInCashFlowSection from "./DayInCashFlowSection";
 import ExampleUsesSection from "./ExampleUsesSection";
 import ReassuranceStrip from "./ReassuranceStrip";
 import OfferingsSection from "./OfferingsSection";
-import GlossarySection from "./GlossarySection";
-import CommonQuestionsSection from "./CommonQuestionsSection";
-import FAQSection from "./FAQSection";
+import QuestionsSection from "./QuestionsSection";
 import CTASection from "./CTASection";
 import StickyCTA from "./StickyCTA";
 import Reveal from "./motion/Reveal";
@@ -49,9 +47,7 @@ export default function LandingPageTemplate({ vertical }: { vertical: VerticalCo
         <Timeline />
         <SocialProofSection vertical={vertical} />
         <Testimonials vertical={vertical} />
-        <FAQSection faqs={vertical.faqs} />
-        <CommonQuestionsSection vertical={vertical} />
-        <GlossarySection vertical={vertical} />
+        <QuestionsSection vertical={vertical} />
         <CTASection vertical={vertical} />
       </main>
       <SiteFooter />

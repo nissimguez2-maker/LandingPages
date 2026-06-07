@@ -6,7 +6,7 @@ export default function GlossarySection({ vertical }: { vertical: VerticalConfig
   if (!terms?.length) return null;
 
   return (
-    <section className="bg-brand-50/50 py-16 sm:py-20">
+    <section className="bg-brand-50/50 py-10 sm:py-14">
       <div className="container-content max-w-3xl">
         <p className="eyebrow">Simple words</p>
         <h2 className="mt-2 text-3xl font-bold tracking-tight text-brand-900 font-display">A few terms, in plain English</h2>

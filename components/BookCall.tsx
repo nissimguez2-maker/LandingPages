@@ -1,16 +1,17 @@
 "use client";
 
 import { track } from "@/lib/analytics";
+import { CALCOM_LINK } from "@/lib/site";
 
 /**
- * Cal.com booking, config-driven. Set NEXT_PUBLIC_CALCOM_LINK to your booking
- * handle (e.g. "fundvella/specialist-call" or a full https URL) to switch it on.
+ * Cal.com booking, config-driven. Set NEXT_PUBLIC_CALCOM_LINK in Netlify (or
+ * CALCOM_LINK in lib/site.ts) to your booking handle (e.g.
+ * "fundvella/fundvella-discovery-call" or a full https URL) to switch it on.
  * Opens the booking page prefilled with the lead's name + email, so they only
  * pick a time. When unset, CALCOM_ENABLED is false and the parent shows the
- * "we'll call you" fallback instead. Link-based on purpose: zero deps, no SSR
- * risk, works on cheap phones.
+ * "we'll call you" fallback. Link-based on purpose: zero deps, no SSR risk.
  */
-const RAW = process.env.NEXT_PUBLIC_CALCOM_LINK;
+const RAW = process.env.NEXT_PUBLIC_CALCOM_LINK || CALCOM_LINK;
 export const CALCOM_ENABLED = Boolean(RAW);
 
 export default function BookCall({

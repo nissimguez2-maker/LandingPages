@@ -3,7 +3,7 @@ import { HOW_IT_WORKS_STEPS } from "@/content/landingPagesConfig";
 /** Visual timeline of the 3-step process (connected on desktop, stacked on mobile). */
 export default function Timeline() {
   return (
-    <section className="bg-brand-50/50 py-16 sm:py-20">
+    <section className="bg-brand-50/50 py-10 sm:py-14">
       <div className="container-content">
         <p className="eyebrow">How it works</p>
         <h2 className="mt-2 text-3xl font-bold tracking-tight text-brand-900 font-display">Three steps, no surprises</h2>

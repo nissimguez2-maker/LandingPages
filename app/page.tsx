@@ -10,12 +10,10 @@ import OfferingsSection from "@/components/OfferingsSection";
 import DayInCashFlowSection from "@/components/DayInCashFlowSection";
 import ExampleUsesSection from "@/components/ExampleUsesSection";
 import ReassuranceStrip from "@/components/ReassuranceStrip";
-import GlossarySection from "@/components/GlossarySection";
-import CommonQuestionsSection from "@/components/CommonQuestionsSection";
+import QuestionsSection from "@/components/QuestionsSection";
 import IndustryPicker from "@/components/IndustryPicker";
 import HowItWorksSection from "@/components/HowItWorksSection";
 import SocialProofSection from "@/components/SocialProofSection";
-import FAQSection from "@/components/FAQSection";
 import CTASection from "@/components/CTASection";
 import StickyCTA from "@/components/StickyCTA";
 import Reveal from "@/components/motion/Reveal";
@@ -49,7 +47,7 @@ export default function HomePage() {
         <ExampleUsesSection vertical={v} />
         <OfferingsSection />
 
-        <section className="bg-white py-16 sm:py-20">
+        <section className="bg-white py-10 sm:py-14">
           <div className="container-content">
             <p className="eyebrow">Built for your industry</p>
             <h2 className="mt-2 text-3xl font-bold tracking-tight text-brand-900 font-display">
@@ -69,9 +67,7 @@ export default function HomePage() {
         <Reveal>
           <SocialProofSection vertical={v} />
         </Reveal>
-        <FAQSection faqs={v.faqs} />
-        <CommonQuestionsSection vertical={v} />
-        <GlossarySection vertical={v} />
+        <QuestionsSection vertical={v} />
         <CTASection vertical={v} />
       </main>
       <SiteFooter />

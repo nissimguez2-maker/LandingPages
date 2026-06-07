@@ -3,7 +3,7 @@ import type { VerticalConfig } from "@/lib/types";
 /** Good fit / may-need-review comparison. Honest framing builds trust (LIFT: Anxiety↓). */
 export default function FitComparisonTable({ vertical }: { vertical: VerticalConfig }) {
   return (
-    <section className="bg-brand-50/50 py-16 sm:py-20">
+    <section className="bg-brand-50/50 py-10 sm:py-14">
       <div className="container-content">
         <p className="eyebrow">Is this a fit?</p>
         <h2 className="mt-2 text-3xl font-bold tracking-tight text-brand-900">

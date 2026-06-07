@@ -12,7 +12,7 @@ export default function PainReliefSection({ vertical }: { vertical: VerticalConf
   if (!pr) return null;
 
   return (
-    <section className="bg-white py-16 sm:py-20">
+    <section className="bg-white py-10 sm:py-14">
       <div className="container-content">
         <p className="eyebrow">{pr.eyebrow}</p>
         <h2 className="mt-2 max-w-3xl text-3xl font-bold tracking-tight text-brand-900 font-display">

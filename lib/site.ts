@@ -7,6 +7,14 @@ export const SITE_NAME = "FundVella";
 
 export const SITE_TAGLINE = "Fast working-capital reviews for real operating businesses.";
 
+/**
+ * Cal.com booking link fallback. Either set NEXT_PUBLIC_CALCOM_LINK in Netlify,
+ * or paste your handle here (e.g. "fundvella/fundvella-discovery-call" or a full
+ * https://cal.com/... URL). When empty and no env var is set, the booking button
+ * is hidden and the "a specialist will reach out" fallback shows instead.
+ */
+export const CALCOM_LINK = "";
+
 export function getSiteUrl(): string {
   // Priority: explicit override -> Netlify's automatic build URL -> localhost.
   // Netlify sets `URL` (and `DEPLOY_PRIME_URL`) automatically to the site's

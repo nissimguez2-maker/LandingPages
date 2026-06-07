@@ -4,7 +4,7 @@ import Icon from "./icons/Icon";
 /** Vertical-specific "what businesses use this for" grid. */
 export default function UseCasesSection({ vertical }: { vertical: VerticalConfig }) {
   return (
-    <section className="bg-white py-16 sm:py-20">
+    <section className="bg-white py-10 sm:py-14">
       <div className="container-content">
         <p className="eyebrow">Common uses</p>
         <h2 className="mt-2 text-3xl font-bold tracking-tight text-brand-900 font-display">

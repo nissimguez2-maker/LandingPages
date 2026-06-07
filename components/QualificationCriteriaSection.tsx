@@ -5,7 +5,7 @@ import { WHAT_WE_LOOK_AT } from "@/content/landingPagesConfig";
 export default function QualificationCriteriaSection({ vertical }: { vertical: VerticalConfig }) {
   const items = vertical.qualificationFocus ?? WHAT_WE_LOOK_AT;
   return (
-    <section className="bg-white py-16 sm:py-20">
+    <section className="bg-white py-10 sm:py-14">
       <div className="container-content">
         <p className="eyebrow">What we look at</p>
         <h2 className="mt-2 text-3xl font-bold tracking-tight text-brand-900 font-display">

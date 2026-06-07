@@ -59,6 +59,7 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
   const [pollResponses, setPollResponses] = useState<Record<string, string>>({});
 
   const [unlocked, setUnlocked] = useState(false);
+  const [skipped, setSkipped] = useState(false);
   const [contact, setContact] = useState<Contact>({ firstName: "", businessName: "", phone: "", email: "", marketingConsent: false });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -140,6 +141,15 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
     setPhase("step");
   };
 
+  const skipToInfo = () => {
+    if (!startedRef.current) {
+      startedRef.current = true;
+      track("stresstest_started", { vertical: vertical.slug, skipped: true });
+    }
+    setSkipped(true);
+    setPhase("result");
+  };
+
   const goToResult = () => {
     track("stresstest_completed", { vertical: vertical.slug });
     setPhase("result");
@@ -154,6 +164,7 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
   const back = () => {
     if (phase === "result") {
       setUnlocked(false);
+      setSkipped(false);
       setPhase("step");
       setStepIdx(STEPS - 1);
       return;
@@ -252,7 +263,7 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
   })();
 
   return (
-    <section id="estimate" className="scroll-mt-16 bg-white py-16 sm:py-20">
+    <section id="estimate" className="scroll-mt-16 bg-white py-10 sm:py-14">
       <div className="container-content max-w-3xl">
         <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lift">
           {/* INTRO */}
@@ -266,6 +277,11 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
               <button type="button" onClick={start} className="btn-primary mt-7">
                 {STRESS_INTRO.startLabel} →
               </button>
+              <div className="mt-3">
+                <button type="button" onClick={skipToInfo} className="text-sm font-semibold text-slate-500 underline-offset-2 hover:text-slate-800 hover:underline">
+                  Prefer to skip? Just leave your info{CALCOM_ENABLED ? " or book a call" : ""}
+                </button>
+              </div>
               <div className="mx-auto mt-5 max-w-md">
                 <DisclaimerBlock variant="line" />
               </div>
@@ -353,6 +369,7 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
           {phase === "result" && (
             <div>
               {/* Free read */}
+              {!skipped && (
               <div className="bg-brand-900 p-6 text-white sm:p-9" aria-live="polite">
                 <p className="text-sm font-medium text-accent-300">{STRESS_TEASER.eyebrow}</p>
                 <h2 ref={headingRef} tabIndex={-1} className="mt-1 text-2xl font-bold tracking-tight font-display focus:outline-none sm:text-3xl">{reveal.headline}</h2>
@@ -377,6 +394,7 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
                   ))}
                 </ul>
               </div>
+              )}
 
               {!unlocked ? (
                 <div className="p-6 sm:p-9">
