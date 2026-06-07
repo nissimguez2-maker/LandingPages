@@ -154,17 +154,22 @@ copy consistent — edit them once to change every page.
 <a name="configure-hubspot"></a>
 ## 6. Configure HubSpot
 
-Submissions use a **Private App token** server-side (created/updated objects:
-Contact → Company → Deal, with associations).
+Submissions use a long-lived **server-side bearer token** — a HubSpot **Service
+Key** (recommended) or a legacy Private App token. It creates/updates
+Contact → Company → Deal with associations.
 
-1. HubSpot → **Settings → Integrations → Private Apps → Create a private app**.
-2. Scopes: `crm.objects.contacts.read/write`, `crm.objects.companies.read/write`,
-   `crm.objects.deals.read/write`.
-3. Copy the **access token** and set environment variables (locally in
+1. HubSpot → **Settings → Integrations → Private Apps**. HubSpot's 2025 platform
+   migration may route this to **Legacy Apps**; when prompted, choose **"Use
+   Service Keys instead"** — the supported path for single-account API access.
+   (Avoid OAuth/"public" apps — those tokens expire in minutes.)
+2. Scopes (least privilege): `crm.objects.contacts.read/write`,
+   `crm.objects.companies.read/write`, `crm.objects.deals.read/write`. Selecting
+   scopes your account isn't provisioned for makes key creation fail.
+3. Copy the key and set environment variables (locally in
    `.env.local`, and in Netlify → Site settings → Environment variables):
 
 ```
-HUBSPOT_PRIVATE_APP_TOKEN=pat-xxxxxxxx     # required (server-side secret)
+HUBSPOT_PRIVATE_APP_TOKEN=...              # required: Service Key OR Private App token (bearer secret)
 HUBSPOT_PORTAL_ID=148647134                # optional
 HUBSPOT_FORM_ID=                           # optional (form mirror, not required)
 HUBSPOT_DEAL_PIPELINE_ID=default           # see "Build the pipeline"
@@ -378,3 +383,42 @@ This foundation is designed so automation can plug in later **without rework**:
   ideas, trigger-based outreach, and dashboards.
 
 No crawlers or automated posting are included in this build (out of scope).
+
+---
+
+## 16. Conversion overhaul (audit-driven) — what's new & how to populate it
+
+An 18-lens expert audit drove a comprehensive overhaul. The new pieces are all
+config-driven:
+
+### Add real images
+`components/MediaFigure.tsx` shows a branded placeholder until a real image exists.
+To use real photos: drop files in `public/media/...` and set `heroImage.src` on the
+vertical in `content/landingPagesConfig.ts` (alt text is already set). Use-case icons
+come from the inline-SVG registry in `components/icons/Icon.tsx` (no image files).
+
+### Add real social proof (never fabricate)
+`SocialProofSection` always shows compliant trust signals (`DEFAULT_TRUST_SIGNALS`).
+Testimonials/stats/logos render **only when populated with real data** — set
+`testimonials`, `stats`, and/or `logos` on a vertical in `landingPagesConfig.ts`.
+Leave them empty to show nothing.
+
+### Funding calculator
+`components/FundingCalculator.tsx` is client-only math (deposits → estimate range,
+clearly "not an offer"). Tune via `DEFAULT_CALCULATOR` or a per-vertical `calculator`.
+
+### Legal pages — fill the placeholders
+`app/privacy`, `app/terms`, `app/disclosures` are live and linked in the footer.
+Replace `[your contact email]` / `[your state/jurisdiction]` and have counsel review.
+
+### Analytics events (added)
+`session_id` on every event, plus `prequal_step_abandoned`, `prequal_validation_error`,
+and `calculator_used` (see `lib/analytics.ts`; still vendor-neutral).
+
+### HubSpot lifecycle fields + nurture (optional)
+The integration also writes — only if the properties exist — `captured_at`,
+`lead_capture_stage` (full/partial), `last_form_activity_date`, and consent
+timestamp/source. Unknown properties are **auto-dropped** (they never break a
+submission), so create them in HubSpot only when you want them. Suggested workflows
+to build manually: Green → fast follow-up, Yellow → docs/reassurance, Red → nurture,
+and a partial-lead **win-back** at ~7 days for ≥60% completion.
