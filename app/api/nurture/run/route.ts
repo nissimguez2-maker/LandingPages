@@ -10,8 +10,6 @@ import {
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// Temp build-time test token (removed after verification). Production uses NURTURE_SECRET.
-const SETUP_TOKEN = "stp_9Qx7Lk2mB4vR8tZ_mca_pipeline_setup";
 const HS = "https://api.hubapi.com";
 
 const STATE_PROPS = ["nurture_track", "nurture_step", "nurture_last_sent"] as const;
@@ -74,7 +72,7 @@ async function sendEmail(opts: {
 async function processTrack(
   track: "partial" | "cold",
   contacts: Contact[],
-  ctx: { token: string; apiKey: string; from: string; base: string; now: number; force: boolean },
+  ctx: { token: string; apiKey: string; from: string; base: string; now: number },
 ): Promise<{ checked: number; sent: number }> {
   const emails = track === "partial" ? PARTIAL_EMAILS : COLD_EMAILS;
   const offsets = track === "partial" ? PARTIAL_OFFSETS : COLD_OFFSETS;
@@ -90,7 +88,7 @@ async function processTrack(
     const step = storedTrack === track ? Number(c.properties.nurture_step || "0") : 0;
     if (step >= offsets.length) continue; // track complete
 
-    if (!ctx.force && ctx.now < createdate + offsets[step]) continue; // not due yet
+    if (ctx.now < createdate + offsets[step]) continue; // not due yet
 
     const def = emails[step];
     const ctaUrl =
@@ -125,10 +123,9 @@ async function processTrack(
 
 export async function POST(req: Request): Promise<NextResponse> {
   const secret = process.env.NURTURE_SECRET;
-  const authed =
-    (secret && req.headers.get("x-nurture-secret") === secret) ||
-    req.headers.get("x-setup-token") === SETUP_TOKEN;
-  if (!authed) return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
+  if (!secret || req.headers.get("x-nurture-secret") !== secret) {
+    return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
+  }
 
   const token = process.env.HUBSPOT_PRIVATE_APP_TOKEN;
   const apiKey = process.env.RESEND_API_KEY;
@@ -141,12 +138,7 @@ export async function POST(req: Request): Promise<NextResponse> {
   const from = process.env.RESEND_FROM || "MCA Funding <onboarding@resend.dev>";
   const base = siteBase();
   const now = Date.now();
-  // `force` (test only, requires the setup token) ignores send-timing so a brand-new
-  // test lead can be exercised immediately.
-  const force =
-    new URL(req.url).searchParams.get("force") === "1" &&
-    req.headers.get("x-setup-token") === SETUP_TOKEN;
-  const ctx = { token, apiKey, from, base, now, force };
+  const ctx = { token, apiKey, from, base, now };
 
   try {
     const tenDaysAgo = String(now - 10 * 86400000);
