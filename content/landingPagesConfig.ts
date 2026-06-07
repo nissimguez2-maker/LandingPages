@@ -183,11 +183,11 @@ export const landingPages: VerticalConfig[] = [
     seoDescription:
       "Working capital for restaurants, reviewed on card-batch deposits and bank activity. You may qualify. Approval depends on underwriting.",
     theme: { accent: "amber" },
-    heroHeadline: "Working capital that keeps the kitchen open",
+    heroHeadline: "Capital that keeps the line moving",
     heroSubheadline:
-      "We read your daily card-batch deposits and bank activity, not just your credit, so a slow week doesn't define your file.",
+      "We read your daily card batches and bank activity, not just your credit. A slow Tuesday does not define your file.",
     cashFlowSignature:
-      "The walk-in compressor dies on a Friday, the produce vendor wants COD, and rent clears Monday, all before the weekend's batches settle.",
+      "The walk-in dies Friday, produce is COD, and rent clears Monday. The weekend's batches settle after all of it.",
     heroHighlights: ["We read daily card batches", "Seasonality expected, not penalized", "Tips & vendor COD are normal here"],
     heroImage: { src: "/media/restaurant.jpg", alt: "A busy restaurant kitchen during service" },
     useCaseIcons: ["tools", "inventory", "payroll", "expand", "marketing"],
@@ -263,9 +263,9 @@ export const landingPages: VerticalConfig[] = [
       closer: "You earned the money over the weekend. It shows up Monday. The bills did not wait that long. That gap is the whole problem.",
     },
     exampleUses: [
-      { label: "Walk-in or cooler repair", rangeLow: 800, rangeHigh: 3000, when: "the day it breaks", note: "Fix it same day so the weekend still happens." },
-      { label: "A new or used oven or fryer", rangeLow: 2000, rangeHigh: 12000, when: "before the rush" },
-      { label: "A week of vendor orders before a big weekend", rangeLow: 3000, rangeHigh: 8000 },
+      { label: "Replace the kitchen line or refrigeration", rangeLow: 25000, rangeHigh: 75000, when: "to keep service running" },
+      { label: "Stock up and cover a slow season", rangeLow: 30000, rangeHigh: 100000, when: "before the busy months" },
+      { label: "Build a patio or open a second spot", rangeLow: 75000, rangeHigh: 300000, when: "when you are ready to grow" },
     ],
     reassurance: [
       "A slow January is normal. It does not count against you.",
@@ -293,11 +293,11 @@ export const landingPages: VerticalConfig[] = [
     seoDescription:
       "Working capital for owner-operators and fleets, reviewed on settlements and bank activity. You may qualify. Approval depends on underwriting.",
     theme: { accent: "orange" },
-    heroHeadline: "Keep the wheels turning between settlements",
+    heroHeadline: "Keep rolling between settlements",
     heroSubheadline:
-      "Owner-operator or a growing fleet, we review on settlements and deposits, lumpy weeks and factoring included.",
+      "Owner-operator or fleet, we review on your settlements and deposits. Lumpy weeks and factoring are read as normal.",
     cashFlowSignature:
-      "Factoring's taken its cut, the broker pays in 45, and the truck's down for a turbo, but the next load is already booked.",
+      "Factoring took its cut, the broker pays net-45, and the truck is down for a turbo. The next load is already booked.",
     heroHighlights: ["Owner-operators & fleets alike", "Lumpy settlements understood", "A down truck won't sink your file"],
     heroImage: { src: "/media/trucking.jpg", alt: "A semi truck driver beside their rig" },
     useCaseIcons: ["vehicle", "tools", "expand", "scale", "payroll"],
@@ -373,9 +373,9 @@ export const landingPages: VerticalConfig[] = [
       closer: "With money in place, you cover fuel and the repair now and let the slow invoices catch up. You may qualify on your settlements and deposits, factoring included. No obligation, and payments fit how you get paid.",
     },
     exampleUses: [
-      { label: "Truck or engine repair", rangeLow: 4000, rangeHigh: 15000, when: "the day the truck goes down" },
-      { label: "Fuel and upkeep between settlements", rangeLow: 2000, rangeHigh: 10000, when: "the weeks the broker has not paid yet" },
-      { label: "Down payment on another truck", rangeLow: 10000, rangeHigh: 30000, when: "when there is freight you could take" },
+      { label: "Major engine or truck repair", rangeLow: 25000, rangeHigh: 60000, when: "the day the truck goes down" },
+      { label: "Add a truck or trailer", rangeLow: 50000, rangeHigh: 150000, when: "when there is freight to cover" },
+      { label: "Fuel, payroll, and a cash cushion", rangeLow: 30000, rangeHigh: 100000, when: "across slow-paying weeks" },
     ],
     reassurance: [
       "Lumpy weeks are normal. We look at your whole pattern.",
@@ -403,11 +403,11 @@ export const landingPages: VerticalConfig[] = [
     seoDescription:
       "Working capital for contractors and subs, reviewed on deposits across jobs. You may qualify. Approval depends on underwriting.",
     theme: { accent: "yellow" },
-    heroHeadline: "Cover materials and payroll before the draw lands",
+    heroHeadline: "Cover materials and crew before the draw lands",
     heroSubheadline:
-      "We expect draw-based, lumpy cash flow and review on your deposit history across months, not a single billing cycle.",
+      "We expect draw-based, lumpy cash flow. The review reads your deposits across jobs, not one billing cycle.",
     cashFlowSignature:
-      "Materials and payroll are due now; the progress draw lands in three weeks, and the GC still has to sign off.",
+      "Materials and payroll are due now. The progress draw is three weeks out, and the GC still has to sign off.",
     heroHighlights: ["Draw schedules understood", "GCs and subs welcome", "Materials-before-payment is the norm"],
     heroImage: { src: "/media/construction.jpg", alt: "A contractor reviewing plans on a job site" },
     useCaseIcons: ["inventory", "payroll", "tools", "expand", "spark"],
@@ -482,9 +482,9 @@ export const landingPages: VerticalConfig[] = [
       closer: "With money in place, you cover materials and crew now and let the draw catch up. You may qualify on your deposits across jobs. No obligation, and payments fit your cash flow.",
     },
     exampleUses: [
-      { label: "Materials upfront before a draw", rangeLow: 10000, rangeHigh: 50000, when: "at the start of a job" },
-      { label: "Payroll between draws", rangeLow: 5000, rangeHigh: 25000, when: "while you wait on progress billing" },
-      { label: "Equipment repair or rental", rangeLow: 3000, rangeHigh: 20000, when: "when a machine goes down" },
+      { label: "Materials and mobilization for a job", rangeLow: 30000, rangeHigh: 150000, when: "at the start of a job" },
+      { label: "Payroll across draws", rangeLow: 25000, rangeHigh: 100000, when: "while you wait on progress billing" },
+      { label: "Take on a bigger contract", rangeLow: 100000, rangeHigh: 500000, when: "when the job is yours if you want it" },
     ],
     reassurance: [
       "Lumpy pay between draws is normal here.",
@@ -512,11 +512,11 @@ export const landingPages: VerticalConfig[] = [
     seoDescription:
       "Inventory and growth capital for online sellers, reviewed on processor volume and bank activity. You may qualify. Approval depends on underwriting.",
     theme: { accent: "violet" },
-    heroHeadline: "Stock up before demand spikes",
+    heroHeadline: "Stock the winners before the peak hits",
     heroSubheadline:
-      "We weigh processor and marketplace volume alongside bank activity, so peak-season buys don't stall on cash.",
+      "We weigh your processor and marketplace volume with your bank activity. Peak-season buys do not stall on cash.",
     cashFlowSignature:
-      "Q4 is coming, your supplier wants 50% down with an 8-week lead time, and your cash is tied up in last month's ad spend.",
+      "Q4 is coming, the supplier wants 50% down on an 8-week lead time, and your cash is tied up in last month's ad spend.",
     heroHighlights: ["Processor & marketplace volume count", "Sized for peak-season buys", "Shopify, Amazon & DTC sellers"],
     heroImage: { src: "/media/ecommerce.jpg", alt: "An e-commerce owner packing orders in a warehouse" },
     useCaseIcons: ["cart", "inventory", "marketing", "scale", "expand"],
@@ -592,9 +592,9 @@ export const landingPages: VerticalConfig[] = [
       closer: "With money in place, you buy inventory ahead of the season without starving your ads. You may qualify on your processor and bank deposits. No obligation, and payments fit your cash flow.",
     },
     exampleUses: [
-      { label: "Inventory before peak season", rangeLow: 10000, rangeHigh: 75000, when: "before Q4 or a big launch" },
-      { label: "Restock your best sellers", rangeLow: 5000, rangeHigh: 30000, when: "when a top item runs low" },
-      { label: "Scale ads that are working", rangeLow: 3000, rangeHigh: 25000, when: "while your return on ad spend is strong" },
+      { label: "Peak-season inventory buy", rangeLow: 30000, rangeHigh: 150000, when: "before Q4 or a launch" },
+      { label: "Bulk reorder of best sellers", rangeLow: 40000, rangeHigh: 200000, when: "when a top SKU runs low" },
+      { label: "Scale ads that are working", rangeLow: 25000, rangeHigh: 100000, when: "while the math still works" },
     ],
     reassurance: [
       "Peak-season ramps are expected, not a red flag.",
@@ -701,9 +701,9 @@ export const landingPages: VerticalConfig[] = [
       closer: "You front the parts and payroll now. The tickets pay you later. With money in place, you order parts the minute a job lands. You may qualify on your shop deposits. No obligation, and payments fit your cash flow.",
     },
     exampleUses: [
-      { label: "Stock common parts", rangeLow: 3000, rangeHigh: 12000, when: "so cars do not sit waiting" },
-      { label: "Fix or add a lift or scan tool", rangeLow: 2000, rangeHigh: 20000, when: "when a tool goes down" },
-      { label: "Cover payroll on a slow week", rangeLow: 4000, rangeHigh: 15000, when: "between busy stretches" },
+      { label: "Lifts, alignment, or diagnostic equipment", rangeLow: 25000, rangeHigh: 80000, when: "to add capacity" },
+      { label: "Parts inventory and a payroll cushion", rangeLow: 25000, rangeHigh: 75000, when: "when the distributor is COD" },
+      { label: "Add a bay or a second location", rangeLow: 75000, rangeHigh: 250000, when: "when you are ready to grow" },
     ],
     reassurance: [
       "One bay or six, you are welcome here.",
@@ -733,7 +733,7 @@ export const landingPages: VerticalConfig[] = [
     theme: { accent: "teal" },
     heroHeadline: "Don't let reimbursement lag stall the practice",
     heroSubheadline:
-      "We review on collections and bank activity with reimbursement lag built in, solo practice or group.",
+      "We review on collections and bank activity with reimbursement lag built in. Solo practice or group.",
     cashFlowSignature:
       "Payroll runs every two weeks; the insurer reimburses in 60. The new chairside unit can't wait for the AR to clear.",
     heroHighlights: ["Reimbursement lag is normal", "Solo & group practices", "Collections, not just credit"],
@@ -811,9 +811,9 @@ export const landingPages: VerticalConfig[] = [
       closer: "The work is done and the money is owed to you. It just is not in the account yet. With capital in place, you meet payroll and add equipment now. You may qualify on your collections. No obligation, and payments fit your cash flow.",
     },
     exampleUses: [
-      { label: "Bridge payroll while claims clear", rangeLow: 25000, rangeHigh: 150000, when: "during the reimbursement gap" },
-      { label: "New or replacement equipment", rangeLow: 15000, rangeHigh: 100000, when: "to see more patients" },
-      { label: "Add a provider or service line", rangeLow: 20000, rangeHigh: 120000, when: "before the first claim pays" },
+      { label: "Bridge payroll while claims clear", rangeLow: 50000, rangeHigh: 200000, when: "during the reimbursement gap" },
+      { label: "New equipment or imaging", rangeLow: 40000, rangeHigh: 150000, when: "to see more patients" },
+      { label: "Add a provider or service line", rangeLow: 75000, rangeHigh: 300000, when: "before the first claim pays" },
     ],
     reassurance: [
       "Insurance lag is normal. It does not count against you.",
@@ -841,11 +841,11 @@ export const landingPages: VerticalConfig[] = [
     seoDescription:
       "Working capital for dental practices, reviewed on collections and bank activity. You may qualify. Approval depends on underwriting.",
     theme: { accent: "cyan" },
-    heroHeadline: "Grow the practice before collections catch up",
+    heroHeadline: "Add the operatory now. Let collections catch up.",
     heroSubheadline:
-      "We review on production and collections, not credit alone, with the gap between chair time and payment in mind.",
+      "We read your collections and bank deposits, not just your credit. Production fills the chair months before the money lands. We get that.",
     cashFlowSignature:
-      "You added an operatory and a hygienist, but production shows up in the chair months before collections catch up.",
+      "New chair in, hygienist hired, schedule packed. But insurance pays in 30 to 60 days, and the lab bill is due this week.",
     heroHighlights: ["Production cycles understood", "Solo & group practices", "Reviewed on collections"],
     heroImage: { src: "/media/dental.jpg", alt: "A dentist in a modern dental operatory" },
     useCaseIcons: ["tools", "payroll", "expand", "spark", "marketing"],
@@ -921,9 +921,9 @@ export const landingPages: VerticalConfig[] = [
       closer: "Production shows up in the chair long before the money shows up in the bank. With capital in place, you staff and equip now. You may qualify on your collections. No obligation, and payments fit your cash flow.",
     },
     exampleUses: [
-      { label: "New chair or imaging unit", rangeLow: 15000, rangeHigh: 100000, when: "to grow the practice" },
-      { label: "Hire and train a hygienist", rangeLow: 10000, rangeHigh: 40000, when: "before collections catch up" },
-      { label: "Office build-out or refresh", rangeLow: 20000, rangeHigh: 80000, when: "to add operatories" },
+      { label: "New operatory or imaging", rangeLow: 50000, rangeHigh: 200000, when: "to grow the practice" },
+      { label: "Bridge payroll and the lab while claims clear", rangeLow: 30000, rangeHigh: 120000, when: "during the 30 to 60 day gap" },
+      { label: "Hire and ramp a hygienist", rangeLow: 25000, rangeHigh: 90000, when: "before collections catch up" },
     ],
     reassurance: [
       "The gap between chair time and pay is normal.",
@@ -951,11 +951,11 @@ export const landingPages: VerticalConfig[] = [
     seoDescription:
       "Working capital for salons and med spas, reviewed on appointment deposits and bank activity. You may qualify. Approval depends on underwriting.",
     theme: { accent: "rose" },
-    heroHeadline: "Fund the chair before the calendar fills",
+    heroHeadline: "Add the chair before the calendar fills.",
     heroSubheadline:
-      "We review on appointment-driven deposits and bank activity, with seasonal swings expected.",
+      "We read your booking deposits and bank activity, not just your credit. Slow weeks happen in this business. The review expects them.",
     cashFlowSignature:
-      "New chairs, fresh inventory, and a stylist to hire, all before the calendar fills back up after a slow stretch.",
+      "A new station, a laser, and a stylist to hire. All due now, while the books are still light from a slow stretch.",
     heroHighlights: ["Appointment revenue counts", "Salons & med spas", "Seasonal swings expected"],
     heroImage: { src: "/media/beauty.jpg", alt: "A stylist in a modern salon" },
     useCaseIcons: ["tools", "inventory", "expand", "payroll", "marketing"],
@@ -1031,9 +1031,9 @@ export const landingPages: VerticalConfig[] = [
       closer: "The costs to grow show up before the bookings do. With money in place, you upgrade and stock now. You may qualify on your deposits. No obligation, and payments fit your cash flow.",
     },
     exampleUses: [
-      { label: "New chair, laser, or device", rangeLow: 5000, rangeHigh: 40000, when: "to add services" },
-      { label: "Stock retail and treatment supplies", rangeLow: 2000, rangeHigh: 15000, when: "before a busy season" },
-      { label: "Hire and train a stylist", rangeLow: 4000, rangeHigh: 20000, when: "before the rush" },
+      { label: "New stations, lasers, or devices", rangeLow: 25000, rangeHigh: 100000, when: "to add services" },
+      { label: "Stock product and supplies", rangeLow: 25000, rangeHigh: 60000, when: "before a busy season" },
+      { label: "Renovate or expand the space", rangeLow: 50000, rangeHigh: 200000, when: "when you are ready to grow" },
     ],
     reassurance: [
       "Slow stretches are normal and expected.",
@@ -1063,9 +1063,9 @@ export const landingPages: VerticalConfig[] = [
     theme: { accent: "blue" },
     heroHeadline: "Buy the season before it sells",
     heroSubheadline:
-      "We review on sales, card-processor volume, and bank activity, with seasonal inventory cycles in mind.",
+      "We read your sales, card-processor volume, and bank deposits, not just your credit. The season ships months before it pays you back.",
     cashFlowSignature:
-      "The holiday buy is due to the vendor now; the sell-through that pays for it doesn't start until November.",
+      "The vendor wants the holiday order paid now. The sell-through that pays for it does not start until November.",
     heroHighlights: ["Sales & processor volume count", "Single or multi-location", "Seasonal inventory in mind"],
     heroImage: { src: "/media/retail.jpg", alt: "A shop owner at the counter of their retail store" },
     useCaseIcons: ["inventory", "expand", "tools", "payroll", "marketing"],
@@ -1141,9 +1141,9 @@ export const landingPages: VerticalConfig[] = [
       closer: "You buy the season months before it pays you back. With money in place, you stock the full season. You may qualify on your sales deposits. No obligation, and payments fit your cash flow.",
     },
     exampleUses: [
-      { label: "Seasonal inventory buy", rangeLow: 10000, rangeHigh: 60000, when: "before the holiday rush" },
-      { label: "Remodel or a second location", rangeLow: 15000, rangeHigh: 75000, when: "to grow the store" },
-      { label: "Extra staff for the rush", rangeLow: 4000, rangeHigh: 20000, when: "before receipts land" },
+      { label: "Seasonal inventory buy", rangeLow: 30000, rangeHigh: 150000, when: "before the holiday rush" },
+      { label: "Restock best sellers mid-season", rangeLow: 25000, rangeHigh: 90000, when: "when a top item runs low" },
+      { label: "Remodel or a second location", rangeLow: 75000, rangeHigh: 300000, when: "to grow the store" },
     ],
     reassurance: [
       "One busy season is normal in retail.",
@@ -1171,11 +1171,11 @@ export const landingPages: VerticalConfig[] = [
     seoDescription:
       "Working capital for HVAC and plumbing businesses, reviewed on deposits and bank activity. You may qualify. Approval depends on underwriting.",
     theme: { accent: "sky" },
-    heroHeadline: "Be ready when the first heat wave hits",
+    heroHeadline: "Stock the trucks before the first heat wave.",
     heroSubheadline:
-      "We review on service and install deposits with seasonal demand swings expected, no credit-only decisions.",
+      "We read your service and install deposits, not just your credit. Demand spikes with the weather here. The review expects that.",
     cashFlowSignature:
-      "The first heat wave hits, calls triple overnight, and you need trucks stocked and crews staffed before you've collected on a single job.",
+      "The first heat wave hits and calls triple overnight. You need condensers on the trucks and crews staffed before one invoice gets paid.",
     heroHighlights: ["Seasonal spikes understood", "Service & install crews", "Deposits over credit score"],
     heroImage: { src: "/media/hvac-plumbing.jpg", alt: "An HVAC technician servicing a unit" },
     useCaseIcons: ["vehicle", "inventory", "payroll", "expand", "marketing"],
@@ -1250,9 +1250,9 @@ export const landingPages: VerticalConfig[] = [
       closer: "The costs land first. The collections come weeks later. With money in place, you stock and staff for the rush. You may qualify on your deposits. No obligation, and payments fit your cash flow.",
     },
     exampleUses: [
-      { label: "Stock parts and units for peak season", rangeLow: 5000, rangeHigh: 30000, when: "before the rush" },
-      { label: "Add or repair a service truck", rangeLow: 8000, rangeHigh: 40000, when: "to run a second crew" },
-      { label: "Staff up for busy season", rangeLow: 5000, rangeHigh: 25000, when: "before checks clear" },
+      { label: "Stock units and parts for peak season", rangeLow: 30000, rangeHigh: 100000, when: "before summer or winter demand" },
+      { label: "Add or replace a service truck", rangeLow: 40000, rangeHigh: 120000, when: "to run a second crew" },
+      { label: "Payroll and a cash cushion through the rush", rangeLow: 25000, rangeHigh: 90000, when: "before install checks clear" },
     ],
     reassurance: [
       "Busy and slow seasons are expected.",
@@ -1280,11 +1280,11 @@ export const landingPages: VerticalConfig[] = [
     seoDescription:
       "Working capital for cleaning businesses, reviewed on recurring-contract deposits. You may qualify. Approval depends on underwriting.",
     theme: { accent: "emerald" },
-    heroHeadline: "Win the contract, cover the crew",
+    heroHeadline: "Win the contract. Cover the crew.",
     heroSubheadline:
-      "We review on recurring-contract deposits and bank activity, with net-30/60 receivables in mind.",
+      "We read your recurring-contract deposits and bank activity, not just your credit. Commercial accounts pay net-30 or net-60. The review expects that.",
     cashFlowSignature:
-      "Crews and supplies get paid weekly; the commercial contract pays net-60, and you just won two more accounts.",
+      "Crews and supplies get paid every Friday. The new commercial contract pays net-60, and you just won two more accounts.",
     heroHighlights: ["Recurring contracts count", "Residential & commercial", "Net-30/60 receivables in mind"],
     heroImage: { src: "/media/cleaning.jpg", alt: "A cleaning crew member at work in a commercial space" },
     useCaseIcons: ["tools", "payroll", "vehicle", "scale", "expand"],
@@ -1359,9 +1359,9 @@ export const landingPages: VerticalConfig[] = [
       closer: "The work starts now. The big checks come in 30 to 60 days. With money in place, you cover crew and supplies and take the accounts. You may qualify on your contract deposits. No obligation, and payments fit your cash flow.",
     },
     exampleUses: [
-      { label: "Cover payroll while invoices clear", rangeLow: 5000, rangeHigh: 25000, when: "during net-30/60 gaps" },
-      { label: "Equipment and supplies for a new account", rangeLow: 3000, rangeHigh: 15000, when: "when you win a contract" },
-      { label: "Add a vehicle or crew", rangeLow: 8000, rangeHigh: 30000, when: "to grow your routes" },
+      { label: "Cover payroll across net-60 contracts", rangeLow: 25000, rangeHigh: 100000, when: "during net-30 or net-60 gaps" },
+      { label: "Equipment and supplies for new accounts", rangeLow: 25000, rangeHigh: 75000, when: "the week you win a contract" },
+      { label: "Add vans and crews for a new route", rangeLow: 50000, rangeHigh: 200000, when: "to grow your service area" },
     ],
     reassurance: [
       "Net-30/60 pay is normal in commercial cleaning.",
@@ -1389,11 +1389,11 @@ export const landingPages: VerticalConfig[] = [
     seoDescription:
       "Funding options that weigh business revenue and bank activity, not just credit score. You may qualify. Approval depends on underwriting.",
     theme: { accent: "emerald" },
-    heroHeadline: "Your revenue tells a story your score doesn't",
+    heroHeadline: "Bad credit? Your deposits get read first.",
     heroSubheadline:
-      "We weigh business revenue and bank activity first; credit is one input, not the gatekeeper.",
+      "We weigh your business revenue and bank activity first. Credit is one input, not the gatekeeper. A real specialist reads your file.",
     cashFlowSignature:
-      "A rough credit stretch is behind you, but the deposits never stopped, and the next opportunity won't wait for your score to recover.",
+      "The rough credit stretch is behind you. The deposits never stopped. But one number on a report keeps ending the conversation early.",
     heroHighlights: ["Revenue weighed first", "Past issues don't auto-disqualify", "A real specialist reviews it"],
     heroImage: { src: "/media/bad-credit.jpg", alt: "A small-business owner reviewing finances" },
     useCaseIcons: ["scale", "clock", "shield", "payroll", "spark"],
@@ -1470,9 +1470,9 @@ export const landingPages: VerticalConfig[] = [
       closer: "Your revenue tells a story your score does not. Here the deposits come first. You may qualify on revenue and bank activity. Credit is one input, not the gatekeeper. No obligation, and payments fit your cash flow.",
     },
     exampleUses: [
-      { label: "General working capital", rangeLow: 5000, rangeHigh: 50000, when: "when you need breathing room" },
-      { label: "Cover a short cash crunch", rangeLow: 3000, rangeHigh: 20000, when: "to keep operations running" },
-      { label: "Restock or fund a recovery", rangeLow: 5000, rangeHigh: 30000, when: "to get back on track" },
+      { label: "General working capital", rangeLow: 25000, rangeHigh: 150000, when: "when you need breathing room" },
+      { label: "Cover a cash crunch and stabilize", rangeLow: 25000, rangeHigh: 100000, when: "to keep operations running" },
+      { label: "Restock or fund a comeback", rangeLow: 30000, rangeHigh: 150000, when: "to get back on track" },
     ],
     reassurance: [
       "Past credit issues do not end the conversation.",
