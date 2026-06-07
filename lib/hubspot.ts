@@ -285,21 +285,37 @@ async function upsertContact(props: Props, email?: string): Promise<string> {
     : (json as { id: string }).id;
 }
 
+/** Find an existing company by domain (preferred) or exact name, to avoid dupes. */
+async function findCompanyId(domain?: string, name?: string): Promise<string | null> {
+  const filter = domain
+    ? { propertyName: "domain", operator: "EQ", value: domain }
+    : name
+      ? { propertyName: "name", operator: "EQ", value: name }
+      : null;
+  if (!filter) return null;
+  const res = await hsFetch("/crm/v3/objects/companies/search", "POST", {
+    filterGroups: [{ filters: [filter] }],
+    properties: ["domain"],
+    limit: 1,
+  });
+  if (!res.ok) return null;
+  const json = (await res.json()) as { results?: { id: string }[] };
+  return json.results?.[0]?.id ?? null;
+}
+
+// HubSpot doesn't allow batch upsert by `domain` (not a unique idProperty), so we
+// search → update-or-create. This also dedupes across partial + full submissions.
 async function upsertCompany(props: Props): Promise<string | null> {
   if (!props[COMPANY.name]) return null;
-  const domain = props[COMPANY.domain];
+  const existingId = await findCompanyId(props[COMPANY.domain], props[COMPANY.name]);
   const make = (p: Props) =>
-    domain
-      ? hsFetch("/crm/v3/objects/companies/batch/upsert", "POST", {
-          inputs: [{ idProperty: "domain", id: domain, properties: p }],
-        })
+    existingId
+      ? hsFetch(`/crm/v3/objects/companies/${existingId}`, "PATCH", { properties: p })
       : hsFetch("/crm/v3/objects/companies", "POST", { properties: p });
   const res = await requestWithRetry(make, props);
   if (!res.ok) throw new Error(await readError(res));
-  const json = await res.json();
-  return domain
-    ? (json as { results: { id: string }[] }).results[0].id
-    : (json as { id: string }).id;
+  const json = (await res.json()) as { id: string };
+  return json.id;
 }
 
 async function createDeal(props: Props): Promise<string> {
