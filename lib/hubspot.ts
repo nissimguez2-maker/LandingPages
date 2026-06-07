@@ -25,6 +25,7 @@ import {
   PAYMENT_BURDEN_NUMERIC,
   ADVANCES_COUNT,
   PIPELINE,
+  MCA_PIPELINE_STAGES,
 } from "./hubspotFieldMap";
 
 const HS_BASE = "https://api.hubapi.com";
@@ -231,7 +232,15 @@ function buildDealProps(lead: LeadData, score: LeadScore): Props {
   setProp(p, DEAL.fundingReadinessScore, score.score);
   setProp(p, DEAL.leadCategory, bandToHubSpotCategory(score.band));
   setProp(p, DEAL.pipeline, PIPELINE.id);
-  setProp(p, DEAL.dealStage, PIPELINE.defaultStageId);
+  // Route by band: Green → Prequalified Green, Yellow → Prequalified Yellow,
+  // everything else → New Lead. Falls back to the default stage.
+  const stageByBand =
+    score.band === "green"
+      ? MCA_PIPELINE_STAGES.prequalified_green
+      : score.band === "yellow"
+        ? MCA_PIPELINE_STAGES.prequalified_yellow
+        : MCA_PIPELINE_STAGES.new_lead;
+  setProp(p, DEAL.dealStage, stageByBand || PIPELINE.defaultStageId);
   return p;
 }
 

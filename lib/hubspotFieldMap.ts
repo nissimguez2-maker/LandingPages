@@ -203,14 +203,14 @@ export const ADVANCES_COUNT: Record<string, number> = {
 };
 
 /* ════════════════════════════════════════════════════════════════════════
- *  PIPELINE — overridable via env. The 18-stage MCA pipeline does NOT exist
- *  in the portal yet (only the default "Sales Pipeline"). See README for how
- *  to build it; then set HUBSPOT_DEAL_PIPELINE_ID + the stage ids below.
+ *  PIPELINE — overridable via env. The 18-stage MCA pipeline is LIVE: the
+ *  account's single deal pipeline (id "default") was repurposed with the 18
+ *  stages below. Stage ids are real values from the portal (2026-06).
  * ════════════════════════════════════════════════════════════════════════ */
 export const PIPELINE = {
   id: process.env.HUBSPOT_DEAL_PIPELINE_ID || "default",
-  /** Stage a brand-new full-submission deal lands in. */
-  defaultStageId: process.env.HUBSPOT_DEAL_DEFAULT_STAGE_ID || "appointmentscheduled",
+  /** Stage a brand-new full-submission deal lands in ("New Lead"). */
+  defaultStageId: process.env.HUBSPOT_DEAL_DEFAULT_STAGE_ID || "5498908918",
   /** Default product for these MCA acquisition funnels. */
   defaultProductType: "merchant_cash_advance" as const,
 };
@@ -221,22 +221,22 @@ export const PIPELINE = {
  * so routing logic can reference stable keys.
  */
 export const MCA_PIPELINE_STAGES = {
-  new_lead: "TODO_stage_id",
-  prequalification_needed: "TODO_stage_id",
-  prequalified_green: "TODO_stage_id",
-  prequalified_yellow: "TODO_stage_id",
-  documents_requested: "TODO_stage_id",
-  documents_received: "TODO_stage_id",
-  statement_review: "TODO_stage_id",
-  submitted_to_underwriting: "TODO_stage_id",
-  offer_received: "TODO_stage_id",
-  offer_presented: "TODO_stage_id",
-  contracts_sent: "TODO_stage_id",
-  contracts_signed: "TODO_stage_id",
-  closing_stips: "TODO_stage_id",
-  funded: "TODO_stage_id",
-  declined: "TODO_stage_id",
-  lost_not_interested: "TODO_stage_id",
-  nurture: "TODO_stage_id",
-  renewal_opportunity: "TODO_stage_id",
+  new_lead: "5498908918",
+  prequalification_needed: "5498908919",
+  prequalified_green: "5498908920",
+  prequalified_yellow: "5498854606",
+  documents_requested: "5498908921",
+  documents_received: "5498854607",
+  statement_review: "5498854608",
+  submitted_to_underwriting: "5498909882",
+  offer_received: "5498854609",
+  offer_presented: "5498909883",
+  contracts_sent: "5498909884",
+  contracts_signed: "5498854610",
+  closing_stips: "5498854611",
+  funded: "5498909885",
+  declined: "5498909886",
+  lost_not_interested: "5498909887",
+  nurture: "5498909888",
+  renewal_opportunity: "5498854612",
 } as const;
