@@ -151,14 +151,20 @@ function buildContactProps(lead: LeadData, score: LeadScore): Props {
   setProp(p, CONTACT.utmContent, lead.utm?.utm_content);
   setProp(p, CONTACT.utmTerm, lead.utm?.utm_term);
 
-  // Lifecycle (optional HubSpot props; auto-dropped if not created yet — safe).
-  const now = Date.now();
-  setProp(p, CONTACT.capturedAt, now);
-  setProp(p, CONTACT.lastFormActivityDate, now);
-  setProp(p, CONTACT.leadCaptureStage, lead.partial ? "partial" : "full_submission");
-  if (lead.marketingConsent) {
-    setProp(p, CONTACT.consentTimestamp, now);
-    setProp(p, CONTACT.consentSourcePage, lead.sourcePage);
+  // Lifecycle fields are OFF by default because they don't exist in the portal
+  // yet (sending them would force a wasteful drop-and-retry on every submit).
+  // To enable: create these properties in HubSpot, then set
+  // HUBSPOT_WRITE_LIFECYCLE=true. The safe-retry still protects against any other
+  // unexpected unknown property.
+  if (process.env.HUBSPOT_WRITE_LIFECYCLE === "true") {
+    const now = Date.now();
+    setProp(p, CONTACT.capturedAt, now);
+    setProp(p, CONTACT.lastFormActivityDate, now);
+    setProp(p, CONTACT.leadCaptureStage, lead.partial ? "partial" : "full_submission");
+    if (lead.marketingConsent) {
+      setProp(p, CONTACT.consentTimestamp, now);
+      setProp(p, CONTACT.consentSourcePage, lead.sourcePage);
+    }
   }
   return p;
 }
@@ -234,7 +240,9 @@ function buildDealProps(lead: LeadData, score: LeadScore): Props {
 /** Pull invalid property names out of a HubSpot 400 validation body. */
 function extractInvalidProps(text: string): string[] {
   const names = new Set<string>();
-  const re = /"name"\s*:\s*"([^"]+)"/g;
+  // HubSpot embeds the offending names as ESCAPED JSON inside `message`
+  // (e.g. \"name\":\"captured_at\"), so allow optional backslashes around quotes.
+  const re = /\\?"name\\?"\s*:\s*\\?"([^"\\]+)/g;
   let m: RegExpExecArray | null;
   while ((m = re.exec(text))) names.add(m[1]);
   return [...names];
