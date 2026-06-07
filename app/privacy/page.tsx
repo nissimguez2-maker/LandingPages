@@ -41,7 +41,7 @@ export default function PrivacyPage() {
         <ul className="list-disc space-y-1 pl-5">
           <li><strong>Our CRM provider</strong> (HubSpot), which stores and processes your inquiry on our behalf.</li>
           <li><strong>Funding partners and underwriters</strong>, to evaluate and present available options.</li>
-          <li><strong>Service providers</strong> that support our operations (e.g., hosting and analytics).</li>
+          <li><strong>Service providers</strong> that support our operations and process data on our behalf, including Netlify (hosting), Resend (email), cal.com (call scheduling), and Microsoft Clarity and PostHog (product analytics and session insights).</li>
           <li><strong>Authorities</strong>, where required by law.</li>
         </ul>
         <p>We do not sell your personal information.</p>
@@ -49,8 +49,11 @@ export default function PrivacyPage() {
 
       <LegalSection heading="Cookies & analytics">
         <p>
-          We use basic, privacy-respecting analytics to understand site usage. No paid advertising trackers
-          are connected at this time. You can control cookies through your browser settings.
+          We use privacy-respecting product analytics to understand how the site is used, including Microsoft
+          Clarity and PostHog, which may record anonymized usage and on-page interactions to help us improve
+          the experience. Form fields are masked in any session recording, so what you type is not captured.
+          We do not run paid advertising trackers. Scheduling a call is handled by cal.com. You can control
+          cookies through your browser settings.
         </p>
       </LegalSection>
 

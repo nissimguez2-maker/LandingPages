@@ -49,6 +49,7 @@ export default function BookCallInline({
         calLink: handle(RAW),
         config: { name: name || "", email: email || "", notes: notes || "", layout: "month_view" },
       });
+      Cal("ui", { hideEventTypeDetails: false, layout: "month_view" });
       Cal("on", { action: "bookingSuccessful", callback: () => track("booking_confirmed", { vertical }) });
       track("booking_opened", { vertical });
     } catch {
@@ -69,7 +70,13 @@ export default function BookCallInline({
 
   return (
     <div>
-      <div ref={ref} className="min-h-[560px] w-full overflow-hidden rounded-xl border border-slate-200 bg-white" />
+      <div className="relative min-h-[560px] w-full overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
+        <div aria-hidden className="pointer-events-none absolute inset-0 flex items-center justify-center text-sm text-slate-400">
+          Loading the calendar&hellip;
+        </div>
+        {/* Cal.com renders its booking iframe into this node, painting over the loader. */}
+        <div ref={ref} className="relative h-full min-h-[560px] w-full" />
+      </div>
       <p className="mt-2 text-center text-xs text-slate-400">
         Trouble loading the calendar?{" "}
         <a href={fallbackUrl} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-700">

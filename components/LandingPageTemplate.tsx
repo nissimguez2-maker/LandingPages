@@ -17,7 +17,6 @@ import OfferingsSection from "./OfferingsSection";
 import QuestionsSection from "./QuestionsSection";
 import CTASection from "./CTASection";
 import StickyCTA from "./StickyCTA";
-import Reveal from "./motion/Reveal";
 
 /**
  * One template for every vertical. Lead with the tool: the Cash-Flow Stress Test
@@ -40,10 +39,8 @@ export default function LandingPageTemplate({ vertical }: { vertical: VerticalCo
 
         <DayInCashFlowSection vertical={vertical} />
         <ExampleUsesSection vertical={vertical} />
+        <FitComparisonTable vertical={vertical} />
         <OfferingsSection />
-        <Reveal>
-          <FitComparisonTable vertical={vertical} />
-        </Reveal>
         <Timeline />
         <SocialProofSection vertical={vertical} />
         <Testimonials vertical={vertical} />

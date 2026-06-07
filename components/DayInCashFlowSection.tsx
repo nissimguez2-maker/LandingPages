@@ -8,7 +8,7 @@ export default function DayInCashFlowSection({ vertical }: { vertical: VerticalC
   if (!d) return null;
 
   return (
-    <Collapsible eyebrow={d.eyebrow} title={d.headline} defaultOpen bg="bg-brand-50/50">
+    <Collapsible eyebrow={d.eyebrow} title={d.headline} bg="bg-brand-50/50">
       {d.intro && <p className="text-slate-600">{d.intro}</p>}
       <ol className="relative mt-6 space-y-5 border-l-2 border-brand-200 pl-6">
         {d.steps.map((s, i) => (
