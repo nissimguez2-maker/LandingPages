@@ -403,9 +403,15 @@ Testimonials/stats/logos render **only when populated with real data** — set
 `testimonials`, `stats`, and/or `logos` on a vertical in `landingPagesConfig.ts`.
 Leave them empty to show nothing.
 
-### Funding calculator
-`components/FundingCalculator.tsx` is client-only math (deposits → estimate range,
-clearly "not an offer"). Tune via `DEFAULT_CALCULATOR` or a per-vertical `calculator`.
+### Cash-Flow Stress Test (the `#estimate` game)
+`components/CashFlowStressTest.tsx` is a client-only, tap-only diagnostic that
+surfaces *why* a merchant needs working capital (no dollar amount, no offer),
+captures lead intel, and pre-fills the prequal via `sessionStorage["mca_prefill"]`.
+Copy lives in `content/stressTest.ts`; pure scoring/exposure math in
+`lib/stressTest.ts`. The per-vertical `cashFlowSignature` is the Step-1 "Sound
+familiar?" hook. Funding products are presented (MCA-led) via the shared
+`OFFERINGS` constant + `components/OfferingsSection.tsx`; the "Sound familiar?"
+pain→relief blocks come from each vertical's `painRelief` in `landingPagesConfig.ts`.
 
 ### Legal pages — fill the placeholders
 `app/privacy`, `app/terms`, `app/disclosures` are live and linked in the footer.

@@ -5,7 +5,9 @@ import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import HeroSection from "@/components/HeroSection";
 import TrustBar from "@/components/TrustBar";
-import FundingCalculator from "@/components/FundingCalculator";
+import CashFlowStressTest from "@/components/CashFlowStressTest";
+import PainReliefSection from "@/components/PainReliefSection";
+import OfferingsSection from "@/components/OfferingsSection";
 import PrequalificationFlow from "@/components/prequal/PrequalificationFlow";
 import IndustryPicker from "@/components/IndustryPicker";
 import HowItWorksSection from "@/components/HowItWorksSection";
@@ -38,7 +40,9 @@ export default function HomePage() {
         <HeroSection vertical={v} />
         <TrustBar />
 
-        <FundingCalculator vertical={v} />
+        <PainReliefSection vertical={v} />
+
+        <CashFlowStressTest vertical={v} />
 
         <section id="prequalify" className="scroll-mt-20 bg-brand-50/50 py-16 sm:py-20">
           <div className="container-content max-w-3xl">
@@ -76,6 +80,7 @@ export default function HomePage() {
           </div>
         </section>
 
+        <OfferingsSection />
         <HowItWorksSection />
         <Reveal>
           <SocialProofSection vertical={v} />

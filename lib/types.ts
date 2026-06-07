@@ -245,6 +245,44 @@ export interface UseCase {
   description: string;
 }
 
+/** One "you know this feeling → here's the position capital puts you in" pairing. */
+export interface PainReliefItem {
+  /** Recognition: their reality, present tense, NO funding mentioned. Ends on the pinch. */
+  pain: string;
+  /** Relief: the same moment with capital in place — a POSITION, never a promised outcome. */
+  relief: string;
+  /** Optional icon key from components/icons/Icon.tsx. */
+  icon?: string;
+}
+
+/** "Sound familiar?" recognition block, rendered before the stress test. */
+export interface PainReliefSection {
+  eyebrow: string;
+  headline: string;
+  intro: string;
+  items: PainReliefItem[];
+  closer: string;
+}
+
+/** A funding option a specialist can match the merchant to (MCA-led). */
+export interface OfferingProduct {
+  name: string;
+  /** One-line "best when…" trigger. */
+  bestWhen: string;
+  body: string;
+  icon?: string;
+  /** Exactly one product is the hero (MCA). */
+  hero?: boolean;
+}
+
+export interface OfferingsSection {
+  eyebrow: string;
+  headline: string;
+  intro: string;
+  products: OfferingProduct[];
+  footnote: string;
+}
+
 export interface VerticalConfig {
   slug: string;
   title: string;
@@ -280,6 +318,8 @@ export interface VerticalConfig {
   calcContext?: string;
   /** Three short, scannable points for the hero readiness card. */
   heroCardPoints?: string[];
+  /** "Sound familiar?" pain → relief recognition block (renders before the stress test). */
+  painRelief?: PainReliefSection;
   /** Maps to HubSpot company industry_focus when it fits one of HubSpot's options. */
   industryFocus?: "technology" | "healthcare" | "finance" | "retail";
   /** Free-text tag stored for segmentation / future campaign routing. */

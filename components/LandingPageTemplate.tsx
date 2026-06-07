@@ -11,7 +11,9 @@ import Timeline from "./Timeline";
 import QualificationCriteriaSection from "./QualificationCriteriaSection";
 import FitComparisonTable from "./FitComparisonTable";
 import Testimonials from "./Testimonials";
-import FundingCalculator from "./FundingCalculator";
+import CashFlowStressTest from "./CashFlowStressTest";
+import PainReliefSection from "./PainReliefSection";
+import OfferingsSection from "./OfferingsSection";
 import FAQSection from "./FAQSection";
 import CTASection from "./CTASection";
 import DisclaimerBlock from "./DisclaimerBlock";
@@ -36,7 +38,9 @@ export default function LandingPageTemplate({ vertical }: { vertical: VerticalCo
         <HeroSection vertical={vertical} />
         <TrustBar items={vertical.heroHighlights} />
 
-        <FundingCalculator vertical={vertical} />
+        <PainReliefSection vertical={vertical} />
+
+        <CashFlowStressTest vertical={vertical} />
 
         <section id="prequalify" className="scroll-mt-20 bg-brand-50/50 py-16 sm:py-20">
           <div className="container-content max-w-3xl">
@@ -61,6 +65,7 @@ export default function LandingPageTemplate({ vertical }: { vertical: VerticalCo
         <Reveal>
           <UseCasesSection vertical={vertical} />
         </Reveal>
+        <OfferingsSection />
         <Reveal>
           <QualificationCriteriaSection vertical={vertical} />
         </Reveal>
