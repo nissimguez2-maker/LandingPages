@@ -10,7 +10,7 @@ export default function FitComparisonTable({ vertical }: { vertical: VerticalCon
           Good fit vs. may need a closer look
         </h2>
         <p className="mt-3 max-w-2xl text-slate-600">
-          A &ldquo;may need review&rdquo; doesn&apos;t mean no — it just means a specialist will look closer.
+          A &ldquo;may need review&rdquo; doesn&apos;t mean no, it just means a specialist will look closer.
         </p>
 
         <div className="mt-8 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-card">

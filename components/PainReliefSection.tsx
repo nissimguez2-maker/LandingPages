@@ -3,7 +3,7 @@ import Icon from "./icons/Icon";
 import Reveal from "./motion/Reveal";
 
 /**
- * "Sound familiar?" — names the merchant's pain (left/top) then the position
+ * "Sound familiar?", names the merchant's pain (left/top) then the position
  * capital puts them in (right/bottom). Renders only when the vertical defines
  * `painRelief`. The relief describes a POSITION, never a promised outcome.
  */

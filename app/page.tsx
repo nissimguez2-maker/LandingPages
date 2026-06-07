@@ -8,6 +8,11 @@ import TrustBar from "@/components/TrustBar";
 import CashFlowStressTest from "@/components/CashFlowStressTest";
 import PainReliefSection from "@/components/PainReliefSection";
 import OfferingsSection from "@/components/OfferingsSection";
+import DayInCashFlowSection from "@/components/DayInCashFlowSection";
+import ExampleUsesSection from "@/components/ExampleUsesSection";
+import ReassuranceStrip from "@/components/ReassuranceStrip";
+import GlossarySection from "@/components/GlossarySection";
+import CommonQuestionsSection from "@/components/CommonQuestionsSection";
 import PrequalificationFlow from "@/components/prequal/PrequalificationFlow";
 import IndustryPicker from "@/components/IndustryPicker";
 import HowItWorksSection from "@/components/HowItWorksSection";
@@ -22,9 +27,9 @@ import { accentCssVars } from "@/lib/themes";
 import { SITE_NAME } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: `${SITE_NAME} — Small business funding, reviewed on revenue`,
+  title: `${SITE_NAME}, Small business funding, reviewed on revenue`,
   description:
-    "Working capital for almost any operating business, reviewed on revenue and bank activity — not credit alone. Check your readiness in two minutes. Approval depends on underwriting.",
+    "Working capital for almost any operating business, reviewed on revenue and bank activity, not credit alone. Check your readiness in two minutes. Approval depends on underwriting.",
 };
 
 export default function HomePage() {
@@ -41,6 +46,8 @@ export default function HomePage() {
         <TrustBar />
 
         <PainReliefSection vertical={v} />
+
+        <DayInCashFlowSection vertical={v} />
 
         <CashFlowStressTest vertical={v} />
 
@@ -64,6 +71,8 @@ export default function HomePage() {
           </div>
         </section>
 
+        <ReassuranceStrip vertical={v} />
+
         <section className="bg-white py-16 sm:py-20">
           <div className="container-content">
             <p className="eyebrow">Built for your industry</p>
@@ -71,7 +80,7 @@ export default function HomePage() {
               Find the review built for your business
             </h2>
             <p className="mt-3 max-w-2xl text-slate-600">
-              We have dedicated pages for these industries — and we fund plenty that aren&apos;t listed.
+              We have dedicated pages for these industries, and we fund plenty that aren&apos;t listed.
               Tell us what you do and we&apos;ll point you to the right place.
             </p>
             <div className="mt-8">
@@ -80,12 +89,15 @@ export default function HomePage() {
           </div>
         </section>
 
+        <ExampleUsesSection vertical={v} />
         <OfferingsSection />
         <HowItWorksSection />
         <Reveal>
           <SocialProofSection vertical={v} />
         </Reveal>
         <FAQSection faqs={v.faqs} />
+        <CommonQuestionsSection vertical={v} />
+        <GlossarySection vertical={v} />
         <CTASection vertical={v} />
       </main>
       <SiteFooter />

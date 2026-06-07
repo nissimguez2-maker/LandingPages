@@ -78,7 +78,7 @@ export default function PrequalificationFlow({ vertical }: { vertical: VerticalC
   const submittedRef = useRef(false);
   const partialSavedRef = useRef(false);
   const summaryRef = useRef<HTMLDivElement>(null);
-  const hpRef = useRef(""); // honeypot — stays empty for real users
+  const hpRef = useRef(""); // honeypot, stays empty for real users
 
   const set = useCallback(
     <K extends keyof LeadData>(key: K, value: LeadData[K]) => {
@@ -237,7 +237,7 @@ export default function PrequalificationFlow({ vertical }: { vertical: VerticalC
 
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-card sm:p-8">
-      {/* Honeypot — hidden from real users; bots that fill it are silently dropped server-side. */}
+      {/* Honeypot, hidden from real users; bots that fill it are silently dropped server-side. */}
       <input
         type="text"
         name="company_website"
@@ -257,7 +257,7 @@ export default function PrequalificationFlow({ vertical }: { vertical: VerticalC
         {step === 1 && (
           <FormStep
             title="Tell us about your business"
-            description="Quick questions to start — no obligation."
+            description="Quick questions to start, no obligation."
             footer={
               <>
                 <span />
@@ -306,7 +306,7 @@ export default function PrequalificationFlow({ vertical }: { vertical: VerticalC
             />
             <RadioCards
               legend="Recent NSFs or negative balance days?"
-              help="NSFs are bounced payments from insufficient funds — estimate the last 90 days."
+              help="NSFs are bounced payments from insufficient funds, estimate the last 90 days."
               options={NSF_OPTIONS}
               value={lead.recentNsfs}
               onChange={(v: NsfValue) => set("recentNsfs", v)}
@@ -368,7 +368,7 @@ export default function PrequalificationFlow({ vertical }: { vertical: VerticalC
               />
               <span>
                 By submitting, I authorize {SITE_NAME} and its funding partners to contact me about my
-                inquiry by phone, email, and text — including autodialed or prerecorded messages — at the
+                inquiry by phone, email, and text, including autodialed or prerecorded messages, at the
                 number provided. Consent isn&apos;t a condition of any service; message/data rates may apply;
                 reply STOP to opt out. See our{" "}
                 <Link href="/privacy" className="underline hover:text-slate-800">

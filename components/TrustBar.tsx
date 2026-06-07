@@ -4,7 +4,7 @@ const DEFAULT_ITEMS = [
   "Secure, encrypted submission",
 ];
 
-/** Thin reassurance strip — keeps trust signals above the fold (Cialdini). */
+/** Thin reassurance strip, keeps trust signals above the fold (Cialdini). */
 export default function TrustBar({ items = DEFAULT_ITEMS }: { items?: string[] }) {
   return (
     <div className="border-y border-brand-100 bg-brand-50/60">

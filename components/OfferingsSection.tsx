@@ -3,7 +3,7 @@ import Icon from "./icons/Icon";
 import Reveal from "./motion/Reveal";
 
 /**
- * "Options a specialist matches you to" — MCA-led, others available. Compliance:
+ * "Options a specialist matches you to", MCA-led, others available. Compliance:
  * FundVella connects merchants with specialists; it does not lend or approve.
  */
 export default function OfferingsSection() {

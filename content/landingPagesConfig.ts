@@ -18,7 +18,7 @@
  *   `cashFlowSignature` describes the merchant's PAIN, never a promised outcome.
  *   Use cases describe what capital is FOR (a use), never a guaranteed OUTCOME.
  *   Social-proof slots (testimonials/stats/logos) stay empty until REAL data
- *   is supplied — never fabricate.
+ *   is supplied, never fabricate.
  */
 
 import type {
@@ -29,12 +29,12 @@ import type {
   CalculatorConfig,
 } from "@/lib/types";
 
-/** Fallback "What we look at" — used when a vertical sets no qualificationFocus. */
+/** Fallback "What we look at", used when a vertical sets no qualificationFocus. */
 export const WHAT_WE_LOOK_AT: { title: string; description: string }[] = [
   { title: "Monthly deposits", description: "Steady deposits show the business can support new payments." },
   { title: "Time in business", description: "More operating history strengthens a review." },
   { title: "Bank activity", description: "Healthy day-to-day banking often matters more than one number." },
-  { title: "Existing advances", description: "Current loans or advances — and how many run at once — affect what's realistic." },
+  { title: "Existing advances", description: "Current loans or advances, and how many run at once, affect what's realistic." },
   { title: "Recent NSFs", description: "Frequent bounced payments or negative-balance days can make a file harder to place." },
   { title: "Use of funds", description: "A clear, productive use of funds strengthens the file." },
 ];
@@ -42,7 +42,7 @@ export const WHAT_WE_LOOK_AT: { title: string; description: string }[] = [
 /** Compliant, factual trust signals (NOT fabricated stats). Shared across verticals. */
 export const DEFAULT_TRUST_SIGNALS: TrustSignal[] = [
   { icon: "lock", title: "Secure submission", description: "Your details are sent over an encrypted connection." },
-  { icon: "user-check", title: "Reviewed by a specialist", description: "A real funding specialist reviews your file — not an instant algorithm." },
+  { icon: "user-check", title: "Reviewed by a specialist", description: "A real funding specialist reviews your file, not an instant algorithm." },
   { icon: "scale", title: "Revenue-first review", description: "Files are weighed on revenue and bank activity, not credit alone." },
   { icon: "eye", title: "No obligation", description: "Prequalifying doesn't obligate you to accept any offer." },
 ];
@@ -81,20 +81,20 @@ export const HOW_IT_WORKS_STEPS = [
 
 /**
  * Funding options a specialist can match a merchant to (MCA-led). Shared across
- * the site. FundVella connects merchants with specialists — it does not lend.
+ * the site. FundVella connects merchants with specialists, it does not lend.
  */
 export const OFFERINGS = {
   eyebrow: "Funding options",
   headline: "One conversation. The funding option that actually fits.",
   intro:
-    "There's no single right way to fund a business — it depends on what the money is for and how you get paid. A funding specialist reviews your file and matches you to the option that fits your cash flow, starting with the one most small businesses reach for first.",
+    "There's no single right way to fund a business, it depends on what the money is for and how you get paid. A funding specialist reviews your file and matches you to the option that fits your cash flow, starting with the one most small businesses reach for first.",
   products: [
     {
       name: "Working Capital Advance",
       icon: "spark",
       hero: true,
       bestWhen: "Best when you need to cover a gap or move on an opportunity fast.",
-      body: "Funding based on your revenue and bank activity rather than credit alone, repaid as a small, automatic share of your deposits — so it flexes with a slow week instead of fighting it. A factor rate (not an APR) sets the cost up front; you may qualify, and approval depends on underwriting.",
+      body: "Funding based on your revenue and bank activity rather than credit alone, repaid as a small, automatic share of your deposits, so it flexes with a slow week instead of fighting it. A factor rate (not an APR) sets the cost up front; you may qualify, and approval depends on underwriting.",
     },
     {
       name: "Business Line of Credit",
@@ -106,12 +106,12 @@ export const OFFERINGS = {
       name: "Term Loan",
       icon: "clock",
       bestWhen: "Best when you have a defined, one-time use and want a predictable monthly payment.",
-      body: "A fixed amount repaid over a set term in predictable payments — straightforward to plan around for a specific project or purchase. Amount and term depend on underwriting and the strength of the file.",
+      body: "A fixed amount repaid over a set term in predictable payments, straightforward to plan around for a specific project or purchase. Amount and term depend on underwriting and the strength of the file.",
     },
     {
       name: "Equipment Financing",
       icon: "tools",
-      bestWhen: "Best when you're buying equipment — new or used — and want to preserve cash.",
+      bestWhen: "Best when you're buying equipment, new or used, and want to preserve cash.",
       body: "Finance the truck, oven, chair, or machine so you can put it to work now while keeping cash free for payroll and the day-to-day. The equipment itself typically anchors the deal; new and used both qualify, subject to underwriting.",
     },
     {
@@ -130,7 +130,7 @@ const baseFaqs = (): FAQItem[] => [
   {
     question: "How much funding could my business qualify for?",
     answer:
-      "It depends on underwriting — amounts are based on your revenue, bank activity, time in business, and existing obligations. A specialist reviews your file to find a range.",
+      "It depends on underwriting, amounts are based on your revenue, bank activity, time in business, and existing obligations. A specialist reviews your file to find a range.",
     bullets: ["Business revenue & deposits", "Time in business", "Bank activity & existing obligations"],
   },
   {
@@ -179,15 +179,15 @@ export const landingPages: VerticalConfig[] = [
   {
     slug: "restaurant-business-funding",
     title: "Restaurant Business Funding",
-    seoTitle: "Restaurant Business Funding — Working Capital on Your Deposits",
+    seoTitle: "Restaurant Business Funding, Working Capital on Your Deposits",
     seoDescription:
       "Working capital for restaurants, reviewed on card-batch deposits and bank activity. You may qualify. Approval depends on underwriting.",
     theme: { accent: "amber" },
     heroHeadline: "Working capital that keeps the kitchen open",
     heroSubheadline:
-      "We read your daily card-batch deposits and bank activity — not just your credit — so a slow week doesn't define your file.",
+      "We read your daily card-batch deposits and bank activity, not just your credit, so a slow week doesn't define your file.",
     cashFlowSignature:
-      "The walk-in compressor dies on a Friday, the produce vendor wants COD, and rent clears Monday — all before the weekend's batches settle.",
+      "The walk-in compressor dies on a Friday, the produce vendor wants COD, and rent clears Monday, all before the weekend's batches settle.",
     heroHighlights: ["We read daily card batches", "Seasonality expected, not penalized", "Tips & vendor COD are normal here"],
     heroImage: { src: "/media/restaurant.jpg", alt: "A busy restaurant kitchen during service" },
     useCaseIcons: ["tools", "inventory", "payroll", "expand", "marketing"],
@@ -201,7 +201,7 @@ export const landingPages: VerticalConfig[] = [
     calcContext: "Use your average monthly deposits (card batches + cash). Four questions for a live range and a readiness check.",
     qualificationFocus: [
       { title: "Daily card batches", description: "Steady card-batch and cash deposits matter more than one slow week." },
-      { title: "Seasonality", description: "Expected swings — holidays, slow months — are read in context, not penalized." },
+      { title: "Seasonality", description: "Expected swings, holidays, slow months, are read in context, not penalized." },
       { title: "Vendor & rent timing", description: "How deposits line up against food cost, payroll, and rent." },
     ],
     qualificationNotes: ["We factor seasonality and the daily card-batch deposits common to food service."],
@@ -231,7 +231,7 @@ export const landingPages: VerticalConfig[] = [
           "Not on its own. Underwriting expects seasonal swings in food service and looks at your overall deposit pattern across months, not a single slow week.",
       },
       {
-        question: "I run mostly on card sales — does that count?",
+        question: "I run mostly on card sales, does that count?",
         answer:
           "Yes. Daily card-batch settlements are exactly what a revenue-based review looks at, alongside your business bank activity.",
       },
@@ -242,28 +242,62 @@ export const landingPages: VerticalConfig[] = [
     painRelief: {
       eyebrow: "Sound familiar?",
       headline: "The kitchen doesn't wait for the weekend to settle",
-      intro: "Most owners don't go looking for capital. They just keep absorbing these — out of the register, out of their own pocket, out of next week.",
+      intro: "Most owners don't go looking for capital. They just keep absorbing these, out of the register, out of their own pocket, out of next week.",
       items: [
-        { icon: "tools", pain: "The walk-in dies mid-prep on a Friday, and the repair tech wants payment before the weekend rush you can't run without it.", relief: "With capital already in place, the unit gets fixed the same day and the weekend's covers still happen — instead of comping tables or closing a section." },
-        { icon: "inventory", pain: "Your best produce and protein vendors moved you to COD, so the busier you get, the more cash you front before a single check lands.", relief: "With working capital on hand, you order ahead of a big weekend without draining the account — and stop letting a vendor's terms cap how much you can sell." },
+        { icon: "tools", pain: "The walk-in dies mid-prep on a Friday, and the repair tech wants payment before the weekend rush you can't run without it.", relief: "With capital already in place, the unit gets fixed the same day and the weekend's covers still happen, instead of comping tables or closing a section." },
+        { icon: "inventory", pain: "Your best produce and protein vendors moved you to COD, so the busier you get, the more cash you front before a single check lands.", relief: "With working capital on hand, you order ahead of a big weekend without draining the account, and stop letting a vendor's terms cap how much you can sell." },
         { icon: "payroll", pain: "January and the slow weeks still cost a full payroll, and you're the one who eats the gap so the line stays staffed for the rebound.", relief: "With a cushion in place, you keep your trained crew through the dip instead of losing cooks you'll have to rehire and retrain in spring." },
       ],
-      closer: "You may qualify based on your card-batch deposits and bank activity — no obligation, and any payments are structured to fit your cash flow.",
+      closer: "You may qualify based on your card-batch deposits and bank activity, no obligation, and any payments are structured to fit your cash flow.",
     },
+    dayInCashFlow: {
+      eyebrow: "A day in your cash flow",
+      headline: "One Friday in your kitchen",
+      intro: "Here is how the money moves on a busy day. You know this day well.",
+      steps: [
+        { time: "7:00 AM", event: "The produce truck arrives. Your best vendor wants cash on the spot, about $1,400 today." },
+        { time: "11:00 AM", event: "The walk-in cooler quits. The repair tech can come now, but he wants about $1,800 before the weekend." },
+        { time: "2:00 PM", event: "Your line cooks need their checks. Payroll is due, busy weekend or not." },
+        { time: "Monday", event: "Friday and Saturday card sales finally hit your bank. Rent clears that same morning." },
+      ],
+      closer: "You earned the money over the weekend. It shows up Monday. The bills did not wait that long. That gap is the whole problem.",
+    },
+    exampleUses: [
+      { label: "Walk-in or cooler repair", rangeLow: 800, rangeHigh: 3000, when: "the day it breaks", note: "Fix it same day so the weekend still happens." },
+      { label: "A new or used oven or fryer", rangeLow: 2000, rangeHigh: 12000, when: "before the rush" },
+      { label: "A week of vendor orders before a big weekend", rangeLow: 3000, rangeHigh: 8000 },
+    ],
+    reassurance: [
+      "A slow January is normal. It does not count against you.",
+      "Mostly card sales? Good. That is what we read.",
+      "One small spot in a small town is welcome here.",
+      "Starting is free and does not hurt your credit score.",
+    ],
+    localTouch: "Whether you run one diner on Main Street or a busy taco spot across town, this page is built for you.",
+    glossary: [
+      { term: "Card batch", plain: "All the card payments from one day, sent to your bank together. It usually lands the next day or two." },
+      { term: "COD (cash on delivery)", plain: "The vendor wants to be paid when the food is dropped off, not later." },
+      { term: "Factor rate", plain: "One set price for the funding, like 1.2. It is not an APR. You know the full payback before you say yes." },
+    ],
+    commonQuestions: [
+      { question: "I take mostly cards and tips. Does that work?", answer: "Yes. We read your daily card sales as your real revenue. Cards and tips are normal in food service, and the review expects them." },
+      { question: "My summer is busy and my winter is slow. Is that a problem?", answer: "No. Busy and slow seasons are normal for restaurants. The review looks at your deposits across the whole year, not one slow week." },
+      { question: "I only have one small spot. Am I too small?", answer: "No. One small location is welcome. The review looks at your deposits and bank activity, not how many places you run." },
+    ],
     campaignTag: "restaurant",
   },
   {
     slug: "trucking-business-funding",
     title: "Trucking Business Funding",
-    seoTitle: "Trucking Business Funding — Working Capital for Carriers",
+    seoTitle: "Trucking Business Funding, Working Capital for Carriers",
     seoDescription:
       "Working capital for owner-operators and fleets, reviewed on settlements and bank activity. You may qualify. Approval depends on underwriting.",
     theme: { accent: "orange" },
     heroHeadline: "Keep the wheels turning between settlements",
     heroSubheadline:
-      "Owner-operator or a growing fleet, we review on settlements and deposits — lumpy weeks and factoring included.",
+      "Owner-operator or a growing fleet, we review on settlements and deposits, lumpy weeks and factoring included.",
     cashFlowSignature:
-      "Factoring's taken its cut, the broker pays in 45, and the truck's down for a turbo — but the next load is already booked.",
+      "Factoring's taken its cut, the broker pays in 45, and the truck's down for a turbo, but the next load is already booked.",
     heroHighlights: ["Owner-operators & fleets alike", "Lumpy settlements understood", "A down truck won't sink your file"],
     heroImage: { src: "/media/trucking.jpg", alt: "A semi truck driver beside their rig" },
     useCaseIcons: ["vehicle", "tools", "expand", "scale", "payroll"],
@@ -302,12 +336,12 @@ export const landingPages: VerticalConfig[] = [
     ],
     faqs: [
       {
-        question: "I'm a single owner-operator — can I still apply?",
+        question: "I'm a single owner-operator, can I still apply?",
         answer:
           "Yes. Owner-operators are reviewed on the same basis: business revenue, bank activity, and time in business. You may qualify; approval depends on underwriting.",
       },
       {
-        question: "I use a factoring company — does that affect the review?",
+        question: "I use a factoring company, does that affect the review?",
         answer:
           "No. Factoring deposits are read as normal carrier revenue. Underwriting looks at the overall deposit pattern, factoring included.",
       },
@@ -318,20 +352,54 @@ export const landingPages: VerticalConfig[] = [
     painRelief: {
       eyebrow: "Sound familiar?",
       headline: "The load's booked. The money just isn't here yet.",
-      intro: "You're not short on work — you're short on the gap between doing the work and getting paid for it. Here's where that gap usually bites.",
+      intro: "You're not short on work, you're short on the gap between doing the work and getting paid for it. Here's where that gap usually bites.",
       items: [
         { icon: "clock", pain: "Factoring already took its cut, the broker still pays net-45, and fuel and the truck payment don't care that the money's on the way.", relief: "With capital in place, you cover fuel and fixed costs now and let the slow-paying invoices catch up on their timeline instead of yours." },
-        { icon: "tools", pain: "A blown turbo or a DOT repair grounds the truck, and every day it sits is a day the only thing that earns is parked in a shop bay.", relief: "With working capital ready, the truck gets back on the road for the load that's already booked — instead of waiting until the cash clears to authorize the fix." },
+        { icon: "tools", pain: "A blown turbo or a DOT repair grounds the truck, and every day it sits is a day the only thing that earns is parked in a shop bay.", relief: "With working capital ready, the truck gets back on the road for the load that's already booked, instead of waiting until the cash clears to authorize the fix." },
         { icon: "vehicle", pain: "There's freight you could take with a second truck or a down payment, but committing the cash means you can't cover the lane you're already running.", relief: "With funding behind you, you put money down to add capacity without starving the routes paying the bills today." },
       ],
-      closer: "Owner-operator or fleet, you may qualify on your settlements and deposits — factoring included. No obligation, and payments are built to fit how you actually get paid.",
+      closer: "Owner-operator or fleet, you may qualify on your settlements and deposits, factoring included. No obligation, and payments are built to fit how you actually get paid.",
     },
+    dayInCashFlow: {
+      eyebrow: "A day in your cash flow",
+      headline: "The load is booked. The money is not here yet.",
+      steps: [
+        { time: "5:00 AM", event: "You fuel up before the run. That is about $600 to $1,000 gone before the wheels turn." },
+        { time: "Mid-morning", event: "The broker confirms the load. Good news. But they pay in 45 days." },
+        { time: "Noon", event: "Factoring sends last week's money. They already took their cut, so it is less than the load paid." },
+        { time: "2:00 PM", event: "A warning light. The turbo is going. The shop says about $4,000 to $8,000, and the part is days out." },
+        { time: "Night", event: "The truck sits in a bay. A parked truck earns nothing, and the next load is already booked." },
+      ],
+      closer: "With money in place, you cover fuel and the repair now and let the slow invoices catch up. You may qualify on your settlements and deposits, factoring included. No obligation, and payments fit how you get paid.",
+    },
+    exampleUses: [
+      { label: "Truck or engine repair", rangeLow: 4000, rangeHigh: 15000, when: "the day the truck goes down" },
+      { label: "Fuel and upkeep between settlements", rangeLow: 2000, rangeHigh: 10000, when: "the weeks the broker has not paid yet" },
+      { label: "Down payment on another truck", rangeLow: 10000, rangeHigh: 30000, when: "when there is freight you could take" },
+    ],
+    reassurance: [
+      "Lumpy weeks are normal. We look at your whole pattern.",
+      "Owner-operator or fleet, you are reviewed the same way.",
+      "Factoring deposits count as your revenue.",
+      "Starting is free and does not hurt your credit score.",
+    ],
+    localTouch: "One truck or twenty, this page is built for carriers like you.",
+    glossary: [
+      { term: "Factor rate", plain: "One set price for the funding. It is not an APR. You know the full payback before you say yes." },
+      { term: "Holdback", plain: "A small share of your deposits that goes to payback. On a slow week it is smaller." },
+      { term: "Net-45", plain: "The broker has 45 days to pay you after the load, even though fuel was due today." },
+    ],
+    commonQuestions: [
+      { question: "My credit is not great. Can I still get looked at?", answer: "Yes. Files are reviewed mainly on your revenue and bank activity, not credit alone. You may qualify, and approval depends on underwriting." },
+      { question: "My settlements are lumpy. Is that a problem?", answer: "No. Lumpy weeks are normal for carriers. The review looks at your deposits across months, not one slow week." },
+      { question: "I use a factoring company. Does that count against me?", answer: "No. Factoring deposits are read as normal carrier revenue, and the review looks at your overall deposit pattern." },
+    ],
     campaignTag: "trucking",
   },
   {
     slug: "construction-business-funding",
     title: "Construction Contractor Funding",
-    seoTitle: "Construction Contractor Funding — Bridge Jobs & Payroll",
+    seoTitle: "Construction Contractor Funding, Bridge Jobs & Payroll",
     seoDescription:
       "Working capital for contractors and subs, reviewed on deposits across jobs. You may qualify. Approval depends on underwriting.",
     theme: { accent: "yellow" },
@@ -378,14 +446,14 @@ export const landingPages: VerticalConfig[] = [
     ],
     faqs: [
       {
-        question: "My income is lumpy between draws — does that matter?",
+        question: "My income is lumpy between draws, does that matter?",
         answer:
           "Lumpy cash flow is normal in construction. Underwriting looks at your deposit history over several months, so a gap between draws doesn't automatically work against you.",
       },
       {
         question: "Can I use funds to take on a bigger contract?",
         answer:
-          "Yes — mobilization, materials, and payroll for a larger job are common uses. Amounts depend on underwriting and your deposit history.",
+          "Yes, mobilization, materials, and payroll for a larger job are common uses. Amounts depend on underwriting and your deposit history.",
       },
       ...baseFaqs(),
     ],
@@ -394,7 +462,7 @@ export const landingPages: VerticalConfig[] = [
     painRelief: {
       eyebrow: "Sound familiar?",
       headline: "The work's done. The draw's still three weeks out.",
-      intro: "Most contractors don't go looking for capital — they just float it: out of pocket, out of the next draw, out of the supply house's patience.",
+      intro: "Most contractors don't go looking for capital, they just float it: out of pocket, out of the next draw, out of the supply house's patience.",
       items: [
         { icon: "clock", pain: "Materials and payroll are due now, but the progress draw is three weeks out and the GC still has to sign off.", relief: "With capital in place, you cover materials and crews now and let the draw catch up on its own schedule instead of yours." },
         { icon: "tools", pain: "A machine goes down mid-job, and renting a replacement eats the margin you bid the work on.", relief: "With working capital ready, you repair or rent immediately and keep the job on schedule instead of watching the timeline slip." },
@@ -402,12 +470,45 @@ export const landingPages: VerticalConfig[] = [
       ],
       closer: "You may qualify on your deposit history across jobs, draw gaps included. No obligation, and any payments are built to fit your cash flow.",
     },
+    dayInCashFlow: {
+      eyebrow: "A day in your cash flow",
+      headline: "The work is done. The draw is weeks out.",
+      steps: [
+        { time: "Monday", event: "You buy materials for the job. That is thousands out the door before you bill anything." },
+        { time: "Midweek", event: "Payroll is due for the crew. They get paid weekly, draw or no draw." },
+        { time: "Thursday", event: "You submit the draw. Now the GC has to review it and sign off." },
+        { time: "Three weeks later", event: "The draw finally lands. Your money was tied up the whole time." },
+      ],
+      closer: "With money in place, you cover materials and crew now and let the draw catch up. You may qualify on your deposits across jobs. No obligation, and payments fit your cash flow.",
+    },
+    exampleUses: [
+      { label: "Materials upfront before a draw", rangeLow: 10000, rangeHigh: 50000, when: "at the start of a job" },
+      { label: "Payroll between draws", rangeLow: 5000, rangeHigh: 25000, when: "while you wait on progress billing" },
+      { label: "Equipment repair or rental", rangeLow: 3000, rangeHigh: 20000, when: "when a machine goes down" },
+    ],
+    reassurance: [
+      "Lumpy pay between draws is normal here.",
+      "GCs and subs are both welcome.",
+      "We look at your deposits across jobs, not one month.",
+      "Starting is free and does not hurt your credit score.",
+    ],
+    localTouch: "From a one-truck crew to a full shop, this page is built for contractors.",
+    glossary: [
+      { term: "Draw", plain: "A scheduled payment on a job, paid as you hit milestones." },
+      { term: "Mobilization", plain: "The upfront cost to get a crew and gear on site to start a job." },
+      { term: "Factor rate", plain: "One set price for the funding. It is not an APR. You know the full payback up front." },
+    ],
+    commonQuestions: [
+      { question: "My income is lumpy between draws. Does that hurt?", answer: "No. Lumpy cash flow is normal in construction. The review looks at your deposits over several months, so a gap between draws does not count against you." },
+      { question: "Can I use it to take a bigger job?", answer: "Yes. Materials, mobilization, and payroll for a larger job are common uses. Amounts depend on underwriting." },
+      { question: "My credit took a hit. Can I still apply?", answer: "Yes. The review weighs revenue and bank activity, not credit alone. Approval depends on underwriting." },
+    ],
     campaignTag: "construction",
   },
   {
     slug: "ecommerce-inventory-funding",
     title: "E-commerce Inventory Funding",
-    seoTitle: "E-commerce Inventory Funding — Fund Stock & Growth",
+    seoTitle: "E-commerce Inventory Funding, Fund Stock & Growth",
     seoDescription:
       "Inventory and growth capital for online sellers, reviewed on processor volume and bank activity. You may qualify. Approval depends on underwriting.",
     theme: { accent: "violet" },
@@ -471,7 +572,7 @@ export const landingPages: VerticalConfig[] = [
     painRelief: {
       eyebrow: "Sound familiar?",
       headline: "The buy is due now. The sell-through that pays for it isn't.",
-      intro: "Online, the cash is always one step behind the growth — tied up in stock, ad spend, and supplier deposits before a single order ships.",
+      intro: "Online, the cash is always one step behind the growth, tied up in stock, ad spend, and supplier deposits before a single order ships.",
       items: [
         { icon: "inventory", pain: "Your supplier wants 50% down with an eight-week lead time, and last month's ad spend already has your cash committed.", relief: "With capital in place, you place the pre-season buy without starving the campaigns that are still bringing in orders." },
         { icon: "cart", pain: "Your best SKU sells out right as demand peaks, and the reorder won't land until the moment has passed.", relief: "With working capital ready, you restock the winners before the peak instead of handing sold-out sales to a competitor." },
@@ -479,12 +580,45 @@ export const landingPages: VerticalConfig[] = [
       ],
       closer: "You may qualify on processor and marketplace volume alongside bank activity. No obligation, and payments are structured to fit your cash flow.",
     },
+    dayInCashFlow: {
+      eyebrow: "A day in your cash flow",
+      headline: "The buy is due now. The sales come later.",
+      steps: [
+        { time: "Week 1", event: "Your supplier wants 50% down to start production." },
+        { time: "Weeks 2 to 9", event: "The goods are made and shipped. Your cash is tied up the whole time." },
+        { time: "Launch day", event: "Orders come in. Great. But the cash from them lands a few days later." },
+        { time: "Same month", event: "Ad spend climbs before the orders catch up." },
+      ],
+      closer: "With money in place, you buy inventory ahead of the season without starving your ads. You may qualify on your processor and bank deposits. No obligation, and payments fit your cash flow.",
+    },
+    exampleUses: [
+      { label: "Inventory before peak season", rangeLow: 10000, rangeHigh: 75000, when: "before Q4 or a big launch" },
+      { label: "Restock your best sellers", rangeLow: 5000, rangeHigh: 30000, when: "when a top item runs low" },
+      { label: "Scale ads that are working", rangeLow: 3000, rangeHigh: 25000, when: "while your return on ad spend is strong" },
+    ],
+    reassurance: [
+      "Peak-season ramps are expected, not a red flag.",
+      "Shopify, Amazon, and DTC sellers welcome.",
+      "We read your processor and marketplace deposits.",
+      "Starting is free and does not hurt your credit score.",
+    ],
+    localTouch: "One-person shop or a growing brand, this page is built for online sellers.",
+    glossary: [
+      { term: "Processor volume", plain: "The card sales your payment processor sends to your bank." },
+      { term: "Chargeback", plain: "When a customer disputes a charge and the money is pulled back." },
+      { term: "Factor rate", plain: "One set price for the funding. It is not an APR. You know the full payback up front." },
+    ],
+    commonQuestions: [
+      { question: "Do you look at my Shopify or Amazon sales?", answer: "Yes. Your processor and marketplace deposits are part of the review, along with your bank activity." },
+      { question: "Can I fund inventory before a launch?", answer: "Yes. Pre-buying for a launch or peak season is one of the most common uses. Amounts depend on underwriting." },
+      { question: "My sales spike then dip. Is that a problem?", answer: "No. Spiky, seasonal volume is normal online. The review looks at your deposits over time." },
+    ],
     campaignTag: "ecommerce",
   },
   {
     slug: "auto-repair-shop-funding",
     title: "Auto Repair Shop Funding",
-    seoTitle: "Auto Repair Shop Funding — Working Capital for Shops",
+    seoTitle: "Auto Repair Shop Funding, Working Capital for Shops",
     seoDescription:
       "Working capital for auto repair shops, reviewed on ticket deposits and bank activity. You may qualify. Approval depends on underwriting.",
     theme: { accent: "red" },
@@ -531,14 +665,14 @@ export const landingPages: VerticalConfig[] = [
     ],
     faqs: [
       {
-        question: "Parts are often COD — can funding help with that?",
+        question: "Parts are often COD, can funding help with that?",
         answer:
           "Yes. Covering parts inventory and COD distributor orders is a common use. Underwriting sizes options on your ticket deposits and bank activity.",
       },
       {
         question: "Does it matter if I'm a single-bay independent?",
         answer:
-          "No. Independents and multi-bay shops are reviewed the same way — on shop deposits, bank activity, and time in business.",
+          "No. Independents and multi-bay shops are reviewed the same way, on shop deposits, bank activity, and time in business.",
       },
       ...baseFaqs(),
     ],
@@ -547,7 +681,7 @@ export const landingPages: VerticalConfig[] = [
     painRelief: {
       eyebrow: "Sound familiar?",
       headline: "The cars are on the lifts. The parts are COD.",
-      intro: "A full shop should mean a full account — but the parts cycle and Friday payroll have a way of getting there first.",
+      intro: "A full shop should mean a full account, but the parts cycle and Friday payroll have a way of getting there first.",
       items: [
         { icon: "inventory", pain: "Three cars are waiting on parts, the distributor is COD, and you're fronting every dollar before a single ticket closes.", relief: "With capital on hand, you order parts the moment a job lands and turn cars faster instead of pacing the account." },
         { icon: "tools", pain: "A lift or a scanner finally gives out, and the fix costs less than the tickets you'll lose while it's down.", relief: "With working capital ready, you repair or replace it now and keep every bay earning." },
@@ -555,18 +689,51 @@ export const landingPages: VerticalConfig[] = [
       ],
       closer: "You may qualify on your ticket-based shop deposits and bank activity. No obligation, and any payments are built to fit your cash flow.",
     },
+    dayInCashFlow: {
+      eyebrow: "A day in your cash flow",
+      headline: "A morning in your shop",
+      steps: [
+        { time: "8:00 AM", event: "Three cars are dropped off. Two need parts you do not have on the shelf." },
+        { time: "9:30 AM", event: "The parts distributor is COD. You pay about $1,200 before you touch a wrench." },
+        { time: "1:00 PM", event: "A lift acts up. The repair quote is about $900 to keep the bay running." },
+        { time: "Friday", event: "Your techs get their checks, busy week or slow week." },
+      ],
+      closer: "You front the parts and payroll now. The tickets pay you later. With money in place, you order parts the minute a job lands. You may qualify on your shop deposits. No obligation, and payments fit your cash flow.",
+    },
+    exampleUses: [
+      { label: "Stock common parts", rangeLow: 3000, rangeHigh: 12000, when: "so cars do not sit waiting" },
+      { label: "Fix or add a lift or scan tool", rangeLow: 2000, rangeHigh: 20000, when: "when a tool goes down" },
+      { label: "Cover payroll on a slow week", rangeLow: 4000, rangeHigh: 15000, when: "between busy stretches" },
+    ],
+    reassurance: [
+      "One bay or six, you are welcome here.",
+      "Ticket-based income is exactly what we read.",
+      "Slow weeks happen. We look at the bigger picture.",
+      "Starting is free and does not hurt your credit score.",
+    ],
+    localTouch: "Whether it is a one-bay shop or a busy garage on the corner, this page is built for you.",
+    glossary: [
+      { term: "COD (cash on delivery)", plain: "The parts house wants payment when parts arrive, not later." },
+      { term: "Ticket", plain: "One repair order. The money you bill for a job." },
+      { term: "Factor rate", plain: "One set price for the funding. It is not an APR. You know the full payback up front." },
+    ],
+    commonQuestions: [
+      { question: "Parts are COD. Can this help?", answer: "Yes. Covering parts and COD orders is one of the most common uses. The review looks at your shop deposits and bank activity." },
+      { question: "I run a single bay. Am I too small?", answer: "No. Independents and bigger shops are reviewed the same way, on deposits and time in business." },
+      { question: "My credit is rough. Can I still apply?", answer: "Yes. The review weighs revenue and bank activity, not credit alone. Approval depends on underwriting." },
+    ],
     campaignTag: "auto-repair",
   },
   {
     slug: "medical-practice-funding",
     title: "Medical Practice Funding",
-    seoTitle: "Medical Practice Funding — Working Capital With Lag Built In",
+    seoTitle: "Medical Practice Funding, Working Capital With Lag Built In",
     seoDescription:
       "Working capital for medical practices, reviewed on collections with reimbursement lag in mind. You may qualify. Approval depends on underwriting.",
     theme: { accent: "teal" },
     heroHeadline: "Don't let reimbursement lag stall the practice",
     heroSubheadline:
-      "We review on collections and bank activity with reimbursement lag built in — solo practice or group.",
+      "We review on collections and bank activity with reimbursement lag built in, solo practice or group.",
     cashFlowSignature:
       "Payroll runs every two weeks; the insurer reimburses in 60. The new chairside unit can't wait for the AR to clear.",
     heroHighlights: ["Reimbursement lag is normal", "Solo & group practices", "Collections, not just credit"],
@@ -607,14 +774,14 @@ export const landingPages: VerticalConfig[] = [
     ],
     faqs: [
       {
-        question: "My deposits lag because of insurance — is that a problem?",
+        question: "My deposits lag because of insurance, is that a problem?",
         answer:
           "Reimbursement lag is expected for practices. Underwriting reviews your deposit pattern over time, so timing gaps don't automatically count against the file.",
       },
       {
         question: "Can funds bridge the gap while AR clears?",
         answer:
-          "Yes — bridging payroll and equipment while reimbursements process is a common use. Amounts depend on underwriting and your collections history.",
+          "Yes, bridging payroll and equipment while reimbursements process is a common use. Amounts depend on underwriting and your collections history.",
       },
       ...baseFaqs(),
     ],
@@ -626,18 +793,51 @@ export const landingPages: VerticalConfig[] = [
       headline: "You did the work in March. The payer pays in May.",
       intro: "A profitable practice can still run tight, because production and reimbursement live on two different calendars. This is where that shows up.",
       items: [
-        { icon: "clock", pain: "Payroll runs every two weeks like clockwork, but the insurer reimburses in 60 — so the work is done, the AR is real, and the cash still isn't in the account.", relief: "With capital in place, you meet payroll and fixed costs on schedule and let receivables clear on the payer's timeline instead of carrying the gap yourself." },
-        { icon: "tools", pain: "The chairside unit or imaging system you need to see more patients can't wait the two or three cycles it takes for the AR to free up the cash.", relief: "With funding behind you, you add the equipment now — and start earning on it months before that capital would have surfaced from collections." },
+        { icon: "clock", pain: "Payroll runs every two weeks like clockwork, but the insurer reimburses in 60, so the work is done, the AR is real, and the cash still isn't in the account.", relief: "With capital in place, you meet payroll and fixed costs on schedule and let receivables clear on the payer's timeline instead of carrying the gap yourself." },
+        { icon: "tools", pain: "The chairside unit or imaging system you need to see more patients can't wait the two or three cycles it takes for the AR to free up the cash.", relief: "With funding behind you, you add the equipment now, and start earning on it months before that capital would have surfaced from collections." },
         { icon: "spark", pain: "You want to add a provider or open a new service line, but every growth move means fronting salary and setup long before the first claim on it gets paid.", relief: "With working capital available, you hire and launch on your timeline rather than waiting for collections to slowly underwrite the expansion." },
       ],
       closer: "You may qualify on your collections and bank activity, with reimbursement lag taken into account. No obligation, and any payments are structured to fit the practice's cash flow.",
     },
+    dayInCashFlow: {
+      eyebrow: "A day in your cash flow",
+      headline: "Two calendars that never line up",
+      steps: [
+        { time: "The 1st", event: "Payroll runs for your staff. Every two weeks, like clockwork." },
+        { time: "The 5th", event: "You bill the insurer for last month's visits." },
+        { time: "Day 30 to 60", event: "The reimbursement finally lands. The work was done weeks ago." },
+        { time: "Meanwhile", event: "A chairside unit or scanner needs replacing now, not in two cycles." },
+      ],
+      closer: "The work is done and the money is owed to you. It just is not in the account yet. With capital in place, you meet payroll and add equipment now. You may qualify on your collections. No obligation, and payments fit your cash flow.",
+    },
+    exampleUses: [
+      { label: "Bridge payroll while claims clear", rangeLow: 25000, rangeHigh: 150000, when: "during the reimbursement gap" },
+      { label: "New or replacement equipment", rangeLow: 15000, rangeHigh: 100000, when: "to see more patients" },
+      { label: "Add a provider or service line", rangeLow: 20000, rangeHigh: 120000, when: "before the first claim pays" },
+    ],
+    reassurance: [
+      "Insurance lag is normal. It does not count against you.",
+      "Solo practice or group, both welcome.",
+      "We read your collections, not just your score.",
+      "Starting is free and does not hurt your credit score.",
+    ],
+    localTouch: "From a solo office to a growing group, this page is built for your practice.",
+    glossary: [
+      { term: "AR (accounts receivable)", plain: "Money owed to you for work already done, like unpaid insurance claims." },
+      { term: "Reimbursement lag", plain: "The weeks between billing the insurer and getting paid." },
+      { term: "Factor rate", plain: "One set price for the funding. It is not an APR. You know the full payback up front." },
+    ],
+    commonQuestions: [
+      { question: "My deposits lag because of insurance. Is that a problem?", answer: "No. Reimbursement lag is expected. The review looks at your deposits over time, so timing gaps do not count against you." },
+      { question: "Can it bridge payroll while claims clear?", answer: "Yes. Bridging payroll and equipment while AR clears is a common use. Amounts depend on underwriting." },
+      { question: "I run a solo practice. Too small?", answer: "No. Solo and group practices are reviewed the same way, on collections and bank activity." },
+    ],
     campaignTag: "medical",
   },
   {
     slug: "dental-practice-funding",
     title: "Dental Practice Funding",
-    seoTitle: "Dental Practice Funding — Working Capital for Dentists",
+    seoTitle: "Dental Practice Funding, Working Capital for Dentists",
     seoDescription:
       "Working capital for dental practices, reviewed on collections and bank activity. You may qualify. Approval depends on underwriting.",
     theme: { accent: "cyan" },
@@ -684,14 +884,14 @@ export const landingPages: VerticalConfig[] = [
     ],
     faqs: [
       {
-        question: "Production is up but collections lag — does that hurt?",
+        question: "Production is up but collections lag, does that hurt?",
         answer:
           "No. The gap between production and collections is normal in dental. Underwriting reviews your collection deposits over time, not a single month.",
       },
       {
         question: "Can I fund a new operatory or hygienist?",
         answer:
-          "Yes — equipment, build-outs, and hiring are common uses. Amounts depend on underwriting and your collections history.",
+          "Yes, equipment, build-outs, and hiring are common uses. Amounts depend on underwriting and your collections history.",
       },
       ...baseFaqs(),
     ],
@@ -701,7 +901,7 @@ export const landingPages: VerticalConfig[] = [
     painRelief: {
       eyebrow: "Sound familiar?",
       headline: "You did the production. Collections are months behind it.",
-      intro: "A busy schedule doesn't always mean a full account — production shows up in the chair long before the money shows up in the bank.",
+      intro: "A busy schedule doesn't always mean a full account, production shows up in the chair long before the money shows up in the bank.",
       items: [
         { icon: "clock", pain: "You added a hygienist and an operatory, but the production runs months ahead of the collections that pay for them.", relief: "With capital in place, you staff and equip on your timeline and let collections catch up instead of carrying the gap yourself." },
         { icon: "tools", pain: "The imaging or chairside tech that would grow the practice can't wait the cycles it takes for AR to free up cash.", relief: "With working capital ready, you add the technology now and start earning on it before collections would have surfaced the cash." },
@@ -709,12 +909,45 @@ export const landingPages: VerticalConfig[] = [
       ],
       closer: "You may qualify on your collections and bank activity, with production timing in mind. No obligation, and any payments are structured to fit your cash flow.",
     },
+    dayInCashFlow: {
+      eyebrow: "A day in your cash flow",
+      headline: "Production today, collections later",
+      steps: [
+        { time: "This week", event: "You add a hygienist and book the chair solid." },
+        { time: "Same month", event: "Staff and lab bills are due now." },
+        { time: "Weeks later", event: "Insurance and patient payments slowly come in." },
+        { time: "Meanwhile", event: "An imaging unit or new chair would grow the practice, but the cash is months out." },
+      ],
+      closer: "Production shows up in the chair long before the money shows up in the bank. With capital in place, you staff and equip now. You may qualify on your collections. No obligation, and payments fit your cash flow.",
+    },
+    exampleUses: [
+      { label: "New chair or imaging unit", rangeLow: 15000, rangeHigh: 100000, when: "to grow the practice" },
+      { label: "Hire and train a hygienist", rangeLow: 10000, rangeHigh: 40000, when: "before collections catch up" },
+      { label: "Office build-out or refresh", rangeLow: 20000, rangeHigh: 80000, when: "to add operatories" },
+    ],
+    reassurance: [
+      "The gap between chair time and pay is normal.",
+      "Solo or group practices welcome.",
+      "We read your collections, not just your score.",
+      "Starting is free and does not hurt your credit score.",
+    ],
+    localTouch: "One operatory or a full group, this page is built for your practice.",
+    glossary: [
+      { term: "Production", plain: "The value of the work done in the chair, before it is collected." },
+      { term: "Collections", plain: "The money you actually receive from patients and insurers." },
+      { term: "Factor rate", plain: "One set price for the funding. It is not an APR. You know the full payback up front." },
+    ],
+    commonQuestions: [
+      { question: "Production is up but collections lag. Does that hurt?", answer: "No. That gap is normal in dental. The review looks at your collection deposits over time, not one month." },
+      { question: "Can I fund a new operatory?", answer: "Yes. Equipment, build-outs, and hiring are common uses. Amounts depend on underwriting." },
+      { question: "My credit is not perfect. Can I apply?", answer: "Yes. The review weighs revenue and bank activity, not credit alone. Approval depends on underwriting." },
+    ],
     campaignTag: "dental",
   },
   {
     slug: "beauty-salon-med-spa-funding",
     title: "Beauty Salon / Med Spa Funding",
-    seoTitle: "Beauty Salon & Med Spa Funding — Working Capital",
+    seoTitle: "Beauty Salon & Med Spa Funding, Working Capital",
     seoDescription:
       "Working capital for salons and med spas, reviewed on appointment deposits and bank activity. You may qualify. Approval depends on underwriting.",
     theme: { accent: "rose" },
@@ -722,7 +955,7 @@ export const landingPages: VerticalConfig[] = [
     heroSubheadline:
       "We review on appointment-driven deposits and bank activity, with seasonal swings expected.",
     cashFlowSignature:
-      "New chairs, fresh inventory, and a stylist to hire — all before the calendar fills back up after a slow stretch.",
+      "New chairs, fresh inventory, and a stylist to hire, all before the calendar fills back up after a slow stretch.",
     heroHighlights: ["Appointment revenue counts", "Salons & med spas", "Seasonal swings expected"],
     heroImage: { src: "/media/beauty.jpg", alt: "A stylist in a modern salon" },
     useCaseIcons: ["tools", "inventory", "expand", "payroll", "marketing"],
@@ -761,14 +994,14 @@ export const landingPages: VerticalConfig[] = [
     ],
     faqs: [
       {
-        question: "Bookings dip in slow seasons — does that hurt?",
+        question: "Bookings dip in slow seasons, does that hurt?",
         answer:
           "No. Seasonal swings are expected for salons and med spas. Underwriting looks at deposits across months, not one slow stretch.",
       },
       {
         question: "Can I fund new equipment like lasers or chairs?",
         answer:
-          "Yes — equipment, inventory, and renovations are common uses. Amounts depend on underwriting and your deposit history.",
+          "Yes, equipment, inventory, and renovations are common uses. Amounts depend on underwriting and your deposit history.",
       },
       ...baseFaqs(),
     ],
@@ -778,7 +1011,7 @@ export const landingPages: VerticalConfig[] = [
     painRelief: {
       eyebrow: "Sound familiar?",
       headline: "The chairs are ready. The calendar's still filling back up.",
-      intro: "After a slow stretch, the costs to grow show up before the bookings do — and that gap is where owners quietly carry the load.",
+      intro: "After a slow stretch, the costs to grow show up before the bookings do, and that gap is where owners quietly carry the load.",
       items: [
         { icon: "tools", pain: "New chairs, a laser, or a fresh build-out would lift bookings, but the cash for them is due before the calendar refills.", relief: "With capital in place, you upgrade now and grow into the bookings instead of waiting for a busy season to fund the move." },
         { icon: "inventory", pain: "Retail and treatment supplies have to be stocked ahead of demand, tying up cash right when a slow stretch already has it tight.", relief: "With working capital ready, you keep the shelves and treatment rooms stocked without draining the account." },
@@ -786,12 +1019,45 @@ export const landingPages: VerticalConfig[] = [
       ],
       closer: "You may qualify on your appointment-driven deposits and bank activity, seasonal swings included. No obligation, and any payments are built to fit your cash flow.",
     },
+    dayInCashFlow: {
+      eyebrow: "A day in your cash flow",
+      headline: "The chair is ready before the calendar fills",
+      steps: [
+        { time: "After a slow stretch", event: "Bookings are light, but rent and product orders are not." },
+        { time: "This week", event: "A new chair, laser, or stylist would bring in more, but each costs cash now." },
+        { time: "Next month", event: "The calendar fills back up. The money follows after that." },
+        { time: "Meanwhile", event: "You front supplies and payroll to be ready for the rush." },
+      ],
+      closer: "The costs to grow show up before the bookings do. With money in place, you upgrade and stock now. You may qualify on your deposits. No obligation, and payments fit your cash flow.",
+    },
+    exampleUses: [
+      { label: "New chair, laser, or device", rangeLow: 5000, rangeHigh: 40000, when: "to add services" },
+      { label: "Stock retail and treatment supplies", rangeLow: 2000, rangeHigh: 15000, when: "before a busy season" },
+      { label: "Hire and train a stylist", rangeLow: 4000, rangeHigh: 20000, when: "before the rush" },
+    ],
+    reassurance: [
+      "Slow stretches are normal and expected.",
+      "Salons and med spas both welcome.",
+      "We read your appointment deposits.",
+      "Starting is free and does not hurt your credit score.",
+    ],
+    localTouch: "One chair or a full floor, this page is built for your shop.",
+    glossary: [
+      { term: "Appointment revenue", plain: "The money from booked services, your real day-to-day income." },
+      { term: "Holdback", plain: "A small share of your deposits that goes to payback. On a slow week it is smaller." },
+      { term: "Factor rate", plain: "One set price for the funding. It is not an APR. You know the full payback up front." },
+    ],
+    commonQuestions: [
+      { question: "Bookings dip in slow seasons. Does that hurt?", answer: "No. Seasonal swings are expected for salons and spas. The review looks at deposits across months." },
+      { question: "Can I fund a laser or new chairs?", answer: "Yes. Equipment, supplies, and renovations are common uses. Amounts depend on underwriting." },
+      { question: "I rent one chair. Too small?", answer: "No. The review looks at your deposits and bank activity, not your size." },
+    ],
     campaignTag: "beauty-medspa",
   },
   {
     slug: "retail-store-funding",
     title: "Retail Store Funding",
-    seoTitle: "Retail Store Funding — Inventory & Working Capital",
+    seoTitle: "Retail Store Funding, Inventory & Working Capital",
     seoDescription:
       "Working capital for retail stores, reviewed on sales, processor volume and bank activity. You may qualify. Approval depends on underwriting.",
     theme: { accent: "blue" },
@@ -838,14 +1104,14 @@ export const landingPages: VerticalConfig[] = [
     ],
     faqs: [
       {
-        question: "Most of my sales are in one season — can I still qualify?",
+        question: "Most of my sales are in one season, can I still qualify?",
         answer:
           "Possibly. Seasonal concentration is common in retail. Underwriting reviews your deposit history and volume; you may qualify, and approval depends on underwriting.",
       },
       {
         question: "Can I fund inventory ahead of the holidays?",
         answer:
-          "Yes — pre-buying seasonal inventory is one of the most common uses. Amounts depend on underwriting and your sales history.",
+          "Yes, pre-buying seasonal inventory is one of the most common uses. Amounts depend on underwriting and your sales history.",
       },
       ...baseFaqs(),
     ],
@@ -855,7 +1121,7 @@ export const landingPages: VerticalConfig[] = [
     painRelief: {
       eyebrow: "Sound familiar?",
       headline: "The holiday buy is due now. The sell-through starts in November.",
-      intro: "Retail runs on a calendar that pays in arrears — you buy the season months before the season pays you back.",
+      intro: "Retail runs on a calendar that pays in arrears, you buy the season months before the season pays you back.",
       items: [
         { icon: "inventory", pain: "The seasonal buy is due to your vendor now, but the sell-through that pays for it doesn't start for months.", relief: "With capital in place, you stock the season in full and let sell-through pay it back instead of under-buying and selling out early." },
         { icon: "expand", pain: "A second location or a remodel would grow the business, but the build-out drains the cash the current store runs on.", relief: "With working capital ready, you expand without starving the store that's already paying the bills." },
@@ -863,18 +1129,51 @@ export const landingPages: VerticalConfig[] = [
       ],
       closer: "You may qualify on your sales, processor volume, and bank activity, seasonal cycles included. No obligation, and any payments are built to fit your cash flow.",
     },
+    dayInCashFlow: {
+      eyebrow: "A day in your cash flow",
+      headline: "Buy the season before it sells",
+      steps: [
+        { time: "Late summer", event: "Your vendor wants the holiday order paid now." },
+        { time: "Weeks later", event: "The boxes arrive. Your cash is now sitting on the shelves." },
+        { time: "November to December", event: "The season finally sells through." },
+        { time: "Meanwhile", event: "Rent, payroll, and the next order are all due before the receipts land." },
+      ],
+      closer: "You buy the season months before it pays you back. With money in place, you stock the full season. You may qualify on your sales deposits. No obligation, and payments fit your cash flow.",
+    },
+    exampleUses: [
+      { label: "Seasonal inventory buy", rangeLow: 10000, rangeHigh: 60000, when: "before the holiday rush" },
+      { label: "Remodel or a second location", rangeLow: 15000, rangeHigh: 75000, when: "to grow the store" },
+      { label: "Extra staff for the rush", rangeLow: 4000, rangeHigh: 20000, when: "before receipts land" },
+    ],
+    reassurance: [
+      "One busy season is normal in retail.",
+      "Single store or a few, both welcome.",
+      "We read your sales and card deposits.",
+      "Starting is free and does not hurt your credit score.",
+    ],
+    localTouch: "One shop on the square or a few locations, this page is built for you.",
+    glossary: [
+      { term: "Sell-through", plain: "How fast your stock actually sells after you buy it." },
+      { term: "Processor volume", plain: "The card sales your payment processor sends to your bank." },
+      { term: "Factor rate", plain: "One set price for the funding. It is not an APR. You know the full payback up front." },
+    ],
+    commonQuestions: [
+      { question: "Most of my sales are one season. Can I qualify?", answer: "Possibly. Seasonal sales are common in retail. The review looks at your deposit history and volume. Approval depends on underwriting." },
+      { question: "Can I fund inventory before the holidays?", answer: "Yes. Pre-buying seasonal inventory is one of the most common uses. Amounts depend on underwriting." },
+      { question: "My credit took a hit. Can I apply?", answer: "Yes. The review weighs revenue and bank activity, not credit alone. Approval depends on underwriting." },
+    ],
     campaignTag: "retail",
   },
   {
     slug: "hvac-plumbing-business-funding",
     title: "HVAC / Plumbing Business Funding",
-    seoTitle: "HVAC & Plumbing Business Funding — Working Capital",
+    seoTitle: "HVAC & Plumbing Business Funding, Working Capital",
     seoDescription:
       "Working capital for HVAC and plumbing businesses, reviewed on deposits and bank activity. You may qualify. Approval depends on underwriting.",
     theme: { accent: "sky" },
     heroHeadline: "Be ready when the first heat wave hits",
     heroSubheadline:
-      "We review on service and install deposits with seasonal demand swings expected — no credit-only decisions.",
+      "We review on service and install deposits with seasonal demand swings expected, no credit-only decisions.",
     cashFlowSignature:
       "The first heat wave hits, calls triple overnight, and you need trucks stocked and crews staffed before you've collected on a single job.",
     heroHighlights: ["Seasonal spikes understood", "Service & install crews", "Deposits over credit score"],
@@ -915,14 +1214,14 @@ export const landingPages: VerticalConfig[] = [
     ],
     faqs: [
       {
-        question: "My revenue spikes seasonally — is that a problem?",
+        question: "My revenue spikes seasonally, is that a problem?",
         answer:
           "No. Seasonal demand is expected in HVAC and plumbing. Underwriting reviews your deposits across the year, so peaks and dips are read in context.",
       },
       {
         question: "Can I fund parts and staffing before peak season?",
         answer:
-          "Yes — stocking parts and staffing up ahead of a rush are common uses. Amounts depend on underwriting and your deposit history.",
+          "Yes, stocking parts and staffing up ahead of a rush are common uses. Amounts depend on underwriting and your deposit history.",
       },
       ...baseFaqs(),
     ],
@@ -931,7 +1230,7 @@ export const landingPages: VerticalConfig[] = [
     painRelief: {
       eyebrow: "Sound familiar?",
       headline: "The heat wave hits. You collect on the jobs weeks later.",
-      intro: "When demand spikes, the costs land first — trucks, parts, and crews all need covering before a single invoice is paid.",
+      intro: "When demand spikes, the costs land first, trucks, parts, and crews all need covering before a single invoice is paid.",
       items: [
         { icon: "inventory", pain: "The first heat wave triples your calls, but you need units and parts stocked before you've collected on a single job.", relief: "With capital in place, you stock for the rush up front and capture the season instead of turning calls away." },
         { icon: "vehicle", pain: "Another truck would let you run a second crew, but the down payment competes with the jobs you're already covering.", relief: "With working capital ready, you add capacity for peak season without starving day-to-day operations." },
@@ -939,12 +1238,45 @@ export const landingPages: VerticalConfig[] = [
       ],
       closer: "You may qualify on your service and install deposits, seasonal swings included. No obligation, and any payments are built to fit your cash flow.",
     },
+    dayInCashFlow: {
+      eyebrow: "A day in your cash flow",
+      headline: "The first heat wave hits",
+      steps: [
+        { time: "Day one", event: "Calls triple. Everyone needs service now." },
+        { time: "Same day", event: "You need units and parts on the truck before you can run the jobs." },
+        { time: "That week", event: "More techs on payroll to keep up with demand." },
+        { time: "Weeks later", event: "The install checks finally clear." },
+      ],
+      closer: "The costs land first. The collections come weeks later. With money in place, you stock and staff for the rush. You may qualify on your deposits. No obligation, and payments fit your cash flow.",
+    },
+    exampleUses: [
+      { label: "Stock parts and units for peak season", rangeLow: 5000, rangeHigh: 30000, when: "before the rush" },
+      { label: "Add or repair a service truck", rangeLow: 8000, rangeHigh: 40000, when: "to run a second crew" },
+      { label: "Staff up for busy season", rangeLow: 5000, rangeHigh: 25000, when: "before checks clear" },
+    ],
+    reassurance: [
+      "Busy and slow seasons are expected.",
+      "Service or install, both count.",
+      "We read your deposits, not just your score.",
+      "Starting is free and does not hurt your credit score.",
+    ],
+    localTouch: "One truck or a full fleet of vans, this page is built for your crew.",
+    glossary: [
+      { term: "Net terms", plain: "How many days a customer has to pay you after the job." },
+      { term: "Holdback", plain: "A small share of your deposits that goes to payback. On a slow week it is smaller." },
+      { term: "Factor rate", plain: "One set price for the funding. It is not an APR. You know the full payback up front." },
+    ],
+    commonQuestions: [
+      { question: "My work spikes with the weather. Is that a problem?", answer: "No. Seasonal demand is expected in HVAC and plumbing. The review looks at your deposits across the year." },
+      { question: "Can I stock parts before the rush?", answer: "Yes. Stocking parts and staffing up ahead of a busy season are common uses. Amounts depend on underwriting." },
+      { question: "My credit is not great. Can I apply?", answer: "Yes. The review weighs revenue and bank activity, not credit alone. Approval depends on underwriting." },
+    ],
     campaignTag: "hvac-plumbing",
   },
   {
     slug: "cleaning-business-funding",
     title: "Cleaning Business Funding",
-    seoTitle: "Cleaning Business Funding — Working Capital for Crews",
+    seoTitle: "Cleaning Business Funding, Working Capital for Crews",
     seoDescription:
       "Working capital for cleaning businesses, reviewed on recurring-contract deposits. You may qualify. Approval depends on underwriting.",
     theme: { accent: "emerald" },
@@ -952,7 +1284,7 @@ export const landingPages: VerticalConfig[] = [
     heroSubheadline:
       "We review on recurring-contract deposits and bank activity, with net-30/60 receivables in mind.",
     cashFlowSignature:
-      "Crews and supplies get paid weekly; the commercial contract pays net-60 — and you just won two more accounts.",
+      "Crews and supplies get paid weekly; the commercial contract pays net-60, and you just won two more accounts.",
     heroHighlights: ["Recurring contracts count", "Residential & commercial", "Net-30/60 receivables in mind"],
     heroImage: { src: "/media/cleaning.jpg", alt: "A cleaning crew member at work in a commercial space" },
     useCaseIcons: ["tools", "payroll", "vehicle", "scale", "expand"],
@@ -991,14 +1323,14 @@ export const landingPages: VerticalConfig[] = [
     ],
     faqs: [
       {
-        question: "My commercial accounts pay net-30/60 — does that matter?",
+        question: "My commercial accounts pay net-30/60, does that matter?",
         answer:
           "It's expected. Underwriting understands net-term receivables in commercial cleaning and reviews your deposit pattern over time, so the gap doesn't automatically hurt the file.",
       },
       {
         question: "Can I fund payroll while waiting on invoices?",
         answer:
-          "Yes — bridging crew payroll and supplies while receivables clear is a common use. Amounts depend on underwriting and your deposit history.",
+          "Yes, bridging crew payroll and supplies while receivables clear is a common use. Amounts depend on underwriting and your deposit history.",
       },
       ...baseFaqs(),
     ],
@@ -1007,20 +1339,53 @@ export const landingPages: VerticalConfig[] = [
     painRelief: {
       eyebrow: "Sound familiar?",
       headline: "Crews get paid weekly. The contract pays net-60.",
-      intro: "Win a big commercial account and the work starts immediately — but the payment terms mean you carry the crew and supplies in the meantime.",
+      intro: "Win a big commercial account and the work starts immediately, but the payment terms mean you carry the crew and supplies in the meantime.",
       items: [
-        { icon: "payroll", pain: "Crews and supplies get paid weekly, but your commercial contracts pay net-30 or net-60 — and you just won two more accounts.", relief: "With capital in place, you cover payroll and supplies now and let the receivables clear on their own terms instead of yours." },
+        { icon: "payroll", pain: "Crews and supplies get paid weekly, but your commercial contracts pay net-30 or net-60, and you just won two more accounts.", relief: "With capital in place, you cover payroll and supplies now and let the receivables clear on their own terms instead of yours." },
         { icon: "tools", pain: "Onboarding a new account means equipment and supplies up front, long before that contract's first check arrives.", relief: "With working capital ready, you take on the account and gear up immediately instead of slow-walking the start." },
         { icon: "vehicle", pain: "A new route would grow the business, but a vehicle and crew cost cash the current contracts are already spoken for.", relief: "With funding behind you, you expand the service area without straining the accounts already on the books." },
       ],
       closer: "You may qualify on your recurring-contract deposits and bank activity, net-term gaps included. No obligation, and any payments are built to fit your cash flow.",
     },
+    dayInCashFlow: {
+      eyebrow: "A day in your cash flow",
+      headline: "Weekly costs, net-60 pay",
+      steps: [
+        { time: "Every Friday", event: "Crews and supplies get paid. Weekly, no matter what." },
+        { time: "This month", event: "You win two new commercial accounts. Great news." },
+        { time: "But", event: "Those accounts pay net-30 or net-60." },
+        { time: "Meanwhile", event: "You front the crew and supplies for them in the meantime." },
+      ],
+      closer: "The work starts now. The big checks come in 30 to 60 days. With money in place, you cover crew and supplies and take the accounts. You may qualify on your contract deposits. No obligation, and payments fit your cash flow.",
+    },
+    exampleUses: [
+      { label: "Cover payroll while invoices clear", rangeLow: 5000, rangeHigh: 25000, when: "during net-30/60 gaps" },
+      { label: "Equipment and supplies for a new account", rangeLow: 3000, rangeHigh: 15000, when: "when you win a contract" },
+      { label: "Add a vehicle or crew", rangeLow: 8000, rangeHigh: 30000, when: "to grow your routes" },
+    ],
+    reassurance: [
+      "Net-30/60 pay is normal in commercial cleaning.",
+      "Residential and commercial both welcome.",
+      "We read your recurring deposits.",
+      "Starting is free and does not hurt your credit score.",
+    ],
+    localTouch: "One crew or a few routes across town, this page is built for you.",
+    glossary: [
+      { term: "Net-30 / net-60", plain: "The customer has 30 or 60 days to pay you after the work." },
+      { term: "Recurring revenue", plain: "Steady income from contracts that bill every month." },
+      { term: "Factor rate", plain: "One set price for the funding. It is not an APR. You know the full payback up front." },
+    ],
+    commonQuestions: [
+      { question: "My accounts pay net-30/60. Does that matter?", answer: "No. Net terms are expected in commercial cleaning. The review looks at your deposits over time, so the gap does not hurt your file." },
+      { question: "Can I cover payroll while invoices clear?", answer: "Yes. Bridging crew payroll and supplies while receivables clear is a common use. Amounts depend on underwriting." },
+      { question: "My credit is rough. Can I apply?", answer: "Yes. The review weighs revenue and bank activity, not credit alone. Approval depends on underwriting." },
+    ],
     campaignTag: "cleaning",
   },
   {
     slug: "bad-credit-business-funding",
     title: "Bad Credit Business Funding",
-    seoTitle: "Bad Credit Business Funding — Reviewed on Revenue",
+    seoTitle: "Bad Credit Business Funding, Reviewed on Revenue",
     seoDescription:
       "Funding options that weigh business revenue and bank activity, not just credit score. You may qualify. Approval depends on underwriting.",
     theme: { accent: "emerald" },
@@ -1028,7 +1393,7 @@ export const landingPages: VerticalConfig[] = [
     heroSubheadline:
       "We weigh business revenue and bank activity first; credit is one input, not the gatekeeper.",
     cashFlowSignature:
-      "A rough credit stretch is behind you, but the deposits never stopped — and the next opportunity won't wait for your score to recover.",
+      "A rough credit stretch is behind you, but the deposits never stopped, and the next opportunity won't wait for your score to recover.",
     heroHighlights: ["Revenue weighed first", "Past issues don't auto-disqualify", "A real specialist reviews it"],
     heroImage: { src: "/media/bad-credit.jpg", alt: "A small-business owner reviewing finances" },
     useCaseIcons: ["scale", "clock", "shield", "payroll", "spark"],
@@ -1039,7 +1404,7 @@ export const landingPages: VerticalConfig[] = [
       { title: "Payroll", description: "Keep your team paid through a rough stretch." },
       { title: "Fund a recovery", description: "Invest in inventory, equipment, or marketing to recover and grow." },
     ],
-    calcContext: "Use your average monthly deposits — credit isn't part of this estimate. Four questions for a live range.",
+    calcContext: "Use your average monthly deposits, credit isn't part of this estimate. Four questions for a live range.",
     qualificationFocus: [
       { title: "Revenue first", description: "Business revenue and deposits carry the most weight in the review." },
       { title: "Bank health", description: "Recent NSFs and negative days matter more than the score itself." },
@@ -1076,7 +1441,7 @@ export const landingPages: VerticalConfig[] = [
       {
         question: "Do you only look at my credit score?",
         answer:
-          "No. Business revenue, bank activity, time in business, and existing obligations all matter — many files are placed largely on the strength of revenue and banking.",
+          "No. Business revenue, bank activity, time in business, and existing obligations all matter, many files are placed largely on the strength of revenue and banking.",
       },
       ...baseFaqs(),
     ],
@@ -1087,12 +1452,45 @@ export const landingPages: VerticalConfig[] = [
       headline: "The deposits kept coming. The 'no' still came anyway.",
       intro: "The score from a rough stretch follows you around long after the business recovered. Here's where owners feel that mismatch most.",
       items: [
-        { icon: "scale", pain: "Your statements show steady deposits month after month, but one number on a credit report keeps deciding the conversation before anyone looks at the revenue.", relief: "Here the review weighs business revenue and bank activity first — a real specialist reads the deposits, so credit is one input, not the gatekeeper." },
-        { icon: "spark", pain: "An opportunity lands — inventory, a contract, a piece of equipment — and you're watching it pass because you assume your credit already answered for you.", relief: "With options reviewed on revenue, past credit issues don't automatically disqualify the file, so you can find out where you stand before the window closes." },
-        { icon: "shield", pain: "Current payments are tight and you're quietly juggling which one slips this week, sure that asking for help just means another hard no.", relief: "A specialist can review your file and walk through options that fit your cash flow — past stumbles don't end the conversation before it starts." },
+        { icon: "scale", pain: "Your statements show steady deposits month after month, but one number on a credit report keeps deciding the conversation before anyone looks at the revenue.", relief: "Here the review weighs business revenue and bank activity first, a real specialist reads the deposits, so credit is one input, not the gatekeeper." },
+        { icon: "spark", pain: "An opportunity lands, inventory, a contract, a piece of equipment, and you're watching it pass because you assume your credit already answered for you.", relief: "With options reviewed on revenue, past credit issues don't automatically disqualify the file, so you can find out where you stand before the window closes." },
+        { icon: "shield", pain: "Current payments are tight and you're quietly juggling which one slips this week, sure that asking for help just means another hard no.", relief: "A specialist can review your file and walk through options that fit your cash flow, past stumbles don't end the conversation before it starts." },
       ],
       closer: "You may qualify based on revenue and bank activity, not credit alone. Credit is still considered, there's no guaranteed approval, and there's no obligation to accept an offer.",
     },
+    dayInCashFlow: {
+      eyebrow: "A day in your cash flow",
+      headline: "Steady deposits, one stubborn number",
+      steps: [
+        { time: "Every week", event: "Money comes into your account, steady as ever." },
+        { time: "Then", event: "You apply somewhere and they lead with your credit score." },
+        { time: "The answer", event: "A fast no, before anyone looks at the deposits." },
+        { time: "Meanwhile", event: "An opportunity passes while you wait for your score to recover." },
+      ],
+      closer: "Your revenue tells a story your score does not. Here the deposits come first. You may qualify on revenue and bank activity. Credit is one input, not the gatekeeper. No obligation, and payments fit your cash flow.",
+    },
+    exampleUses: [
+      { label: "General working capital", rangeLow: 5000, rangeHigh: 50000, when: "when you need breathing room" },
+      { label: "Cover a short cash crunch", rangeLow: 3000, rangeHigh: 20000, when: "to keep operations running" },
+      { label: "Restock or fund a recovery", rangeLow: 5000, rangeHigh: 30000, when: "to get back on track" },
+    ],
+    reassurance: [
+      "Past credit issues do not end the conversation.",
+      "We read your deposits first, then credit.",
+      "A real person reviews your file.",
+      "Starting is free and does not hurt your credit score.",
+    ],
+    localTouch: "If your sales never stopped, this page is built for you.",
+    glossary: [
+      { term: "Revenue-based review", plain: "A look at your deposits and bank activity, not just your credit." },
+      { term: "NSF", plain: "A bounced payment, when the account did not have enough to cover it." },
+      { term: "Factor rate", plain: "One set price for the funding. It is not an APR. You know the full payback up front." },
+    ],
+    commonQuestions: [
+      { question: "Can I qualify with bad credit?", answer: "Possibly. The review weighs revenue and bank activity, so past credit issues do not automatically disqualify you. Credit is still considered, and there is no guaranteed approval." },
+      { question: "Do you only look at my score?", answer: "No. Revenue, bank activity, time in business, and current payments all matter. Many files are placed mostly on revenue and banking." },
+      { question: "I had a default before. Is it over?", answer: "Not always. A specialist can review your file and walk through what may fit. Approval depends on underwriting." },
+    ],
     campaignTag: "bad-credit",
   },
 ];
@@ -1104,13 +1502,13 @@ export const landingPages: VerticalConfig[] = [
 export const generalFunding: VerticalConfig = {
   slug: "business-funding",
   title: "Small Business Funding",
-  seoTitle: "Small Business Funding — Working Capital on Revenue",
+  seoTitle: "Small Business Funding, Working Capital on Revenue",
   seoDescription:
-    "Working capital for small businesses, reviewed on revenue and bank activity — not credit alone. You may qualify. Approval depends on underwriting.",
+    "Working capital for small businesses, reviewed on revenue and bank activity, not credit alone. You may qualify. Approval depends on underwriting.",
   theme: { accent: "emerald" },
   heroHeadline: "Working capital, reviewed on your revenue",
   heroSubheadline:
-    "For real operating businesses of almost any kind — we review on deposits and bank activity, not credit alone.",
+    "For real operating businesses of almost any kind, we review on deposits and bank activity, not credit alone.",
   cashFlowSignature:
     "Payroll, inventory, or a sudden repair won't wait for next month's receivables to clear.",
   heroHighlights: ["Most industries welcome", "Reviewed on revenue, not just credit", "A real specialist reviews it"],
@@ -1133,14 +1531,47 @@ export const generalFunding: VerticalConfig = {
   painRelief: {
     eyebrow: "Sound familiar?",
     headline: "The bill is due now. The money lands next month.",
-    intro: "Almost every business runs on the same gap — between the work you've done and the cash that pays for it. Here's where it usually pinches.",
+    intro: "Almost every business runs on the same gap, between the work you've done and the cash that pays for it. Here's where it usually pinches.",
     items: [
       { icon: "clock", pain: "Payroll, rent, or a vendor is due this week, but the receivables that cover it don't clear until next month.", relief: "With working capital in place, you cover what's due now and let receivables catch up on their own timeline instead of yours." },
       { icon: "tools", pain: "A key piece of equipment breaks at the worst possible moment, and the repair costs less than the days you'd lose waiting to afford it.", relief: "With capital on hand, you fix or replace it now and keep earning, instead of letting downtime quietly cost you more than the fix." },
-      { icon: "spark", pain: "A real opportunity shows up — a bigger order, a new location, a contract — and the only thing missing is the cash to act before the window closes.", relief: "With funding behind you, you say yes on the opportunity's timeline rather than watching it pass while you free up cash." },
+      { icon: "spark", pain: "A real opportunity shows up, a bigger order, a new location, a contract, and the only thing missing is the cash to act before the window closes.", relief: "With funding behind you, you say yes on the opportunity's timeline rather than watching it pass while you free up cash." },
     ],
     closer: "Most operating businesses can be reviewed on revenue and bank activity, not credit alone. You may qualify; approval depends on underwriting, and there's no obligation to accept an offer.",
   },
+  dayInCashFlow: {
+    eyebrow: "A day in your cash flow",
+    headline: "The bill is due now. The money lands later.",
+    steps: [
+      { time: "Today", event: "Payroll, rent, or a vendor is due." },
+      { time: "This week", event: "The work is done, but the customer has not paid yet." },
+      { time: "Next month", event: "The receivables finally clear." },
+      { time: "Meanwhile", event: "A repair or an opportunity will not wait that long." },
+    ],
+    closer: "Almost every business runs on that gap. With money in place, you cover what is due now. You may qualify on revenue and bank activity, not credit alone. No obligation, and payments fit your cash flow.",
+  },
+  exampleUses: [
+    { label: "Cover a cash gap", rangeLow: 5000, rangeHigh: 50000, when: "when bills come before pay" },
+    { label: "Buy inventory or supplies", rangeLow: 5000, rangeHigh: 40000, when: "ahead of demand" },
+    { label: "Repair or add equipment", rangeLow: 3000, rangeHigh: 30000, when: "when something breaks" },
+  ],
+  reassurance: [
+    "Most industries are welcome here.",
+    "We read your deposits, not just your score.",
+    "A real person reviews your file.",
+    "Starting is free and does not hurt your credit score.",
+  ],
+  localTouch: "Whatever you do, if money comes in steady, this page is built for you.",
+  glossary: [
+    { term: "Working capital", plain: "Money you use for the day to day, like payroll, stock, and repairs." },
+    { term: "Receivables", plain: "Money your customers owe you for work already done." },
+    { term: "Factor rate", plain: "One set price for the funding. It is not an APR. You know the full payback up front." },
+  ],
+  commonQuestions: [
+    { question: "My industry is not listed. Can I still apply?", answer: "Yes. We fund most operating businesses. The review looks at your deposits and bank activity. Approval depends on underwriting." },
+    { question: "Will checking hurt my credit?", answer: "No. Starting does not trigger a hard credit check. The review is mainly on revenue and bank activity." },
+    { question: "My credit is not great. Can I apply?", answer: "Yes. The review weighs revenue and bank activity, not credit alone. Approval depends on underwriting." },
+  ],
   cta: defaultCta,
   campaignTag: "general",
 };

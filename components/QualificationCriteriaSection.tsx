@@ -1,7 +1,7 @@
 import type { VerticalConfig } from "@/lib/types";
 import { WHAT_WE_LOOK_AT } from "@/content/landingPagesConfig";
 
-/** "What we look at" — sets expectations and pre-frames the form questions. */
+/** "What we look at", sets expectations and pre-frames the form questions. */
 export default function QualificationCriteriaSection({ vertical }: { vertical: VerticalConfig }) {
   const items = vertical.qualificationFocus ?? WHAT_WE_LOOK_AT;
   return (
@@ -12,7 +12,7 @@ export default function QualificationCriteriaSection({ vertical }: { vertical: V
           How files are reviewed
         </h2>
         <p className="mt-3 max-w-2xl text-slate-600">
-          Reviews are based on business revenue and bank activity — not a single number. Here&apos;s what
+          Reviews are based on business revenue and bank activity, not a single number. Here&apos;s what
           tends to matter most.
         </p>
 

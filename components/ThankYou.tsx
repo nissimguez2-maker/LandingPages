@@ -4,7 +4,7 @@ import SiteFooter from "./SiteFooter";
 import DisclaimerBlock from "./DisclaimerBlock";
 
 /**
- * Neutral thank-you page. NEVER shows rejection language — every visitor gets the
+ * Neutral thank-you page. NEVER shows rejection language, every visitor gets the
  * same calm confirmation regardless of internal lead band.
  */
 export default function ThankYou({ verticalTitle }: { verticalTitle?: string }) {
@@ -20,7 +20,7 @@ export default function ThankYou({ verticalTitle }: { verticalTitle?: string }) 
           </div>
           <p className="eyebrow mt-6">{verticalTitle ? `${verticalTitle} • ` : ""}Prequalification received</p>
           <h1 className="mt-2 text-3xl font-bold tracking-tight text-brand-900">
-            Thanks — your information was received.
+            Thanks, your information was received.
           </h1>
           <p className="mt-4 max-w-xl text-lg leading-relaxed text-slate-600">
             A funding specialist may contact you to review whether the file is worth pursuing. Approval is

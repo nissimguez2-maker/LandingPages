@@ -5,7 +5,7 @@ import MediaFigure from "./MediaFigure";
 const DEFAULT_CARD_POINTS = [
   "Reviewed on revenue & bank activity",
   "Share 3–4 months of statements if it looks viable",
-  "A specialist follows up — no obligation",
+  "A specialist follows up, no obligation",
 ];
 
 /**
@@ -19,7 +19,7 @@ export default function HeroSection({ vertical }: { vertical: VerticalConfig }) 
   return (
     <section className="relative overflow-hidden bg-brand-900 text-white">
       <div className="absolute inset-0 bg-gradient-to-br from-brand-900 via-brand-900 to-brand-800" aria-hidden="true" />
-      {/* Accent glow — the per-vertical color, kept subtle over the navy base. */}
+      {/* Accent glow, the per-vertical color, kept subtle over the navy base. */}
       <div
         className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-accent-500 opacity-20 blur-3xl"
         aria-hidden="true"

@@ -15,24 +15,24 @@ export interface Option<T extends string = string> {
 
 export const REVENUE_OPTIONS = [
   { value: "under_10k", label: "Under $10,000 / mo" },
-  { value: "10k_20k", label: "$10,000 – $20,000 / mo" },
-  { value: "20k_50k", label: "$20,000 – $50,000 / mo" },
-  { value: "50k_150k", label: "$50,000 – $150,000 / mo" },
+  { value: "10k_20k", label: "$10,000 to $20,000 / mo" },
+  { value: "20k_50k", label: "$20,000 to $50,000 / mo" },
+  { value: "50k_150k", label: "$50,000 to $150,000 / mo" },
   { value: "150k_plus", label: "$150,000+ / mo" },
 ] as const satisfies readonly Option[];
 
 export const TIME_IN_BUSINESS_OPTIONS = [
   { value: "under_3m", label: "Less than 3 months" },
-  { value: "3_12m", label: "3 – 12 months" },
-  { value: "1_2y", label: "1 – 2 years" },
+  { value: "3_12m", label: "3 to 12 months" },
+  { value: "1_2y", label: "1 to 2 years" },
   { value: "2y_plus", label: "2+ years" },
 ] as const satisfies readonly Option[];
 
 export const AMOUNT_OPTIONS = [
   { value: "under_25k", label: "Under $25,000" },
-  { value: "25k_50k", label: "$25,000 – $50,000" },
-  { value: "50k_100k", label: "$50,000 – $100,000" },
-  { value: "100k_250k", label: "$100,000 – $250,000" },
+  { value: "25k_50k", label: "$25,000 to $50,000" },
+  { value: "50k_100k", label: "$50,000 to $100,000" },
+  { value: "100k_250k", label: "$100,000 to $250,000" },
   { value: "250k_plus", label: "$250,000+" },
 ] as const satisfies readonly Option[];
 
@@ -55,7 +55,7 @@ export const EXISTING_DEBT_OPTIONS = [
 export const PAYMENT_BURDEN_OPTIONS = [
   { value: "none", label: "No current payments" },
   { value: "under_500_wk", label: "Under $500 / week" },
-  { value: "500_1500_wk", label: "$500 – $1,500 / week" },
+  { value: "500_1500_wk", label: "$500 to $1,500 / week" },
   { value: "1500_plus_wk", label: "$1,500+ / week" },
   { value: "not_sure", label: "Not sure" },
 ] as const satisfies readonly Option[];
@@ -283,6 +283,35 @@ export interface OfferingsSection {
   footnote: string;
 }
 
+/** "A day in your cash flow" — a short story where money goes out before it comes in. */
+export interface DayInCashFlowStep {
+  time: string;
+  event: string;
+}
+export interface DayInCashFlow {
+  eyebrow: string;
+  headline: string;
+  intro?: string;
+  steps: DayInCashFlowStep[];
+  closer?: string;
+}
+
+/** Example use with an illustrative dollar range (never an offer or advance amount). */
+export interface ExampleUse {
+  label: string;
+  rangeLow: number;
+  rangeHigh: number;
+  when?: string;
+  note?: string;
+}
+
+/** One plain-English glossary term for a trade. */
+export interface GlossaryTerm {
+  term: string;
+  plain: string;
+  example?: string;
+}
+
 export interface VerticalConfig {
   slug: string;
   title: string;
@@ -320,6 +349,20 @@ export interface VerticalConfig {
   heroCardPoints?: string[];
   /** "Sound familiar?" pain → relief recognition block (renders before the stress test). */
   painRelief?: PainReliefSection;
+
+  // ── "Arrived home" per-trade depth (all optional; sections self-hide when absent) ──
+  /** "A day in your cash flow" timeline story. */
+  dayInCashFlow?: DayInCashFlow;
+  /** Concrete example uses with illustrative dollar ranges (clearly not an offer). */
+  exampleUses?: ExampleUse[];
+  /** Short "this is normal here" lines shown near the form. */
+  reassurance?: string[];
+  /** One friendly line that speaks to a small local owner. */
+  localTouch?: string;
+  /** Plain-English glossary of this trade's terms. */
+  glossary?: GlossaryTerm[];
+  /** Trade-specific "questions owners like you ask" (kept OUT of FAQ JSON-LD). */
+  commonQuestions?: FAQItem[];
   /** Maps to HubSpot company industry_focus when it fits one of HubSpot's options. */
   industryFocus?: "technology" | "healthcare" | "finance" | "retail";
   /** Free-text tag stored for segmentation / future campaign routing. */

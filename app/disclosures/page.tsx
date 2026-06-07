@@ -47,7 +47,7 @@ export default function DisclosuresPage() {
       <LegalSection heading="Communications consent">
         <p>
           If you opt in, you authorize {SITE_NAME} and its funding partners to contact you about your inquiry
-          by phone, email, and text — including autodialed or prerecorded messages — at the number you
+          by phone, email, and text, including autodialed or prerecorded messages, at the number you
           provide. Consent is not a condition of any service, message/data rates may apply, and you can reply
           STOP to opt out of texts at any time.
         </p>

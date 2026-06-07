@@ -14,6 +14,11 @@ import Testimonials from "./Testimonials";
 import CashFlowStressTest from "./CashFlowStressTest";
 import PainReliefSection from "./PainReliefSection";
 import OfferingsSection from "./OfferingsSection";
+import DayInCashFlowSection from "./DayInCashFlowSection";
+import ExampleUsesSection from "./ExampleUsesSection";
+import ReassuranceStrip from "./ReassuranceStrip";
+import GlossarySection from "./GlossarySection";
+import CommonQuestionsSection from "./CommonQuestionsSection";
 import FAQSection from "./FAQSection";
 import CTASection from "./CTASection";
 import DisclaimerBlock from "./DisclaimerBlock";
@@ -40,6 +45,8 @@ export default function LandingPageTemplate({ vertical }: { vertical: VerticalCo
 
         <PainReliefSection vertical={vertical} />
 
+        <DayInCashFlowSection vertical={vertical} />
+
         <CashFlowStressTest vertical={vertical} />
 
         <section id="prequalify" className="scroll-mt-20 bg-brand-50/50 py-16 sm:py-20">
@@ -62,9 +69,12 @@ export default function LandingPageTemplate({ vertical }: { vertical: VerticalCo
           </div>
         </section>
 
+        <ReassuranceStrip vertical={vertical} />
+
         <Reveal>
           <UseCasesSection vertical={vertical} />
         </Reveal>
+        <ExampleUsesSection vertical={vertical} />
         <OfferingsSection />
         <Reveal>
           <QualificationCriteriaSection vertical={vertical} />
@@ -76,6 +86,8 @@ export default function LandingPageTemplate({ vertical }: { vertical: VerticalCo
         <SocialProofSection vertical={vertical} />
         <Testimonials vertical={vertical} />
         <FAQSection faqs={vertical.faqs} />
+        <CommonQuestionsSection vertical={vertical} />
+        <GlossarySection vertical={vertical} />
         <CTASection vertical={vertical} />
       </main>
       <SiteFooter />

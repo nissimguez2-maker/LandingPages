@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 /**
- * Inline-SVG icon registry — no image files, no network cost (matches the
+ * Inline-SVG icon registry, no image files, no network cost (matches the
  * "system stack, no web-font fetch" philosophy). Add a key + path to extend.
  */
 const PATHS: Record<string, ReactNode> = {

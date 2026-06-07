@@ -3,7 +3,7 @@ import type { MediaAsset } from "@/lib/types";
 /**
  * One place that decides image strategy. Renders a real image when `src` is set,
  * otherwise a branded placeholder so layout improves immediately (real art later).
- * Uses plain <img> for now — `next/image` is deferred until real raster exists.
+ * Uses plain <img> for now, `next/image` is deferred until real raster exists.
  */
 export default function MediaFigure({
   asset,

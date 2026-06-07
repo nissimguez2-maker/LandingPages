@@ -83,22 +83,22 @@ export function tierFor(exposure: number): ExposureTier {
 export function pressurePoints(a: StressAnswers): string[] {
   const out: string[] = [];
   if (a.monthlyRevenue === "under_10k" || a.monthlyRevenue === "10k_20k")
-    out.push("Thin deposits leave little cushion when a week comes in light.");
+    out.push("Thin deposits leave little room when a week comes in slow.");
   if (a.timeInBusiness === "under_3m" || a.timeInBusiness === "3_12m")
-    out.push("You're early — momentum is everything, and there isn't much buffer yet.");
+    out.push("You are still early. There is not much cushion yet, so timing hits harder.");
   if (a.recentNsfs === "several")
-    out.push("Repeated tight days mean one surprise could tip the account over.");
+    out.push("Tight days keep happening. One surprise could push the account negative.");
   else if (a.recentNsfs === "a_few")
-    out.push("A few recent tight days say the margin for error is already thin.");
+    out.push("A few tight days mean your room for error is small.");
   if (a.existingDebt === "multiple")
-    out.push("Several payments are competing for the same daily deposits.");
+    out.push("Two or more payments are pulling from the same deposits.");
   else if (a.existingDebt === "one")
-    out.push("An existing payment is already drawing on every deposit.");
+    out.push("One payment is already pulling from every deposit.");
   if (a.urgency === "immediately" || a.urgency === "this_week")
-    out.push("You flagged this as urgent — every week you wait, the squeeze compounds.");
-  // Everyone leaves with at least one finding (even strong operators).
+    out.push("You said this is urgent. Every week you wait, it gets tighter.");
+  // Everyone leaves with at least one finding (even strong shops).
   if (out.length === 0)
-    out.push("Even strong operators get caught by timing — one big surprise can still pinch.");
+    out.push("Even strong shops get caught by timing. One big surprise can still hurt.");
   return out.slice(0, 3);
 }
 
@@ -115,7 +115,7 @@ export function fitFor(use?: UseOfFundsValue): FitKey {
 }
 
 /** Build the partial LeadData the prequal form reads from sessionStorage. */
-export function buildPrefill(a: StressAnswers, slug: string): Partial<LeadData> {
+export function buildPrefill(a: StressAnswers, slug: string, contact?: Partial<LeadData>): Partial<LeadData> {
   return {
     industry: slug,
     ...(a.monthlyRevenue ? { monthlyRevenue: a.monthlyRevenue } : {}),
@@ -124,7 +124,21 @@ export function buildPrefill(a: StressAnswers, slug: string): Partial<LeadData> 
     ...(a.existingDebt ? { existingDebt: a.existingDebt } : {}),
     ...(a.useOfFunds ? { useOfFunds: a.useOfFunds } : {}),
     ...(a.urgency ? { urgency: a.urgency } : {}),
+    ...(contact ?? {}),
   };
+}
+
+/** One concrete "fix this first" action tied to the weakest signal (plain English). */
+export function fixFirst(a: StressAnswers): string {
+  if (a.existingDebt === "multiple")
+    return "Ask a specialist about turning your current payments into one. Stacked payments are the fastest thing to fix.";
+  if (a.recentNsfs === "several" || a.recentNsfs === "a_few")
+    return "Build a small cash cushion so a slow week stops costing you overdraft fees.";
+  if (a.monthlyRevenue === "under_10k" || a.monthlyRevenue === "10k_20k")
+    return "Line up working capital before your next slow week, not during it.";
+  if (a.timeInBusiness === "under_3m" || a.timeInBusiness === "3_12m")
+    return "Keep your deposits steady. Time and steady sales open up better options.";
+  return "Get working capital in place before you need it, so the next surprise does not set you back.";
 }
 
 export function runStressTest(a: StressAnswers): StressResult {

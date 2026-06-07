@@ -25,7 +25,7 @@ export default function IndustryPicker() {
       return;
     }
     track("industry_picker_routed", { query: q, matched: false });
-    setMsg("No dedicated page for that yet — no problem. Check your readiness right here; we fund most industries.");
+    setMsg("No dedicated page for that yet, no problem. Check your readiness right here; we fund most industries.");
     document.querySelector("#estimate")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 

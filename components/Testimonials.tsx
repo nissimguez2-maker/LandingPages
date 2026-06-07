@@ -1,7 +1,7 @@
 import type { VerticalConfig } from "@/lib/types";
 
 /**
- * Testimonials — renders ONLY when real, owner-provided testimonials exist.
+ * Testimonials, renders ONLY when real, owner-provided testimonials exist.
  * Never shows fabricated quotes. Today all verticals have none → renders null.
  */
 export default function Testimonials({ vertical }: { vertical: VerticalConfig }) {
