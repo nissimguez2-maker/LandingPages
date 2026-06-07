@@ -152,24 +152,26 @@ export async function POST(req: Request): Promise<NextResponse> {
     const tenDaysAgo = String(now - 10 * 86400000);
     const thirtyDaysAgo = String(now - 30 * 86400000);
 
+    // Partial = no associated deal (full submissions always create a deal).
+    // num_associated_deals is UNSET (not 0) for contacts with no deals.
     const partial = await hsSearch(
       token,
       [
         { propertyName: "email", operator: "HAS_PROPERTY" },
         { propertyName: "marketing_consent_status", operator: "EQ", value: "opted_in" },
-        { propertyName: "form_completion_percentage", operator: "LT", value: "100" },
-        { propertyName: "num_associated_deals", operator: "EQ", value: "0" },
+        { propertyName: "num_associated_deals", operator: "NOT_HAS_PROPERTY" },
         { propertyName: "createdate", operator: "GTE", value: tenDaysAgo },
       ],
       READ_PROPS,
     );
+    // Cold = full cold leads (have a deal + scored cold).
     const cold = await hsSearch(
       token,
       [
         { propertyName: "email", operator: "HAS_PROPERTY" },
         { propertyName: "marketing_consent_status", operator: "EQ", value: "opted_in" },
         { propertyName: "lead_category", operator: "EQ", value: "cold" },
-        { propertyName: "form_completion_percentage", operator: "EQ", value: "100" },
+        { propertyName: "num_associated_deals", operator: "HAS_PROPERTY" },
         { propertyName: "createdate", operator: "GTE", value: thirtyDaysAgo },
       ],
       READ_PROPS,
