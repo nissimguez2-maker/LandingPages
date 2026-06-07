@@ -21,6 +21,11 @@ export type AnalyticsEventName =
   | "prequal_form_submitted"
   | "partial_lead_saved"
   | "calculator_used"
+  | "calculator_input_changed"
+  | "calculator_readiness_shown"
+  | "calculator_nudge_shown"
+  | "industry_picker_routed"
+  | "experiment_variant"
   | "green_lead"
   | "yellow_lead"
   | "red_lead";

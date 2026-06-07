@@ -47,7 +47,7 @@ export default function StickyCTA({ vertical, label }: { vertical: string; label
         show ? "translate-y-0" : "translate-y-full"
       }`}
     >
-      <CTAButton label={label} location="sticky_mobile" vertical={vertical} className="w-full" />
+      <CTAButton label={label} target="#estimate" location="sticky_mobile" vertical={vertical} className="w-full" />
     </div>
   );
 }

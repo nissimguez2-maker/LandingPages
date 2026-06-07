@@ -2,6 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Default accent = emerald. Per-vertical pages override these vars on a wrapper
+ * (lib/themes.ts → accentCssVars). Home / legal / thank-you inherit the default.
+ */
+:root {
+  --accent-50: 236 253 245;
+  --accent-100: 209 250 229;
+  --accent-200: 167 243 208;
+  --accent-300: 110 231 183;
+  --accent-400: 52 211 153;
+  --accent-500: 16 185 129;
+  --accent-600: 5 150 105;
+  --accent-700: 4 120 87;
+  --accent-800: 6 95 70;
+  --accent-900: 6 78 59;
+  --accent-cta: 5 150 105;
+  --accent-cta-hover: 4 120 87;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -23,11 +42,20 @@ body {
     @apply mx-auto w-full max-w-content px-5 sm:px-6 lg:px-8;
   }
 
-  /* Primary CTA — emerald, used sparingly for the main action. min-h keeps a 44px+ tap target. */
+  /* Primary CTA — per-vertical accent (AA-safe fill), used for the main action. */
   .btn-primary {
-    @apply inline-flex min-h-[48px] items-center justify-center gap-2 rounded-lg bg-accent-600 px-6 py-4
-      text-base font-semibold text-white shadow-card transition
-      hover:bg-accent-700 focus-visible:outline-accent-600 disabled:cursor-not-allowed disabled:opacity-60;
+    @apply inline-flex min-h-[48px] items-center justify-center gap-2 rounded-lg px-6 py-4
+      text-base font-semibold text-white shadow-card transition-[transform,box-shadow,background-color] duration-200
+      disabled:cursor-not-allowed disabled:opacity-60;
+    background-color: rgb(var(--accent-cta));
+  }
+  .btn-primary:hover {
+    background-color: rgb(var(--accent-cta-hover));
+    box-shadow: 0 8px 30px rgba(15, 42, 74, 0.18);
+    transform: translateY(-1px);
+  }
+  .btn-primary:active {
+    transform: translateY(0);
   }
 
   /* Secondary CTA — navy outline. */
@@ -46,5 +74,54 @@ body {
 
   .eyebrow {
     @apply text-sm font-semibold uppercase tracking-wide text-accent-700;
+  }
+
+  /* Display headings use the tighter display face. */
+  .font-display {
+    font-family: theme("fontFamily.display");
+  }
+}
+
+@layer utilities {
+  /* Card hover-lift micro-interaction. */
+  .hover-lift {
+    @apply transition-[transform,box-shadow] duration-200;
+  }
+  .hover-lift:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(15, 42, 74, 0.12);
+  }
+
+  /* Scroll-reveal: start hidden, .reveal-in (set by IntersectionObserver) shows. */
+  .reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    will-change: opacity, transform;
+  }
+  .reveal-in {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/*
+ * Accessibility guardrail: anyone who asks for reduced motion gets none.
+ * Reveals are forced visible so no content can get stuck hidden.
+ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }

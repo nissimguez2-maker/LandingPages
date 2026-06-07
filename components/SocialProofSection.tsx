@@ -26,7 +26,7 @@ export default function SocialProofSection({ vertical }: { vertical: VerticalCon
 
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {DEFAULT_TRUST_SIGNALS.map((sig) => (
-            <div key={sig.title} className="flex items-start gap-3 rounded-xl border border-slate-200 p-4">
+            <div key={sig.title} className="hover-lift flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-4">
               <span className="flex h-10 w-10 flex-none items-center justify-center rounded-lg bg-brand-50 text-brand-700">
                 <Icon name={sig.icon} className="h-5 w-5" />
               </span>

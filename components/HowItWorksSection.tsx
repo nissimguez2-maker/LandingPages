@@ -19,7 +19,7 @@ export default function HowItWorksSection() {
     <section className="bg-brand-50/50 py-16 sm:py-20">
       <div className="container-content">
         <p className="eyebrow">How it works</p>
-        <h2 className="mt-2 text-3xl font-bold tracking-tight text-brand-900">A simple, transparent process</h2>
+        <h2 className="mt-2 text-3xl font-bold tracking-tight text-brand-900 font-display">From check to capital in three steps</h2>
         <ol className="mt-10 grid gap-6 md:grid-cols-3">
           {STEPS.map((step, i) => (
             <li key={step.title} className="relative rounded-xl border border-brand-100 bg-white p-6 shadow-card">

@@ -3,11 +3,12 @@ import { WHAT_WE_LOOK_AT } from "@/content/landingPagesConfig";
 
 /** "What we look at" — sets expectations and pre-frames the form questions. */
 export default function QualificationCriteriaSection({ vertical }: { vertical: VerticalConfig }) {
+  const items = vertical.qualificationFocus ?? WHAT_WE_LOOK_AT;
   return (
     <section className="bg-white py-16 sm:py-20">
       <div className="container-content">
         <p className="eyebrow">What we look at</p>
-        <h2 className="mt-2 text-3xl font-bold tracking-tight text-brand-900">
+        <h2 className="mt-2 text-3xl font-bold tracking-tight text-brand-900 font-display">
           How files are reviewed
         </h2>
         <p className="mt-3 max-w-2xl text-slate-600">
@@ -16,7 +17,7 @@ export default function QualificationCriteriaSection({ vertical }: { vertical: V
         </p>
 
         <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {WHAT_WE_LOOK_AT.map((item) => (
+          {items.map((item) => (
             <div key={item.title} className="rounded-xl border border-slate-200 p-5">
               <h3 className="font-semibold text-brand-900">{item.title}</h3>
               <p className="mt-1.5 text-sm leading-relaxed text-slate-600">{item.description}</p>

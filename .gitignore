@@ -20,3 +20,6 @@ next-env.d.ts
 
 # netlify
 .netlify
+
+# TypeScript incremental build info
+tsconfig.tsbuildinfo

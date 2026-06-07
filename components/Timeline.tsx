@@ -6,7 +6,7 @@ export default function Timeline() {
     <section className="bg-brand-50/50 py-16 sm:py-20">
       <div className="container-content">
         <p className="eyebrow">How it works</p>
-        <h2 className="mt-2 text-3xl font-bold tracking-tight text-brand-900">A simple, transparent process</h2>
+        <h2 className="mt-2 text-3xl font-bold tracking-tight text-brand-900 font-display">Three steps, no surprises</h2>
 
         <ol className="relative mt-12 grid gap-10 md:grid-cols-3 md:gap-6">
           {/* connecting line (desktop) */}

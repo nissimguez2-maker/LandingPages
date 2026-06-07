@@ -4,6 +4,8 @@
  * keeps the form UI, scoring, and CRM mapping perfectly in sync.
  */
 
+import type { AccentName } from "./themes";
+
 export interface Option<T extends string = string> {
   value: T;
   label: string;
@@ -218,6 +220,18 @@ export interface CalculatorConfig {
   highFactor: number;
   minMonthly: number;
   maxMonthly: number;
+  /** Advance sizing: estimated advance ≈ monthly deposits × this multiple. */
+  advanceMultipleLow?: number;
+  advanceMultipleHigh?: number;
+  /** Illustrative cost-of-capital band (factor rate, e.g. 1.15–1.49). */
+  factorRateLow?: number;
+  factorRateHigh?: number;
+  /** Illustrative remittance as a share of deposits (e.g. 0.08–0.20). */
+  holdbackLow?: number;
+  holdbackHigh?: number;
+  /** Illustrative term in months, for the estimated payment math. */
+  termMonthsLow?: number;
+  termMonthsHigh?: number;
 }
 
 export interface FitRow {
@@ -249,8 +263,23 @@ export interface VerticalConfig {
   faqs: FAQItem[];
   cta: {
     primary: string;
-    secondary: string;
+    /** Optional — most pages now use a single canonical CTA. */
+    secondary?: string;
   };
+
+  // ── Visual identity (optional; defaults to emerald) ──
+  /** Per-vertical accent color. Drives hero tint, CTAs, meters, icon chips. */
+  theme?: { accent: AccentName };
+
+  // ── Narrative depth (optional) ──
+  /** Visceral, vertical-specific cash-flow pain hook (shown in the hero). */
+  cashFlowSignature?: string;
+  /** Per-vertical "what we look at" cards (overrides the shared WHAT_WE_LOOK_AT). */
+  qualificationFocus?: { title: string; description: string }[];
+  /** Calculator subhead in the merchant's own language. */
+  calcContext?: string;
+  /** Three short, scannable points for the hero readiness card. */
+  heroCardPoints?: string[];
   /** Maps to HubSpot company industry_focus when it fits one of HubSpot's options. */
   industryFocus?: "technology" | "healthcare" | "finance" | "retail";
   /** Free-text tag stored for segmentation / future campaign routing. */
