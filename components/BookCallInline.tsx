@@ -2,13 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { track } from "@/lib/analytics";
-import { CALCOM_LINK } from "@/lib/site";
-
-const RAW = process.env.NEXT_PUBLIC_CALCOM_LINK || CALCOM_LINK;
-const handle = (v: string) => v.replace(/^https?:\/\/(app\.)?cal\.com\//, "").replace(/^\/+/, "");
-
-// Official Cal.com embed bootstrap (queues calls until embed.js loads).
-const SNIPPET = `(function(C,A,L){let p=function(a,ar){a.q.push(ar)};let d=C.document;C.Cal=C.Cal||function(){let cal=C.Cal;let ar=arguments;if(!cal.loaded){cal.ns={};cal.q=cal.q||[];d.head.appendChild(d.createElement("script")).src=A;cal.loaded=true}if(ar[0]===L){const api=function(){p(api,arguments)};const namespace=ar[1];api.q=api.q||[];if(typeof namespace==="string"){cal.ns[namespace]=cal.ns[namespace]||api;p(cal.ns[namespace],ar);p(cal,["initNamespace",namespace])}else p(cal,ar);return}p(cal,ar)}})(window,"https://app.cal.com/embed/embed.js","init");`;
+import { getCalNs, buildCalUrl, CALCOM_ENABLED, CALCOM_HANDLE } from "@/lib/calcom";
 
 /**
  * Cal.com INLINE embed. Renders the booking calendar on our own page (no
@@ -31,27 +25,20 @@ export default function BookCallInline({
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!RAW || !ref.current) return;
+    if (!CALCOM_ENABLED || !ref.current) return;
     const el = ref.current;
-    const w = window as unknown as { Cal?: (...a: unknown[]) => void };
-    if (!w.Cal) {
-      const s = document.createElement("script");
-      s.textContent = SNIPPET;
-      document.head.appendChild(s);
-    }
-    const Cal = (window as unknown as { Cal?: (...a: unknown[]) => void }).Cal;
-    if (!Cal) return;
+    const cal = getCalNs();
+    if (!cal) return;
     try {
-      Cal("init", { origin: "https://cal.com" });
       el.innerHTML = "";
-      Cal("inline", {
+      cal("inline", {
         elementOrSelector: el,
-        calLink: handle(RAW),
-        config: { name: name || "", email: email || "", notes: notes || "", layout: "month_view" },
+        calLink: CALCOM_HANDLE,
+        config: { name: name || "", email: email || "", notes: notes || "", layout: "month_view", theme: "auto" },
       });
-      Cal("ui", { hideEventTypeDetails: false, layout: "month_view" });
-      Cal("on", { action: "bookingSuccessful", callback: () => track("booking_confirmed", { vertical }) });
-      track("booking_opened", { vertical });
+      cal("ui", { hideEventTypeDetails: true, layout: "month_view" });
+      cal("on", { action: "bookingSuccessful", callback: () => track("booking_confirmed", { vertical, source: "inline" }) });
+      track("booking_opened", { vertical, source: "inline" });
     } catch {
       /* ignore */
     }
@@ -60,13 +47,8 @@ export default function BookCallInline({
     };
   }, [name, email, notes, vertical]);
 
-  if (!RAW) return null;
-  const base = RAW.startsWith("http") ? RAW : `https://cal.com/${handle(RAW)}`;
-  const params = new URLSearchParams();
-  if (name) params.set("name", name);
-  if (email) params.set("email", email);
-  if (notes) params.set("notes", notes);
-  const fallbackUrl = params.toString() ? `${base}?${params.toString()}` : base;
+  if (!CALCOM_ENABLED) return null;
+  const fallbackUrl = buildCalUrl(name, email, notes);
 
   return (
     <div>

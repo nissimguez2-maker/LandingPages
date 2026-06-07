@@ -30,8 +30,9 @@ import Reveal from "./motion/Reveal";
 import DisclaimerBlock from "./DisclaimerBlock";
 import PriorityRank from "./stresstest/PriorityRank";
 import SwipePoll from "./stresstest/SwipePoll";
-import { CALCOM_ENABLED } from "./BookCall";
+import { CALCOM_ENABLED, CALCOM_HANDLE, CALCOM_NAMESPACE, getCalNs } from "@/lib/calcom";
 import BookCallInline from "./BookCallInline";
+import BookCallFloating from "./BookCallFloating";
 
 const emailOk = (v?: string) => !!v && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 const phoneOk = (v?: string) => !!v && v.replace(/\D/g, "").length >= 10;
@@ -77,9 +78,12 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
   const shownRef = useRef(false);
   const contactShownRef = useRef(false);
   const partialSavedRef = useRef(false);
+  const bookedRef = useRef(false);
+  const exitFiredRef = useRef(false);
   const hpRef = useRef("");
   const summaryRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const calTriggerRef = useRef<HTMLButtonElement>(null);
 
   const result = useMemo(() => runStressTest(answers as StressAnswers), [answers]);
   const fix = useMemo(() => fixFirst(answers as StressAnswers), [answers]);
@@ -133,6 +137,53 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
     window.addEventListener("beforeunload", handler);
     return () => window.removeEventListener("beforeunload", handler);
   }, [buildPayload, contact.phone, contact.email]);
+
+  // Fallback capture: when someone books through the cal.com bubble or popup
+  // instead of filling the form, still land the lead in the CRM using the email
+  // cal.com collected. Fires once.
+  const onCalBooked = useCallback(
+    (info: { email?: string; name?: string }) => {
+      if (bookedRef.current) return;
+      bookedRef.current = true;
+      track("stresstest_call_booked", { vertical: vertical.slug });
+      const parts = (info.name || "").trim().split(/\s+/).filter(Boolean);
+      const extra: Partial<LeadData> = {
+        ...(info.email && !contact.email.trim() ? { email: info.email } : {}),
+        ...(parts[0] && !contact.firstName.trim() ? { firstName: parts[0] } : {}),
+        ...(parts.length > 1 ? { lastName: parts.slice(1).join(" ") } : {}),
+        notes: "Booked a discovery call via cal.com.",
+      };
+      try {
+        const payload = buildPayload(true, extra);
+        if (payload.email || payload.phone) {
+          partialSavedRef.current = true;
+          void fetch("/api/lead", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload), keepalive: true });
+        }
+      } catch {
+        /* best effort */
+      }
+    },
+    [buildPayload, contact.email, contact.firstName, vertical.slug],
+  );
+
+  // Exit-intent escalation (desktop): if a visitor is at the contact step and
+  // looks like they're leaving without giving info, open the cal.com popup once
+  // so we get a booked call instead of a bounce. Mobile relies on the bubble.
+  useEffect(() => {
+    if (!CALCOM_ENABLED || phase !== "result" || unlocked) return;
+    getCalNs(); // make sure the embed + namespace are primed for the trigger
+    const open = () => {
+      if (exitFiredRef.current || partialSavedRef.current || bookedRef.current) return;
+      exitFiredRef.current = true;
+      track("booking_exit_intent", { vertical: vertical.slug });
+      calTriggerRef.current?.click();
+    };
+    const onMouseOut = (e: MouseEvent) => {
+      if (e.clientY <= 0 && !e.relatedTarget) open();
+    };
+    document.addEventListener("mouseout", onMouseOut);
+    return () => document.removeEventListener("mouseout", onMouseOut);
+  }, [phase, unlocked, vertical.slug]);
 
   const start = () => {
     if (!startedRef.current) {
@@ -399,6 +450,10 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
 
               {!unlocked ? (
                 <div className="p-6 sm:p-9">
+                  {/* Fallback capture: a floating cal.com bubble + exit-intent popup so a
+                      visitor who will not type can still book a call instead of bouncing. */}
+                  {CALCOM_ENABLED && <BookCallFloating vertical={vertical.slug} notes={calNotes} onBooked={onCalBooked} />}
+
                   {/* cost of waiting, on screen while they decide */}
                   <div className="rounded-2xl border border-slate-200 bg-brand-50/50 p-5 sm:p-6">
                     <p className="font-semibold text-brand-900">{PAYBACK_CLOSE.title}</p>
@@ -440,6 +495,24 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
 
                   <button type="button" onClick={submitContact} disabled={submitting} className="btn-primary mt-6 w-full">{submitting ? "One moment…" : STRESS_CONTACT.button}</button>
                   <p className="mt-2 text-center text-xs text-slate-500">{STRESS_CONTACT.reassure}</p>
+
+                  {CALCOM_ENABLED && (
+                    <p className="mt-4 text-center text-sm text-slate-500">
+                      Rather not type it out?{" "}
+                      <button
+                        ref={calTriggerRef}
+                        type="button"
+                        data-cal-namespace={CALCOM_NAMESPACE}
+                        data-cal-link={CALCOM_HANDLE}
+                        data-cal-config={JSON.stringify({ layout: "month_view", notes: calNotes })}
+                        onClick={() => track("booking_opened", { vertical: vertical.slug, source: "gate-link" })}
+                        className="font-semibold text-accent-700 underline-offset-2 hover:underline"
+                      >
+                        Book a quick call instead
+                      </button>
+                    </p>
+                  )}
+
                   <button type="button" onClick={back} className="mt-4 inline-flex min-h-[44px] items-center text-sm font-medium text-slate-400 hover:text-slate-700">← Change an answer</button>
                 </div>
               ) : (
