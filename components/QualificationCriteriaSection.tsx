@@ -16,7 +16,7 @@ export default function QualificationCriteriaSection({ vertical }: { vertical: V
           tends to matter most.
         </p>
 
-        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((item) => (
             <div key={item.title} className="rounded-xl border border-slate-200 p-5">
               <h3 className="font-semibold text-brand-900">{item.title}</h3>

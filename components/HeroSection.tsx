@@ -24,7 +24,7 @@ export default function HeroSection({ vertical }: { vertical: VerticalConfig }) 
         className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-accent-500 opacity-20 blur-3xl"
         aria-hidden="true"
       />
-      <div className="container-content relative grid gap-10 py-16 lg:grid-cols-12 lg:py-20">
+      <div className="container-content relative grid gap-6 py-16 lg:grid-cols-12 lg:py-20">
         <div className="lg:col-span-6">
           <p className="eyebrow text-accent-300">Working capital, built for {vertical.title.replace(" Funding", "").toLowerCase()}</p>
           <h1 className="mt-3 text-4xl font-bold leading-tight tracking-tight font-display sm:text-5xl">

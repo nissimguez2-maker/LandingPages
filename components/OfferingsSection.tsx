@@ -17,7 +17,7 @@ export default function OfferingsSection() {
         </h2>
         <p className="mt-3 max-w-2xl text-slate-600">{o.intro}</p>
 
-        <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {o.products.map((p, i) => (
             <Reveal key={p.name} delay={i * 80}>
               <div

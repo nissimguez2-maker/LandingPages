@@ -20,7 +20,7 @@ export default function PainReliefSection({ vertical }: { vertical: VerticalConf
         </h2>
         <p className="mt-3 max-w-2xl text-slate-600">{pr.intro}</p>
 
-        <div className="mt-10 grid gap-6 lg:grid-cols-3">
+        <div className="mt-6 grid gap-6 lg:grid-cols-3">
           {pr.items.map((item, i) => (
             <Reveal key={item.pain} delay={i * 100}>
               <div className="hover-lift flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-card">

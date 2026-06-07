@@ -32,6 +32,7 @@ export type AnalyticsEventName =
   | "stresstest_validation_error"
   | "stresstest_cta"
   | "booking_opened"
+  | "booking_confirmed"
   | "industries_menu_opened"
   | "industry_menu_clicked"
   | "industry_picker_routed"

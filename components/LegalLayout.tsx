@@ -20,7 +20,7 @@ export default function LegalLayout({
           <h1 className="text-3xl font-bold tracking-tight text-brand-900">{title}</h1>
           <p className="mt-2 text-sm text-slate-500">Last updated: {lastUpdated}</p>
           <div className="mt-8 space-y-8 text-sm leading-relaxed text-slate-700">{children}</div>
-          <p className="mt-10 rounded-lg border border-slate-200 bg-slate-50 p-4 text-xs text-slate-500">
+          <p className="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-4 text-xs text-slate-500">
             This page is general information, not legal advice. Have your own counsel review and customize it
             (company legal name, contact details, governing law) before relying on it.
           </p>

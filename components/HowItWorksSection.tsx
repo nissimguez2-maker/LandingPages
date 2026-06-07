@@ -20,7 +20,7 @@ export default function HowItWorksSection() {
       <div className="container-content">
         <p className="eyebrow">How it works</p>
         <h2 className="mt-2 text-3xl font-bold tracking-tight text-brand-900 font-display">From check to capital in three steps</h2>
-        <ol className="mt-10 grid gap-6 md:grid-cols-3">
+        <ol className="mt-6 grid gap-6 md:grid-cols-3">
           {STEPS.map((step, i) => (
             <li key={step.title} className="relative rounded-xl border border-brand-100 bg-white p-6 shadow-card">
               <span className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-900 text-base font-bold text-white">

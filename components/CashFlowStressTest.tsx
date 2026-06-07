@@ -30,7 +30,8 @@ import Reveal from "./motion/Reveal";
 import DisclaimerBlock from "./DisclaimerBlock";
 import PriorityRank from "./stresstest/PriorityRank";
 import SwipePoll from "./stresstest/SwipePoll";
-import BookCall, { CALCOM_ENABLED } from "./BookCall";
+import { CALCOM_ENABLED } from "./BookCall";
+import BookCallInline from "./BookCallInline";
 
 const emailOk = (v?: string) => !!v && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 const phoneOk = (v?: string) => !!v && v.replace(/\D/g, "").length >= 10;
@@ -460,7 +461,9 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
                       <>
                         <p className="font-semibold text-brand-900 font-display">{STRESS_PAYOFF.bookTitle}</p>
                         <p className="mt-1 text-sm text-slate-600">{STRESS_PAYOFF.bookSub}</p>
-                        <BookCall vertical={vertical.slug} name={contact.firstName} email={contact.email} notes={calNotes} label={STRESS_PAYOFF.bookLabel} className="mt-4 w-full sm:w-auto" />
+                        <div className="mt-4">
+                          <BookCallInline vertical={vertical.slug} name={contact.firstName} email={contact.email} notes={calNotes} />
+                        </div>
                       </>
                     ) : (
                       <>

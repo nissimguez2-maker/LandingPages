@@ -27,7 +27,7 @@ export default function ThankYou({ verticalTitle }: { verticalTitle?: string }) 
             not guaranteed and depends on underwriting and documentation.
           </p>
 
-          <div className="mt-10 grid w-full gap-4 text-left sm:grid-cols-3">
+          <div className="mt-6 grid w-full gap-4 text-left sm:grid-cols-3">
             {[
               { t: "We may reach out", d: "A specialist may contact you using the details you provided." },
               { t: "Have statements ready", d: "3–4 months of business bank statements help. Clean files can move faster." },
@@ -40,11 +40,11 @@ export default function ThankYou({ verticalTitle }: { verticalTitle?: string }) 
             ))}
           </div>
 
-          <Link href="/" className="btn-secondary mt-10">
+          <Link href="/" className="btn-secondary mt-6">
             Back to home
           </Link>
 
-          <div className="mt-10 w-full">
+          <div className="mt-6 w-full">
             <DisclaimerBlock compact />
           </div>
         </div>

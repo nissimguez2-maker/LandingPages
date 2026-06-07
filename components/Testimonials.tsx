@@ -13,7 +13,7 @@ export default function Testimonials({ vertical }: { vertical: VerticalConfig })
       <div className="container-content">
         <p className="eyebrow">In their words</p>
         <h2 className="mt-2 text-3xl font-bold tracking-tight text-brand-900">What business owners say</h2>
-        <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {items.map((t) => (
             <figure key={t.quote} className="rounded-xl border border-slate-200 bg-white p-6 shadow-card">
               <blockquote className="text-slate-700">&ldquo;{t.quote}&rdquo;</blockquote>

@@ -15,7 +15,7 @@ export default function ExampleUsesSection({ vertical }: { vertical: VerticalCon
         <h2 className="mt-2 text-3xl font-bold tracking-tight text-brand-900 font-display">Real ways the money helps</h2>
         <p className="mt-3 max-w-2xl text-slate-600">These are example costs for your trade. They are not an offer or the amount you may receive.</p>
 
-        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((u, i) => (
             <Reveal key={u.label} delay={i * 70}>
               <div className="hover-lift flex h-full flex-col rounded-xl border border-slate-200 bg-white p-6 shadow-card">

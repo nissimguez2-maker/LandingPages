@@ -9,7 +9,7 @@ export default function SiteFooter() {
   return (
     <footer className="border-t border-slate-200 bg-slate-50">
       <div className="container-content py-12">
-        <div className="grid gap-10 lg:grid-cols-3">
+        <div className="grid gap-6 lg:grid-cols-3">
           <div>
             <p className="font-bold text-brand-900">{SITE_NAME}</p>
             <p className="mt-2 max-w-xs text-sm text-slate-500">{SITE_TAGLINE}</p>
@@ -30,7 +30,7 @@ export default function SiteFooter() {
           </div>
         </div>
 
-        <nav className="mt-10 flex flex-wrap gap-x-6 gap-y-2 text-sm" aria-label="Legal">
+        <nav className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm" aria-label="Legal">
           <Link href="/privacy" className="text-slate-600 hover:text-brand-700">Privacy Policy</Link>
           <Link href="/terms" className="text-slate-600 hover:text-brand-700">Terms of Service</Link>
           <Link href="/disclosures" className="text-slate-600 hover:text-brand-700">Disclosures</Link>

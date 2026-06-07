@@ -8,7 +8,7 @@ export default function Timeline() {
         <p className="eyebrow">How it works</p>
         <h2 className="mt-2 text-3xl font-bold tracking-tight text-brand-900 font-display">Three steps, no surprises</h2>
 
-        <ol className="relative mt-12 grid gap-10 md:grid-cols-3 md:gap-6">
+        <ol className="relative mt-8 grid gap-6 md:grid-cols-3 md:gap-6">
           {/* connecting line (desktop) */}
           <div className="absolute left-0 right-0 top-5 hidden h-0.5 bg-brand-200 md:block" aria-hidden="true" />
           {HOW_IT_WORKS_STEPS.map((step, i) => (

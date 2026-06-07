@@ -22,7 +22,7 @@ export const CALCOM_LINK = "fundvella-specialist/discover-call";
  */
 export const POSTHOG_KEY = "phc_nHPq7EJxXC6aCybaqS3o3xj3L4HfA5VNgWti3GnM9PVu";
 export const POSTHOG_HOST = "https://us.i.posthog.com";
-export const CLARITY_ID = "";
+export const CLARITY_ID = "x3cnn1jpad";
 
 export function getSiteUrl(): string {
   // Priority: explicit override -> Netlify's automatic build URL -> localhost.

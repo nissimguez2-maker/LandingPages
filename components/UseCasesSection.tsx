@@ -10,7 +10,7 @@ export default function UseCasesSection({ vertical }: { vertical: VerticalConfig
         <h2 className="mt-2 text-3xl font-bold tracking-tight text-brand-900 font-display">
           What {vertical.title.replace(" Funding", "").toLowerCase()} owners use working capital for
         </h2>
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {vertical.useCases.map((useCase, i) => (
             <div key={useCase.title} className="hover-lift rounded-xl border border-slate-200 bg-white p-6 shadow-card">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-50 text-sm font-semibold text-brand-700">

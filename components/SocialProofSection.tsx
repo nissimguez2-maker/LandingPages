@@ -39,7 +39,7 @@ export default function SocialProofSection({ vertical }: { vertical: VerticalCon
         </div>
 
         {logos.length > 0 && (
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-x-10 gap-y-6 opacity-80">
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-10 gap-y-6 opacity-80">
             {logos.map((logo) => (
               // eslint-disable-next-line @next/next/no-img-element
               <img key={logo.alt} src={logo.src} alt={logo.alt} className="h-8 w-auto" />
