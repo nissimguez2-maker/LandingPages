@@ -39,7 +39,7 @@ export const PARTIAL_EMAILS: NurtureEmail[] = [
   },
   {
     key: "partial_3",
-    subject: "Last call — finish your funding review",
+    subject: "Last call: finish your funding review",
     ctaLabel: "Finish your funding review",
     paragraphs: [
       "This is a final reminder to complete your funding check if you'd like our team to review your file.",
@@ -52,10 +52,10 @@ export const PARTIAL_EMAILS: NurtureEmail[] = [
 export const COLD_EMAILS: NurtureEmail[] = [
   {
     key: "cold_1",
-    subject: "We received your request — here's what happens next",
+    subject: "We received your request. Here is what happens next",
     ctaLabel: "Re-check your readiness",
     paragraphs: [
-      "Thanks for your funding request — here's a clearer picture of what happens next.",
+      "Thanks for your funding request. Here is a clearer picture of what happens next.",
       "Depending on your file, a funding specialist may follow up to learn more about your business. The review usually looks at things like business revenue, recent bank activity, time in business, and overall file strength.",
       "If you'd like to talk it through, just reply to this email.",
     ],
@@ -92,6 +92,10 @@ export const COLD_EMAILS: NurtureEmail[] = [
   },
 ];
 
+// Note: hot (green) and warm (yellow) leads are intentionally NOT emailed by this
+// engine. Those are worked personally by the SDR (see docs/sdr-outreach-templates.md).
+// Automation here only handles partial win-backs and the cold track.
+
 // CAN-SPAM requires a physical postal address in every marketing email.
 // Set BUSINESS_ADDRESS in Netlify before sending to real leads.
 const BUSINESS_ADDRESS =
@@ -121,6 +125,6 @@ export function renderEmail(email: NurtureEmail, v: RenderVars): { html: string;
   return { html, text };
 }
 
-/** Cumulative send offsets from contact createdate (ms). */
+/** Send offsets from contact createdate (ms), one per email in each track. */
 export const PARTIAL_OFFSETS = [15 * 60 * 1000, 1 * 86400000, 4 * 86400000];
 export const COLD_OFFSETS = [1 * 86400000, 5 * 86400000, 12 * 86400000, 22 * 86400000];

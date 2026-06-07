@@ -16,7 +16,21 @@ const HS = "https://api.hubapi.com";
 const MAX_SENDS_PER_RUN = 50; // bound runtime so the function never times out
 
 const STATE_PROPS = ["nurture_track", "nurture_step", "nurture_last_sent"] as const;
-const READ_PROPS = ["email", "firstname", "createdate", "original_landing_page_url", ...STATE_PROPS];
+const READ_PROPS = [
+  "email", "firstname", "phone", "createdate", "original_landing_page_url",
+  "funding_readiness_score", "hs_lead_status", ...STATE_PROPS,
+];
+
+// ── Cold-lead triage tuning (all env-overridable) ──────────────────────────
+// A red/cold lead whose readiness score still lands at or above this is treated
+// as "potential warm/hot hiding in the cold pile" and handed to the human.
+const PROMISING_MIN = Number(process.env.NURTURE_PROMISING_MIN || 30);
+// Only disqualify a weak cold lead after it has had the full cold sequence.
+const DISQUALIFY_DAYS = Number(process.env.NURTURE_DISQUALIFY_DAYS || 25);
+// Off by default. When "true", disqualified leads are also archived in HubSpot
+// (archived contacts stay recoverable for 90 days; nothing is hard-deleted).
+const DELETE_IRRELEVANT = process.env.NURTURE_DELETE_IRRELEVANT === "true";
+const MAX_ALERTS_PER_RUN = 25; // don't flood the SDR's inbox in one run
 
 type Contact = { id: string; properties: Record<string, string | null> };
 
@@ -167,6 +181,117 @@ async function processTrack(
   return { checked: contacts.length, sent, errors };
 }
 
+/** Archive a contact (recoverable in HubSpot for 90 days; not a hard delete). */
+async function hsArchive(token: string, id: string): Promise<void> {
+  const res = await fetch(`${HS}/crm/v3/objects/contacts/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+    signal: AbortSignal.timeout(8000),
+  });
+  if (!res.ok && res.status !== 404) throw new Error(`archive ${res.status}: ${(await res.text()).slice(0, 200)}`);
+}
+
+/** Internal heads-up to the SDR that a cold-scored lead looks worth a call. */
+async function sendSdrAlert(
+  ctx: Ctx,
+  to: string,
+  lead: { id: string; name: string; email: string; phone: string; score: number },
+): Promise<boolean> {
+  const portalId = process.env.HUBSPOT_PORTAL_ID || "";
+  const link = portalId
+    ? `https://app.hubspot.com/contacts/${portalId}/record/0-1/${lead.id}`
+    : `search "${lead.email}" in HubSpot`;
+  const lines = [
+    "A lead scored cold but still looks worth a personal call.",
+    `Name: ${lead.name || "(none)"}`,
+    `Email: ${lead.email}`,
+    `Phone: ${lead.phone || "(none)"}`,
+    `Readiness score: ${lead.score}`,
+    `Open: ${link}`,
+  ];
+  const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  const html = `<div style="font-family:Arial,sans-serif;font-size:14px;color:#0f2a4a;line-height:1.6">${lines
+    .map((l) => `<p style="margin:4px 0">${esc(l)}</p>`)
+    .join("")}</div>`;
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${ctx.apiKey}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      from: ctx.from,
+      to: [to],
+      subject: `Promising lead to call: ${lead.name || lead.email}`,
+      html,
+      text: lines.join("\n"),
+    }),
+    signal: AbortSignal.timeout(10000),
+  });
+  return res.ok;
+}
+
+/**
+ * Triage cold (red-band) full leads. Promising ones (score still near the warm
+ * cutoff) are flagged OPEN and the SDR is alerted to call them personally. Weak
+ * ones that already had the full cold sequence are marked UNQUALIFIED (and
+ * optionally archived). hs_lead_status doubles as the "already triaged" marker,
+ * so each lead is handled exactly once.
+ */
+async function triageCold(
+  contacts: Contact[],
+  ctx: Ctx,
+  alertTo: string,
+): Promise<{ checked: number; escalated: number; disqualified: number; archived: number; errors: number }> {
+  let escalated = 0;
+  let disqualified = 0;
+  let archived = 0;
+  let errors = 0;
+  let alerts = 0;
+
+  for (const c of contacts) {
+    try {
+      const email = c.properties.email;
+      if (!email) continue;
+      if (c.properties.hs_lead_status) continue; // already triaged
+
+      const score = Number(c.properties.funding_readiness_score);
+      if (!Number.isFinite(score)) continue; // no score yet, cannot judge
+
+      if (score >= PROMISING_MIN) {
+        // Potential warm/hot hiding in the cold pile. Flag it and ping the human.
+        await hsPatch(ctx.token, c.id, { hs_lead_status: "OPEN" });
+        escalated++;
+        if (alertTo && alerts < MAX_ALERTS_PER_RUN) {
+          const ok = await sendSdrAlert(ctx, alertTo, {
+            id: c.id,
+            name: (c.properties.firstname || "").trim(),
+            email,
+            phone: c.properties.phone || "",
+            score,
+          });
+          if (ok) alerts++;
+        }
+        continue;
+      }
+
+      const createdate = Date.parse(c.properties.createdate || "");
+      const oldEnough = Number.isFinite(createdate) && ctx.now - createdate >= DISQUALIFY_DAYS * 86400000;
+      if (oldEnough) {
+        // Tried the full cold sequence, still weak. Clear it out of the pipeline.
+        await hsPatch(ctx.token, c.id, { hs_lead_status: "UNQUALIFIED" });
+        disqualified++;
+        if (DELETE_IRRELEVANT) {
+          await hsArchive(ctx.token, c.id);
+          archived++;
+        }
+      }
+    } catch (err) {
+      errors++;
+      // eslint-disable-next-line no-console
+      console.error(`[nurture] triage ${c.id} failed:`, err instanceof Error ? err.message : err);
+    }
+  }
+  return { checked: contacts.length, escalated, disqualified, archived, errors };
+}
+
 export async function POST(req: Request): Promise<NextResponse> {
   const secret = process.env.NURTURE_SECRET;
   const provided = req.headers.get("x-nurture-secret") || "";
@@ -210,15 +335,30 @@ export async function POST(req: Request): Promise<NextResponse> {
         { propertyName: "marketing_consent_status", operator: "EQ", value: "opted_in" },
         { propertyName: "lead_category", operator: "EQ", value: "cold" },
         { propertyName: "num_associated_deals", operator: "HAS_PROPERTY" },
+        { propertyName: "hs_lead_status", operator: "NOT_HAS_PROPERTY" },
         { propertyName: "createdate", operator: "GTE", value: thirtyDaysAgo },
+      ],
+      READ_PROPS,
+    );
+    // Cold full leads not yet triaged: decide escalate-to-human vs disqualify.
+    const sixtyDaysAgo = String(now - 60 * 86400000);
+    const triageList = await hsSearch(
+      token,
+      [
+        { propertyName: "email", operator: "HAS_PROPERTY" },
+        { propertyName: "lead_category", operator: "EQ", value: "cold" },
+        { propertyName: "num_associated_deals", operator: "HAS_PROPERTY" },
+        { propertyName: "hs_lead_status", operator: "NOT_HAS_PROPERTY" },
+        { propertyName: "createdate", operator: "GTE", value: sixtyDaysAgo },
       ],
       READ_PROPS,
     );
 
     const partialResult = await processTrack("partial", partial, ctx);
     const coldResult = await processTrack("cold", cold, ctx);
+    const triageResult = await triageCold(triageList, ctx, process.env.SDR_ALERT_EMAIL || "");
 
-    return NextResponse.json({ ok: true, partial: partialResult, cold: coldResult });
+    return NextResponse.json({ ok: true, partial: partialResult, cold: coldResult, triage: triageResult });
   } catch (err) {
     const error = err instanceof Error ? err.message : String(err);
     // eslint-disable-next-line no-console
