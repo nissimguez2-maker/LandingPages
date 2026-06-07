@@ -1,17 +1,23 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { LeadData, VerticalConfig } from "@/lib/types";
+import type { LeadData, VerticalConfig, AmountValue, BankStatementsValue, Option } from "@/lib/types";
+import { AMOUNT_OPTIONS, BANK_STATEMENTS_OPTIONS } from "@/lib/types";
 import { runStressTest, buildPrefill, fixFirst, type StressAnswers } from "@/lib/stressTest";
 import {
   STRESS_INTRO,
-  STRESS_STEPS,
+  RANK_OPTIONS,
+  RANK_MIRROR,
+  SWIPE_CARDS,
+  REVENUE_STEP,
+  TIME_STEP,
   STRESS_TEASER,
   TIER_REVEAL,
-  STRESS_CONTACT,
   FIT_COPY,
   PAYBACK_CLOSE,
+  STRESS_CONTACT,
   STRESS_PAYOFF,
+  STRESS_ENRICH,
 } from "@/content/stressTest";
 import { track } from "@/lib/analytics";
 import { scoreLead, bandEvent } from "@/lib/leadScoring";
@@ -22,8 +28,10 @@ import { RadioCards, TextField } from "./prequal/Fields";
 import AnimatedNumber from "./motion/AnimatedNumber";
 import Reveal from "./motion/Reveal";
 import DisclaimerBlock from "./DisclaimerBlock";
+import PriorityRank from "./stresstest/PriorityRank";
+import SwipePoll from "./stresstest/SwipePoll";
+import BookCall, { CALCOM_ENABLED } from "./BookCall";
 
-const PREFILL_KEY = "mca_prefill";
 const emailOk = (v?: string) => !!v && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 const phoneOk = (v?: string) => !!v && v.replace(/\D/g, "").length >= 10;
 
@@ -32,6 +40,7 @@ const METER: Record<string, string> = {
   exposed: "bg-amber-400",
   stretched: "bg-rose-400",
 };
+const STEPS = 4;
 
 type Phase = "intro" | "step" | "result";
 interface Contact {
@@ -42,19 +51,25 @@ interface Contact {
   marketingConsent: boolean;
 }
 
-/**
- * Cash-Flow Stress Test. A tap-only check that shows where the money runs short,
- * captures a real lead at the peak moment, then unlocks the personalized plan.
- * 100% client-side math. No dollar amount shown. No offer.
- */
 export default function CashFlowStressTest({ vertical }: { vertical: VerticalConfig }) {
   const [phase, setPhase] = useState<Phase>("intro");
   const [stepIdx, setStepIdx] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [order, setOrder] = useState<string[]>(() => RANK_OPTIONS.map((o) => o.value));
+  const [pollResponses, setPollResponses] = useState<Record<string, string>>({});
+
   const [unlocked, setUnlocked] = useState(false);
   const [contact, setContact] = useState<Contact>({ firstName: "", businessName: "", phone: "", email: "", marketingConsent: false });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
+
+  // optional enrichment
+  const [enrichOpen, setEnrichOpen] = useState(false);
+  const [enrichDone, setEnrichDone] = useState(false);
+  const [amountNeeded, setAmount] = useState<AmountValue | undefined>();
+  const [bankStatements, setBank] = useState<BankStatementsValue | undefined>();
+  const [lastName, setLastName] = useState("");
+  const [state, setState] = useState("");
 
   const startedRef = useRef(false);
   const shownRef = useRef(false);
@@ -62,42 +77,53 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
   const partialSavedRef = useRef(false);
   const hpRef = useRef("");
   const summaryRef = useRef<HTMLDivElement>(null);
-
-  const step = STRESS_STEPS[stepIdx];
-  const currentValue = step ? answers[step.field] : undefined;
-  const answered = Boolean(currentValue);
+  const headingRef = useRef<HTMLHeadingElement>(null);
 
   const result = useMemo(() => runStressTest(answers as StressAnswers), [answers]);
   const fix = useMemo(() => fixFirst(answers as StressAnswers), [answers]);
   const reveal = TIER_REVEAL[result.tier];
   const fit = FIT_COPY[result.fitKey];
 
-  const buildPayload = useCallback((): LeadData & { honeypot?: string } => {
-    const contactData: Partial<LeadData> = {
+  // Move focus to the new step / result heading (keyboard + screen reader + tall phones).
+  useEffect(() => {
+    if (phase === "intro") return;
+    headingRef.current?.focus();
+  }, [phase, stepIdx, unlocked]);
+
+  const labelFor = (opts: readonly { value: string; label: string }[], v?: string) => opts.find((o) => o.value === v)?.label;
+
+  const buildContact = useCallback(
+    (extra?: Partial<LeadData>): Partial<LeadData> => ({
       firstName: contact.firstName.trim() || undefined,
       businessName: contact.businessName.trim() || undefined,
       phone: contact.phone.trim() || undefined,
       email: contact.email.trim() || undefined,
       marketingConsent: contact.marketingConsent,
-    };
-    return {
-      ...buildPrefill(answers as StressAnswers, vertical.slug, contactData),
+      priorities: order,
+      pollResponses,
+      ...extra,
+    }),
+    [contact, order, pollResponses],
+  );
+
+  const buildPayload = useCallback(
+    (partial: boolean, extra?: Partial<LeadData>): LeadData & { honeypot?: string } => ({
+      ...buildPrefill(answers as StressAnswers, vertical.slug, buildContact(extra)),
       verticalTitle: vertical.title,
       sourcePage: typeof window !== "undefined" ? window.location.href : undefined,
       utm: getStoredUtm(),
-      partial: true,
+      partial,
       honeypot: hpRef.current,
-    };
-  }, [answers, contact, vertical.slug, vertical.title]);
+    }),
+    [answers, vertical.slug, vertical.title, buildContact],
+  );
 
-  // Safety net: if they typed contact then leave before pressing the button.
   useEffect(() => {
     const handler = () => {
       if (partialSavedRef.current) return;
       if (!phoneOk(contact.phone) && !emailOk(contact.email)) return;
       try {
-        const blob = new Blob([JSON.stringify(buildPayload())], { type: "application/json" });
-        navigator.sendBeacon("/api/lead", blob);
+        navigator.sendBeacon("/api/lead", new Blob([JSON.stringify(buildPayload(true))], { type: "application/json" }));
       } catch {
         /* ignore */
       }
@@ -114,31 +140,43 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
     setPhase("step");
   };
 
-  const choose = useCallback((field: string, value: string) => {
-    setAnswers((prev) => ({ ...prev, [field]: value }));
-  }, []);
+  const goToResult = () => {
+    track("stresstest_completed", { vertical: vertical.slug });
+    setPhase("result");
+  };
 
-  const next = () => {
-    if (!answered) return;
-    track("stresstest_step", { vertical: vertical.slug, step: step.id, value: currentValue });
-    if (stepIdx < STRESS_STEPS.length - 1) {
-      setStepIdx((i) => i + 1);
-    } else {
-      track("stresstest_completed", { vertical: vertical.slug });
-      setPhase("result");
-    }
+  const nextFrom = (id: string, value?: string) => {
+    track("stresstest_step", { vertical: vertical.slug, step: id, value });
+    if (stepIdx < STEPS - 1) setStepIdx((i) => i + 1);
+    else goToResult();
   };
 
   const back = () => {
     if (phase === "result") {
       setUnlocked(false);
       setPhase("step");
+      setStepIdx(STEPS - 1);
       return;
     }
     setStepIdx((i) => Math.max(0, i - 1));
   };
 
-  // Fire result + contact-shown once.
+  // rank
+  const confirmRank = () => {
+    setAnswers((a) => ({ ...a, useOfFunds: order[0] }));
+    nextFrom("pressure", order[0]);
+  };
+  // swipe
+  const onSwipeComplete = (resp: Record<string, string>) => {
+    setPollResponses(resp);
+    setAnswers((a) => ({ ...a, recentNsfs: resp.nsfs, existingDebt: resp.debt, urgency: resp.urgency }));
+    track("stresstest_step", { vertical: vertical.slug, step: "signals" });
+    if (stepIdx < STEPS - 1) setStepIdx((i) => i + 1);
+    else goToResult();
+  };
+  // tap
+  const choose = (field: string, value: string) => setAnswers((a) => ({ ...a, [field]: value }));
+
   if (phase === "result" && !shownRef.current) {
     shownRef.current = true;
     track("stresstest_result_shown", { vertical: vertical.slug, tier: result.tier, exposure: result.exposure });
@@ -149,8 +187,8 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
   }
 
   const setC = (k: keyof Contact, v: string | boolean) => {
-    setContact((prev) => ({ ...prev, [k]: v }));
-    setErrors((prev) => ({ ...prev, [k]: "" }));
+    setContact((p) => ({ ...p, [k]: v }));
+    setErrors((p) => ({ ...p, [k]: "" }));
   };
 
   const submitContact = async () => {
@@ -158,62 +196,60 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
     const e: Record<string, string> = {};
     if (!contact.firstName.trim()) e.firstName = "Please add your first name.";
     if (!contact.businessName.trim()) e.businessName = "Please add your business name.";
-    if (!phoneOk(contact.phone) && !emailOk(contact.email)) {
-      e.phone = "Add a phone or an email so we can send your results.";
-    }
+    if (!phoneOk(contact.phone) && !emailOk(contact.email)) e.phone = "Add a phone or an email so we can send your plan.";
     setErrors(e);
     if (Object.keys(e).length) {
       track("stresstest_validation_error", { vertical: vertical.slug, fields: Object.keys(e) });
       requestAnimationFrame(() => summaryRef.current?.focus());
       return;
     }
-
     setSubmitting(true);
-    const payload = buildPayload();
+    const payload = buildPayload(true);
     partialSavedRef.current = true;
     try {
       const { band, score } = scoreLead(payload);
       track(bandEvent(band), { vertical: vertical.slug, score, context: "stresstest" });
-      const { percentage } = computeCompleteness(payload);
-      track("partial_lead_saved", { vertical: vertical.slug, completion: percentage });
+      track("partial_lead_saved", { vertical: vertical.slug, completion: computeCompleteness(payload).percentage });
       track("stresstest_contact_captured", { vertical: vertical.slug });
       track("stresstest_lead_saved", { vertical: vertical.slug });
-      await fetch("/api/lead", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-        keepalive: true,
-      });
+      await fetch("/api/lead", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload), keepalive: true });
     } catch {
-      /* lead is best-effort; the form is a second chance */
+      /* best effort */
     }
     setSubmitting(false);
     setUnlocked(true);
   };
 
-  const onCta = () => {
-    track("stresstest_cta", { vertical: vertical.slug, tier: result.tier });
+  const saveEnrichment = async () => {
+    const extra: Partial<LeadData> = {
+      ...(amountNeeded ? { amountNeeded } : {}),
+      ...(bankStatements ? { canProvideBankStatements: bankStatements } : {}),
+      ...(lastName.trim() ? { lastName: lastName.trim() } : {}),
+      ...(state.trim() ? { state: state.trim() } : {}),
+    };
+    setEnrichDone(true);
+    track("stresstest_enrichment_saved", { vertical: vertical.slug });
     try {
-      sessionStorage.setItem(
-        PREFILL_KEY,
-        JSON.stringify(
-          buildPrefill(answers as StressAnswers, vertical.slug, {
-            firstName: contact.firstName.trim() || undefined,
-            businessName: contact.businessName.trim() || undefined,
-            phone: contact.phone.trim() || undefined,
-            email: contact.email.trim() || undefined,
-            marketingConsent: contact.marketingConsent,
-          }),
-        ),
-      );
+      await fetch("/api/lead", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(buildPayload(false, extra)), keepalive: true });
     } catch {
-      /* ignore */
+      /* best effort */
     }
-    document.querySelector("#prequalify")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const errorList = Object.values(errors).filter(Boolean);
-  const progress = Math.round(((stepIdx + (answered ? 1 : 0)) / STRESS_STEPS.length) * 100);
+  const progress = Math.round((stepIdx / STEPS) * 100);
+  const calNotes = `${vertical.title} | ${reveal.label} | needs: ${labelFor(RANK_OPTIONS, order[0]) ?? ""}`;
+
+  const summaryLine = (() => {
+    const pain = labelFor(RANK_OPTIONS, answers.useOfFunds)?.toLowerCase();
+    const rev = labelFor(REVENUE_STEP.options, answers.monthlyRevenue);
+    const time = labelFor(TIME_STEP.options, answers.timeInBusiness);
+    const parts: string[] = [];
+    if (pain) parts.push(`you put ${pain} first`);
+    if (rev) parts.push(`about ${rev} a month`);
+    if (time) parts.push(`${time.toLowerCase()} in business`);
+    return parts.length ? `Based on your answers: ${parts.join(", ")}. That is a timing gap, not a sales problem.` : "";
+  })();
 
   return (
     <section id="estimate" className="scroll-mt-16 bg-white py-16 sm:py-20">
@@ -237,66 +273,90 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
           )}
 
           {/* STEPS */}
-          {phase === "step" && step && (
+          {phase === "step" && (
             <div className="p-6 sm:p-8">
               <div className="flex items-center justify-between text-xs font-medium text-slate-500">
-                <span>Step {stepIdx + 1} of {STRESS_STEPS.length}</span>
+                <span>Question {stepIdx + 1} of {STEPS}</span>
                 <span>Your profile: {progress}% built</span>
               </div>
               <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
                 <div className="h-full rounded-full bg-accent-500 transition-[width] duration-500 ease-out" style={{ width: `${progress}%` }} />
               </div>
 
-              {stepIdx === 0 && vertical.cashFlowSignature && (
-                <figure className="mt-6 rounded-xl border-l-4 border-accent-500 bg-accent-50/50 p-4">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-accent-700">Sound familiar?</p>
-                  <blockquote className="mt-1 text-sm italic leading-relaxed text-slate-700">
-                    &ldquo;{vertical.cashFlowSignature}&rdquo;
-                  </blockquote>
-                </figure>
+              {/* Q1 rank */}
+              {stepIdx === 0 && (
+                <div className="mt-6">
+                  {vertical.cashFlowSignature && (
+                    <figure className="mb-5 rounded-xl border-l-4 border-accent-500 bg-accent-50/50 p-4">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-accent-700">Sound familiar?</p>
+                      <blockquote className="mt-1 text-sm italic leading-relaxed text-slate-700">&ldquo;{vertical.cashFlowSignature}&rdquo;</blockquote>
+                    </figure>
+                  )}
+                  <h2 ref={headingRef} tabIndex={-1} className="text-lg font-semibold text-brand-900 focus:outline-none">
+                    When money gets tight, what hurts first? Drag the worst to the top.
+                  </h2>
+                  <div className="mt-4">
+                    <PriorityRank legend="Rank these, worst at the top" help="Use the arrows or drag the handle." options={RANK_OPTIONS as unknown as { value: string; label: string }[]} order={order} onChange={setOrder} />
+                  </div>
+                  <p className="mt-4 min-h-[1.5rem] text-sm font-medium text-brand-800">{RANK_MIRROR[order[0]]}</p>
+                  <div className="mt-4 flex items-center justify-between">
+                    <span />
+                    <button type="button" onClick={confirmRank} className="btn-primary">Next</button>
+                  </div>
+                </div>
               )}
 
-              <div className="mt-6">
-                <RadioCards
-                  legend={step.prompt}
-                  help={step.help}
-                  options={step.options}
-                  value={currentValue}
-                  onChange={(v: string) => choose(step.field, v)}
-                  columns={step.columns ?? 1}
-                />
-              </div>
+              {/* Q2 swipe */}
+              {stepIdx === 1 && (
+                <div className="mt-6">
+                  <h2 ref={headingRef} tabIndex={-1} className="text-lg font-semibold text-brand-900 focus:outline-none">
+                    A few quick yes or no questions
+                  </h2>
+                  <div className="mt-4">
+                    <SwipePoll cards={SWIPE_CARDS} onComplete={onSwipeComplete} />
+                  </div>
+                  <div className="mt-4">
+                    <button type="button" onClick={back} className="inline-flex min-h-[44px] items-center text-sm font-medium text-slate-500 hover:text-slate-800">← Back</button>
+                  </div>
+                </div>
+              )}
 
-              <div aria-live="polite" className="min-h-[1.5rem]">
-                {answered && step.mirror[currentValue!] && (
-                  <p className="mt-4 text-sm font-medium text-brand-800">{step.mirror[currentValue!]}</p>
-                )}
-              </div>
+              {/* Q3 revenue */}
+              {stepIdx === 2 && (
+                <div className="mt-6">
+                  <h2 ref={headingRef} tabIndex={-1} className="sr-only focus:outline-none">{REVENUE_STEP.prompt}</h2>
+                  <RadioCards legend={REVENUE_STEP.prompt} help={REVENUE_STEP.help} options={REVENUE_STEP.options as readonly Option[]} value={answers.monthlyRevenue} onChange={(v: string) => choose("monthlyRevenue", v)} columns={1} />
+                  <p className="mt-4 min-h-[1.5rem] text-sm font-medium text-brand-800">{answers.monthlyRevenue && REVENUE_STEP.mirror[answers.monthlyRevenue]}</p>
+                  <div className="mt-4 flex items-center justify-between">
+                    <button type="button" onClick={back} className="inline-flex min-h-[44px] items-center text-sm font-medium text-slate-500 hover:text-slate-800">← Back</button>
+                    <button type="button" onClick={() => nextFrom("revenue", answers.monthlyRevenue)} disabled={!answers.monthlyRevenue} className="btn-primary">Next</button>
+                  </div>
+                </div>
+              )}
 
-              <div className="mt-6 flex items-center justify-between">
-                {stepIdx > 0 ? (
-                  <button type="button" onClick={back} className="text-sm font-medium text-slate-500 hover:text-slate-800">
-                    ← Back
-                  </button>
-                ) : (
-                  <span />
-                )}
-                <button type="button" onClick={next} disabled={!answered} className="btn-primary">
-                  {stepIdx < STRESS_STEPS.length - 1 ? "Next" : "See my read"}
-                </button>
-              </div>
+              {/* Q4 time */}
+              {stepIdx === 3 && (
+                <div className="mt-6">
+                  <h2 ref={headingRef} tabIndex={-1} className="sr-only focus:outline-none">{TIME_STEP.prompt}</h2>
+                  <RadioCards legend={TIME_STEP.prompt} help={TIME_STEP.help} options={TIME_STEP.options as readonly Option[]} value={answers.timeInBusiness} onChange={(v: string) => choose("timeInBusiness", v)} columns={2} />
+                  <p className="mt-4 min-h-[1.5rem] text-sm font-medium text-brand-800">{answers.timeInBusiness && TIME_STEP.mirror[answers.timeInBusiness]}</p>
+                  <div className="mt-4 flex items-center justify-between">
+                    <button type="button" onClick={back} className="inline-flex min-h-[44px] items-center text-sm font-medium text-slate-500 hover:text-slate-800">← Back</button>
+                    <button type="button" onClick={() => nextFrom("time", answers.timeInBusiness)} disabled={!answers.timeInBusiness} className="btn-primary">See my read</button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
           {/* RESULT */}
           {phase === "result" && (
             <div>
-              {/* Free read: exposure + pressure points */}
+              {/* Free read */}
               <div className="bg-brand-900 p-6 text-white sm:p-9" aria-live="polite">
                 <p className="text-sm font-medium text-accent-300">{STRESS_TEASER.eyebrow}</p>
-                <h2 className="mt-1 text-2xl font-bold tracking-tight font-display sm:text-3xl">{reveal.headline}</h2>
+                <h2 ref={headingRef} tabIndex={-1} className="mt-1 text-2xl font-bold tracking-tight font-display focus:outline-none sm:text-3xl">{reveal.headline}</h2>
                 <p className="mt-2 max-w-xl text-brand-100">{reveal.body}</p>
-
                 <div className="mt-6">
                   <div className="flex items-center justify-between text-sm">
                     <span className="font-semibold">{STRESS_TEASER.meterLabel}</span>
@@ -306,7 +366,6 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
                     <div className={`h-full rounded-full transition-[width] duration-700 ease-out ${METER[result.tier]}`} style={{ width: `${Math.max(result.exposure, 6)}%` }} />
                   </div>
                 </div>
-
                 <ul className="mt-6 space-y-2.5">
                   {result.pressurePoints.map((p, i) => (
                     <Reveal key={p} delay={i * 120}>
@@ -319,29 +378,32 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
                 </ul>
               </div>
 
-              {/* Gate OR payoff */}
               {!unlocked ? (
                 <div className="p-6 sm:p-9">
+                  {/* cost of waiting, on screen while they decide */}
+                  <div className="rounded-2xl border border-slate-200 bg-brand-50/50 p-5 sm:p-6">
+                    <p className="font-semibold text-brand-900">{PAYBACK_CLOSE.title}</p>
+                    <ul className="mt-3 space-y-2.5">
+                      {PAYBACK_CLOSE.points.map((pt) => (
+                        <li key={pt} className="flex items-start gap-3 text-sm text-slate-700">
+                          <svg className="mt-0.5 h-5 w-5 flex-none text-accent-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fillRule="evenodd" d="M16.704 5.29a1 1 0 010 1.42l-7.5 7.5a1 1 0 01-1.42 0l-3.5-3.5a1 1 0 111.42-1.42l2.79 2.79 6.79-6.79a1 1 0 011.42 0z" clipRule="evenodd" /></svg>
+                          {pt}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
                   {/* honeypot */}
-                  <input
-                    type="text"
-                    name="company_website"
-                    tabIndex={-1}
-                    autoComplete="off"
-                    aria-hidden="true"
-                    defaultValue=""
-                    onChange={(e) => { hpRef.current = e.target.value; }}
-                    style={{ position: "absolute", left: "-9999px", width: "1px", height: "1px", opacity: 0 }}
-                  />
-                  <p className="eyebrow">{STRESS_CONTACT.headline}</p>
-                  <h3 className="mt-2 text-xl font-bold text-brand-900 font-display">{STRESS_CONTACT.sub}</h3>
+                  <input type="text" name="company_website" tabIndex={-1} autoComplete="off" aria-hidden="true" defaultValue="" onChange={(e) => { hpRef.current = e.target.value; }} style={{ position: "absolute", left: "-9999px", width: "1px", height: "1px", opacity: 0 }} />
+
+                  <p className="eyebrow mt-7">{STRESS_CONTACT.headline}</p>
+                  <h3 className="mt-1 text-xl font-bold text-brand-900 font-display">{STRESS_CONTACT.sub}</h3>
+                  {summaryLine && <p className="mt-2 text-sm text-slate-600">{summaryLine}</p>}
 
                   {errorList.length > 0 && (
                     <div ref={summaryRef} tabIndex={-1} role="alert" className="mt-4 rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-800 focus:outline-none focus:ring-2 focus:ring-red-300">
                       <p className="font-semibold">Please fix the following:</p>
-                      <ul className="mt-1 list-disc pl-5">
-                        {errorList.map((m, i) => <li key={i}>{m}</li>)}
-                      </ul>
+                      <ul className="mt-1 list-disc pl-5">{errorList.map((m, i) => <li key={i}>{m}</li>)}</ul>
                     </div>
                   )}
 
@@ -353,28 +415,17 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
                   </div>
 
                   <label className="mt-4 flex cursor-pointer items-start gap-3 text-xs leading-relaxed text-slate-600">
-                    <input
-                      type="checkbox"
-                      checked={contact.marketingConsent}
-                      onChange={(e) => setC("marketingConsent", e.target.checked)}
-                      className="mt-0.5 h-5 w-5 flex-none rounded border-slate-300 text-brand-600 focus:ring-brand-500"
-                    />
-                    <span>
-                      {STRESS_CONTACT.consent.replace("FundVella", SITE_NAME)} <span className="text-slate-400">({STRESS_CONTACT.consentNote})</span>
-                    </span>
+                    <input type="checkbox" checked={contact.marketingConsent} onChange={(e) => setC("marketingConsent", e.target.checked)} className="mt-0.5 h-5 w-5 flex-none rounded border-slate-300 text-brand-600 focus:ring-brand-500" />
+                    <span>{STRESS_CONTACT.consent.replace("FundVella", SITE_NAME)} <span className="text-slate-400">({STRESS_CONTACT.consentNote})</span></span>
                   </label>
 
-                  <button type="button" onClick={submitContact} disabled={submitting} className="btn-primary mt-6 w-full">
-                    {submitting ? "One moment…" : STRESS_CONTACT.button}
-                  </button>
-                  <p className="mt-3 text-center text-sm font-medium text-brand-800">{STRESS_CONTACT.nudge}</p>
-                  <p className="mt-1 text-center text-xs text-slate-500">{STRESS_CONTACT.reassure}</p>
+                  <button type="button" onClick={submitContact} disabled={submitting} className="btn-primary mt-6 w-full">{submitting ? "One moment…" : STRESS_CONTACT.button}</button>
+                  <p className="mt-2 text-center text-xs text-slate-500">{STRESS_CONTACT.reassure}</p>
+                  <button type="button" onClick={back} className="mt-4 inline-flex min-h-[44px] items-center text-sm font-medium text-slate-400 hover:text-slate-700">← Change an answer</button>
                 </div>
               ) : (
                 <div className="p-6 sm:p-9">
-                  {contact.firstName && (
-                    <p className="text-sm font-semibold text-accent-700">Here is your plan, {contact.firstName}.</p>
-                  )}
+                  {contact.firstName && <p className="text-sm font-semibold text-accent-700">Here is your plan, {contact.firstName}.</p>}
 
                   <div className="mt-3 rounded-2xl border border-accent-200 bg-accent-50/50 p-5">
                     <p className="text-xs font-semibold uppercase tracking-wide text-accent-700">{STRESS_PAYOFF.fixTitle}</p>
@@ -385,28 +436,50 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
                   <h3 className="mt-2 text-xl font-bold text-brand-900 font-display">{fit.title}</h3>
                   <p className="mt-2 text-slate-600">{fit.rationale}</p>
 
-                  <div className="mt-6 rounded-2xl border border-slate-200 bg-brand-50/50 p-5 sm:p-6">
-                    <p className="font-semibold text-brand-900">{PAYBACK_CLOSE.title}</p>
-                    <ul className="mt-3 space-y-2.5">
-                      {PAYBACK_CLOSE.points.map((pt) => (
-                        <li key={pt} className="flex items-start gap-3 text-sm text-slate-700">
-                          <svg className="mt-0.5 h-5 w-5 flex-none text-accent-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                            <path fillRule="evenodd" d="M16.704 5.29a1 1 0 010 1.42l-7.5 7.5a1 1 0 01-1.42 0l-3.5-3.5a1 1 0 111.42-1.42l2.79 2.79 6.79-6.79a1 1 0 011.42 0z" clipRule="evenodd" />
-                          </svg>
-                          {pt}
-                        </li>
-                      ))}
-                    </ul>
+                  {/* Booking or callback */}
+                  <div className="mt-7 rounded-2xl border border-slate-200 bg-brand-50/50 p-5 sm:p-6">
+                    {CALCOM_ENABLED ? (
+                      <>
+                        <p className="font-semibold text-brand-900 font-display">{STRESS_PAYOFF.bookTitle}</p>
+                        <p className="mt-1 text-sm text-slate-600">{STRESS_PAYOFF.bookSub}</p>
+                        <BookCall vertical={vertical.slug} name={contact.firstName} email={contact.email} notes={calNotes} label={STRESS_PAYOFF.bookLabel} className="mt-4 w-full sm:w-auto" />
+                      </>
+                    ) : (
+                      <>
+                        <p className="font-semibold text-brand-900 font-display">{STRESS_PAYOFF.callbackTitle}</p>
+                        <p className="mt-1 text-sm text-slate-600">{STRESS_PAYOFF.callbackSub}</p>
+                      </>
+                    )}
                   </div>
 
-                  <button type="button" onClick={onCta} className="btn-primary mt-7 w-full sm:w-auto">
-                    {STRESS_PAYOFF.ctaLabel} →
-                  </button>
-                  <p className="mt-3 text-sm font-medium text-brand-800">{STRESS_PAYOFF.ctaSub}</p>
-                  <p className="mt-2 text-xs text-slate-500">{STRESS_PAYOFF.disclaimer}</p>
-                  <button type="button" onClick={back} className="mt-4 block text-sm font-medium text-slate-400 hover:text-slate-700">
-                    ← Change an answer
-                  </button>
+                  {/* Slim optional enrichment */}
+                  {enrichDone ? (
+                    <div className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50/60 p-5">
+                      <p className="font-semibold text-brand-900">{STRESS_ENRICH.doneTitle}</p>
+                      <p className="mt-1 text-sm text-slate-600">{STRESS_ENRICH.doneSub}</p>
+                    </div>
+                  ) : enrichOpen ? (
+                    <div className="mt-6 rounded-2xl border border-slate-200 p-5 sm:p-6">
+                      <p className="font-semibold text-brand-900">{STRESS_ENRICH.title}</p>
+                      <p className="mt-1 text-sm text-slate-500">{STRESS_ENRICH.sub}</p>
+                      <div className="mt-4 space-y-4">
+                        <RadioCards legend={STRESS_ENRICH.amount} options={AMOUNT_OPTIONS} value={amountNeeded} onChange={(v: AmountValue) => setAmount(v)} columns={2} />
+                        <RadioCards legend={STRESS_ENRICH.bank} options={BANK_STATEMENTS_OPTIONS} value={bankStatements} onChange={(v: BankStatementsValue) => setBank(v)} columns={3} />
+                        <div className="grid gap-4 sm:grid-cols-2">
+                          <TextField label={STRESS_ENRICH.state.label} value={state} onChange={setState} autoComplete="address-level1" help={STRESS_ENRICH.state.help} />
+                          <TextField label={STRESS_ENRICH.lastName.label} value={lastName} onChange={setLastName} autoComplete="family-name" />
+                        </div>
+                      </div>
+                      <div className="mt-5 flex items-center gap-4">
+                        <button type="button" onClick={saveEnrichment} className="btn-primary">{STRESS_ENRICH.saveLabel}</button>
+                        <button type="button" onClick={() => setEnrichOpen(false)} className="text-sm font-medium text-slate-500 hover:text-slate-800">{STRESS_ENRICH.skipLabel}</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button type="button" onClick={() => setEnrichOpen(true)} className="mt-6 text-sm font-semibold text-accent-700 hover:text-accent-800">+ {STRESS_PAYOFF.enrichToggle}</button>
+                  )}
+
+                  <p className="mt-6 text-xs text-slate-500">{STRESS_PAYOFF.disclaimer}</p>
                 </div>
               )}
             </div>

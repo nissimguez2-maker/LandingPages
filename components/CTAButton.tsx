@@ -4,7 +4,7 @@ import { track } from "@/lib/analytics";
 
 interface CTAButtonProps {
   label: string;
-  /** Anchor to scroll to (default: the prequalification form). */
+  /** Anchor to scroll to (default: the Cash-Flow Stress Test). */
   target?: string;
   /** Where on the page this CTA lives (for analytics). */
   location: string;
@@ -19,7 +19,7 @@ interface CTAButtonProps {
  */
 export default function CTAButton({
   label,
-  target = "#prequalify",
+  target = "#estimate",
   location,
   vertical,
   variant = "primary",

@@ -21,7 +21,7 @@ export default function StickyCTA({ vertical, label }: { vertical: string; label
     };
     window.addEventListener("scroll", onScroll, { passive: true });
 
-    const target = document.querySelector("#prequalify");
+    const target = document.querySelector("#estimate");
     let io: IntersectionObserver | undefined;
     if (target) {
       io = new IntersectionObserver(

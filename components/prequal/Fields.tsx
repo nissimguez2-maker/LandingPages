@@ -116,7 +116,7 @@ export function TextField({
         inputMode={inputMode}
         aria-invalid={!!error}
         aria-describedby={error ? errorId : undefined}
-        className={`mt-1.5 w-full appearance-none rounded-lg border px-4 py-3 text-sm text-slate-900 shadow-sm transition focus:outline-none focus:ring-2 ${
+        className={`mt-1.5 w-full appearance-none rounded-lg border px-4 py-3 text-base text-slate-900 shadow-sm transition focus:outline-none focus:ring-2 sm:text-sm ${
           error
             ? "border-red-400 focus:ring-red-200"
             : "border-slate-300 focus:border-brand-500 focus:ring-brand-100"
@@ -153,7 +153,7 @@ export function TextArea({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         rows={3}
-        className="mt-1.5 w-full rounded-lg border border-slate-300 px-4 py-3 text-sm text-slate-900 shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+        className="mt-1.5 w-full rounded-lg border border-slate-300 px-4 py-3 text-base text-slate-900 shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 sm:text-sm"
       />
     </label>
   );

@@ -167,6 +167,10 @@ export interface LeadData {
   currentBalanceOwed?: string;
   notes?: string;
 
+  // Stress-test extras (rich signal from the interactive questions)
+  priorities?: string[]; // full drag-rank order of cash-flow pains
+  pollResponses?: Record<string, string>; // raw swipe answers
+
   // Meta / attribution (filled automatically)
   verticalTitle?: string;
   sourcePage?: string;
