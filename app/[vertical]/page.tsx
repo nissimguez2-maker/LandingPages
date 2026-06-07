@@ -31,7 +31,7 @@ export async function generateMetadata({
       description: v.seoDescription,
       url,
       type: "website",
-      siteName: "Merchant Capital Review",
+      siteName: "FundVella",
     },
     twitter: { card: "summary_large_image", title: v.seoTitle, description: v.seoDescription },
   };

@@ -1,4 +1,4 @@
-# Merchant Capital Review — MCA / SMB Funding Landing Pages
+# FundVella — MCA / SMB Funding Landing Pages
 
 Conversion-optimized, compliance-aware landing pages for 12 funding verticals.
 **One codebase → one Netlify site → 12 routes → one centralized HubSpot CRM.**

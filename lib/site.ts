@@ -3,7 +3,7 @@
  * from the environment and used for canonical tags, OpenGraph, sitemap, robots.
  */
 
-export const SITE_NAME = "Merchant Capital Review";
+export const SITE_NAME = "FundVella";
 
 export const SITE_TAGLINE = "Fast working-capital reviews for real operating businesses.";
 
