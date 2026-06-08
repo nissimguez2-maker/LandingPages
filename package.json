@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@netlify/blobs": "^10.7.9",
     "next": "^15.1.6",
     "posthog-js": "^1.382.0",
     "react": "^19.0.0",
