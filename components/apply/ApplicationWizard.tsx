@@ -114,6 +114,10 @@ export default function ApplicationWizard({
   useEffect(() => {
     phaseRef.current = phase;
   }, [phase]);
+  const furthestRef = useRef(0);
+  useEffect(() => {
+    if (stepIdx > furthestRef.current) furthestRef.current = stepIdx;
+  }, [stepIdx]);
 
   const setField = <K extends keyof LeadData>(k: K, v: LeadData[K]) =>
     setLead((l) => ({ ...l, [k]: v }));
@@ -174,9 +178,29 @@ export default function ApplicationWizard({
     const handler = () => {
       if (phaseRef.current === "done") return;
       try {
+        const l = leadRef.current;
+        const signals = {
+          ssnProvided: !!l.ssnProvided,
+          ssnDeferred: !!l.ssnDeferred,
+          bankConnected: !!l.bankConnected,
+          bankStatementsDeferred: !!l.bankStatementsDeferred,
+          hasUploads: Array.isArray(l.bankStatementFiles) && l.bankStatementFiles.length > 0,
+        };
         navigator.sendBeacon(
           "/api/application",
-          new Blob([JSON.stringify({ ...leadRef.current, partial: true, abandoned: true })], { type: "application/json" }),
+          new Blob(
+            [
+              JSON.stringify({
+                ...l,
+                partial: true,
+                abandoned: true,
+                dropStep: APPLICATION_STEPS[stepRef.current].id,
+                furthestStep: APPLICATION_STEPS[furthestRef.current].id,
+                signals,
+              }),
+            ],
+            { type: "application/json" },
+          ),
         );
       } catch {
         /* best effort */

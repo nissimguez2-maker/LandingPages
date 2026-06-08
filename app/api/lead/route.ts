@@ -1,27 +1,56 @@
 /**
- * Lead intake — PLACEHOLDER. No backend is wired yet (by design).
+ * Prequal lead intake.
  *
- * The landing page POSTs every capture (partial + full) to this endpoint. Right
- * now it just acknowledges the request so the form completes and the visitor
- * sees the thank-you page. Nothing is stored, scored, emailed, or forwarded.
- *
- * Wire your backend here from scratch — e.g. forward the payload to an n8n
- * webhook, or call a CRM / email service directly.
+ * Was a placeholder that discarded every lead. Now it scores the lead
+ * server-side (authoritative band, not the tamperable client one), builds the
+ * shared leadProfile, and emits a signed, idempotent `lead.captured` event to
+ * n8n. The client fires this 2-4x per visitor (beacon + contact + enrichment +
+ * booking); the deterministic dedup key collapses those to one CRM record.
  */
 
 import { NextResponse } from "next/server";
 
+import { buildLeadProfile, redactSensitive, type ApplicationSubmission } from "@/lib/application";
+import { scoreLead } from "@/lib/leadScoring";
+import { leadDedupeKey, temperatureFor } from "@/lib/server/events";
+import { emit } from "@/lib/server/forward";
+import type { LeadData } from "@/lib/types";
+
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+interface LeadBody extends ApplicationSubmission {
+  company_website?: string; // honeypot
+}
+
 export async function POST(req: Request): Promise<NextResponse> {
+  let body: LeadBody;
   try {
-    await req.json(); // accept the payload (ignored until a backend is wired)
+    body = (await req.json()) as LeadBody;
   } catch {
     return NextResponse.json({ ok: false, error: "invalid_json" }, { status: 400 });
   }
 
-  // TODO: wire your backend here (n8n webhook, CRM, email, …).
+  // Honeypot: bots fill the hidden field. Ack OK (don't tip them off), emit nothing.
+  if (body.company_website && body.company_website.trim()) {
+    return NextResponse.json({ ok: true });
+  }
+
+  const lead = body as LeadData;
+  const score = scoreLead(lead); // server-authoritative
+  const stage = lead.partial === false ? "complete" : "partial";
+
+  const data = {
+    ...redactSensitive(body),
+    leadProfile: buildLeadProfile(lead),
+    band: score.band,
+    score: score.score,
+    scoreReasons: score.reasons,
+    temperature: temperatureFor(lead.urgency),
+    stage,
+  };
+
+  await emit("lead.captured", leadDedupeKey(lead.email, lead.phone, lead.industry, stage), data);
 
   return NextResponse.json({ ok: true });
 }
