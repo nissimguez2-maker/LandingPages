@@ -15,7 +15,6 @@ import {
   STRESS_TEASER,
   TIER_REVEAL,
   FIT_COPY,
-  PAYBACK_CLOSE,
   STRESS_CONTACT,
   STRESS_PAYOFF,
   STRESS_ENRICH,
@@ -490,7 +489,7 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
                   </div>
                 </div>
                 <ul className="mt-6 space-y-2.5">
-                  {result.pressurePoints.map((p, i) => (
+                  {result.pressurePoints.slice(0, 2).map((p, i) => (
                     <Reveal key={p} delay={i * 120}>
                       <li className="flex items-start gap-3 text-sm text-brand-100">
                         <span className="mt-1 h-1.5 w-1.5 flex-none rounded-full bg-accent-400" />
@@ -507,19 +506,6 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
                   {/* Fallback capture: a floating cal.com bubble + exit-intent popup so a
                       visitor who will not type can still book a call instead of bouncing. */}
                   {CALCOM_ENABLED && <BookCallFloating vertical={vertical.slug} notes={calNotes} onBooked={onCalBooked} onConfirmed={() => onBookingConfirmed("floating")} />}
-
-                  {/* cost of waiting, on screen while they decide */}
-                  <div className="rounded-2xl border border-slate-200 bg-brand-50/50 p-5 sm:p-6">
-                    <p className="font-semibold text-brand-900">{PAYBACK_CLOSE.title}</p>
-                    <ul className="mt-3 space-y-2.5">
-                      {PAYBACK_CLOSE.points.map((pt) => (
-                        <li key={pt} className="flex items-start gap-3 text-sm text-slate-700">
-                          <svg className="mt-0.5 h-5 w-5 flex-none text-accent-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fillRule="evenodd" d="M16.704 5.29a1 1 0 010 1.42l-7.5 7.5a1 1 0 01-1.42 0l-3.5-3.5a1 1 0 111.42-1.42l2.79 2.79 6.79-6.79a1 1 0 011.42 0z" clipRule="evenodd" /></svg>
-                          {pt}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
 
                   {/* honeypot */}
                   <input type="text" name="company_website" tabIndex={-1} autoComplete="off" aria-hidden="true" defaultValue="" onChange={(e) => { hpRef.current = e.target.value; }} style={{ position: "absolute", left: "-9999px", width: "1px", height: "1px", opacity: 0 }} />
