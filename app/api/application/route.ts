@@ -14,6 +14,9 @@ import { randomUUID } from "crypto";
 import { NextResponse } from "next/server";
 
 import { buildLeadProfile, redactSensitive, type ApplicationSubmission } from "@/lib/application";
+import { scoreLead } from "@/lib/leadScoring";
+import { temperatureFor } from "@/lib/server/events";
+import { emit } from "@/lib/server/forward";
 import { sendResumeEmail } from "@/lib/server/email";
 import { getApplication, isStoreConfigured, markResumeEmailed, upsertApplication } from "@/lib/server/store";
 import { getSiteUrl } from "@/lib/site";
@@ -23,20 +26,9 @@ export const dynamic = "force-dynamic";
 
 interface AutosaveBody extends ApplicationSubmission {
   abandoned?: boolean;
-}
-
-async function forwardRecovery(payload: Record<string, unknown>): Promise<void> {
-  const url = process.env.APPLICATION_WEBHOOK_URL;
-  if (!url) return;
-  try {
-    await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "application.abandoned", data: payload }),
-    });
-  } catch {
-    /* best effort */
-  }
+  dropStep?: string;
+  furthestStep?: string;
+  signals?: Record<string, unknown>;
 }
 
 export async function GET(req: Request): Promise<NextResponse> {
@@ -66,16 +58,33 @@ export async function POST(req: Request): Promise<NextResponse> {
     lead: safe,
   });
 
-  // Recovery: a leaving lead with an email gets ONE resume nudge.
-  if (body.abandoned && body.email && body.applicationStatus !== "submitted") {
+  // On abandon: the app owns the instant (T+0) resume email; n8n owns the later
+  // branched cadence — so we ALWAYS emit application.abandoned for it to pick up.
+  if (body.abandoned && body.applicationStatus !== "submitted") {
     const rec = isStoreConfigured() ? await getApplication(token) : null;
-    if (!rec?.resume_emailed_at) {
-      const resumeUrl = `${getSiteUrl()}/apply/${body.industry ?? ""}?app=${token}`;
-      const profile = buildLeadProfile(body);
-      const sent = await sendResumeEmail({ to: body.email, firstName: body.firstName, resumeUrl, profile });
-      if (sent) await markResumeEmailed(token);
-      else await forwardRecovery({ email: body.email, firstName: body.firstName, resumeUrl, profile });
+    const alreadyEmailed = Boolean(rec?.resume_emailed_at);
+    const resumeUrl = `${getSiteUrl()}/apply/${body.industry ?? ""}?app=${token}`;
+    const profile = buildLeadProfile(body);
+
+    let emailedByApp = alreadyEmailed;
+    if (body.email && !alreadyEmailed) {
+      emailedByApp = await sendResumeEmail({ to: body.email, firstName: body.firstName, resumeUrl, profile });
+      if (emailedByApp) await markResumeEmailed(token);
     }
+
+    const score = scoreLead(body);
+    await emit("application.abandoned", `app:${token}:abandoned:${body.dropStep ?? "unknown"}`, {
+      ...safe,
+      leadProfile: profile,
+      band: score.band,
+      score: score.score,
+      temperature: temperatureFor(body.urgency),
+      dropStep: body.dropStep,
+      furthestStep: body.furthestStep,
+      signals: body.signals,
+      completionPct: body.formCompletionPercentage,
+      resume: { resumeUrl, emailedByApp },
+    });
   }
 
   return NextResponse.json({ ok: true, id: token });

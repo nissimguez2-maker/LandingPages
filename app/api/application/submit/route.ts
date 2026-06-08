@@ -11,25 +11,14 @@ import { randomUUID } from "crypto";
 import { NextResponse } from "next/server";
 
 import { buildLeadProfile, digitsOnly, redactSensitive, type ApplicationSubmission } from "@/lib/application";
+import { scoreLead } from "@/lib/leadScoring";
+import { temperatureFor } from "@/lib/server/events";
+import { emit } from "@/lib/server/forward";
 import { encryptSecret } from "@/lib/server/secure";
 import { upsertApplication } from "@/lib/server/store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-async function forward(summary: Record<string, unknown>): Promise<void> {
-  const url = process.env.APPLICATION_WEBHOOK_URL;
-  if (!url) return;
-  try {
-    await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "application.submitted", data: summary }),
-    });
-  } catch {
-    /* best effort — never block the applicant on a downstream hiccup */
-  }
-}
 
 export async function POST(req: Request): Promise<NextResponse> {
   let body: ApplicationSubmission;
@@ -55,7 +44,14 @@ export async function POST(req: Request): Promise<NextResponse> {
     plaid_item_id: body.plaidItemId ?? null,
   });
 
-  await forward({ ...safe, leadProfile: profile });
+  const score = scoreLead(body);
+  await emit("application.submitted", `app:${id}:submitted`, {
+    ...safe,
+    leadProfile: profile,
+    band: score.band,
+    score: score.score,
+    temperature: temperatureFor(body.urgency),
+  });
 
   return NextResponse.json({ ok: true, id });
 }
