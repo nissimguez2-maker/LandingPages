@@ -14,6 +14,7 @@ import { buildLeadProfile, redactSensitive, type ApplicationSubmission } from "@
 import { scoreLead } from "@/lib/leadScoring";
 import { leadDedupeKey, temperatureFor } from "@/lib/server/events";
 import { emit } from "@/lib/server/forward";
+import { upsertHubspotContact } from "@/lib/server/hubspot";
 import type { LeadData } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -40,17 +41,22 @@ export async function POST(req: Request): Promise<NextResponse> {
   const score = scoreLead(lead); // server-authoritative
   const stage = lead.partial === false ? "complete" : "partial";
 
+  const temperature = temperatureFor(lead.urgency);
   const data = {
     ...redactSensitive(body),
     leadProfile: buildLeadProfile(lead),
     band: score.band,
     score: score.score,
     scoreReasons: score.reasons,
-    temperature: temperatureFor(lead.urgency),
+    temperature,
     stage,
   };
 
-  await emit("lead.captured", leadDedupeKey(lead.email, lead.phone, lead.industry, stage), data);
+  // Two pipes from one capture: the event bus (n8n) and the CRM upsert (HubSpot, tagged FundVella).
+  await Promise.all([
+    emit("lead.captured", leadDedupeKey(lead.email, lead.phone, lead.industry, stage), data),
+    upsertHubspotContact(lead, { brand: "FundVella", band: score.band, score: score.score, temperature, status: stage }),
+  ]);
 
   return NextResponse.json({ ok: true });
 }
