@@ -257,6 +257,7 @@ export interface LeadData {
   pollResponses?: Record<string, string>; // raw swipe answers
 
   // Meta / attribution (filled automatically)
+  leadBrand?: string; // which stream this lead belongs to (FundVella | FinBiz | …)
   verticalTitle?: string;
   sourcePage?: string;
   utm?: UtmData;

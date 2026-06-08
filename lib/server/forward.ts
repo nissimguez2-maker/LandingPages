@@ -74,8 +74,10 @@ export async function emit(
   event: FvEventType,
   idempotencyKey: string,
   data: Record<string, unknown>,
+  leadBrand: string,
+  source?: string,
 ): Promise<boolean> {
-  const envelope = makeEnvelope(event, idempotencyKey, data);
+  const envelope = makeEnvelope(event, idempotencyKey, data, leadBrand, source);
   if (!WEBHOOK) {
     await deadLetter(envelope);
     return false;

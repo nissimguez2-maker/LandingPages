@@ -14,8 +14,8 @@ import { buildLeadProfile, digitsOnly, redactSensitive, type ApplicationSubmissi
 import { scoreLead } from "@/lib/leadScoring";
 import { temperatureFor } from "@/lib/server/events";
 import { emit } from "@/lib/server/forward";
-import { upsertHubspotContact } from "@/lib/server/hubspot";
 import { encryptSecret } from "@/lib/server/secure";
+import { STREAMS } from "@/lib/streams";
 import { upsertApplication } from "@/lib/server/store";
 
 export const runtime = "nodejs";
@@ -47,16 +47,20 @@ export async function POST(req: Request): Promise<NextResponse> {
 
   const score = scoreLead(body);
   const temperature = temperatureFor(body.urgency);
-  await Promise.all([
-    emit("application.submitted", `app:${id}:submitted`, {
+  const stream = STREAMS.fundvella;
+  await emit(
+    "application.submitted",
+    `app:${id}:submitted`,
+    {
       ...safe,
+      leadBrand: stream.leadBrand,
       leadProfile: profile,
       band: score.band,
       score: score.score,
       temperature,
-    }),
-    upsertHubspotContact(body, { brand: "FundVella", band: score.band, score: score.score, temperature, status: "submitted" }),
-  ]);
+    },
+    stream.leadBrand,
+  );
 
   return NextResponse.json({ ok: true, id });
 }
