@@ -23,7 +23,7 @@ export default function OfferingsSection() {
               <div className="flex items-center gap-3">
                 <span
                   className={`flex h-10 w-10 flex-none items-center justify-center rounded-lg ${
-                    p.hero ? "bg-accent-600 text-white" : "bg-brand-50 text-brand-700"
+                    p.hero ? "bg-[rgb(var(--accent-cta))] text-white" : "bg-brand-50 text-brand-700"
                   }`}
                 >
                   <Icon name={p.icon} className="h-5 w-5" />

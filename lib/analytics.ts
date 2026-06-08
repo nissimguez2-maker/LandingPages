@@ -21,6 +21,7 @@ export type AnalyticsEventName =
   | "prequal_form_submitted"
   | "partial_lead_saved"
   | "calculator_used"
+  | "stresstest_viewed"
   | "stresstest_started"
   | "stresstest_step"
   | "stresstest_completed"
@@ -87,13 +88,26 @@ export function track(event: AnalyticsEventName, payload: AnalyticsPayload = {})
     posthog?: { capture: (e: string, p?: Record<string, unknown>) => void };
     clarity?: (...args: unknown[]) => void;
   };
-  w.posthog?.capture(event, payload);
+  w.posthog?.capture(event, { ...payload, session_id: data.session_id });
   w.clarity?.("event", event);
 
   if (process.env.NODE_ENV === "development") {
     // eslint-disable-next-line no-console
     console.debug("[analytics]", event, payload);
   }
+}
+
+/**
+ * Create a PostHog person profile (person_profiles is "identified_only") so the
+ * visitor's funnel events stitch into one person once they become a lead. Uses
+ * the non-PII session id as the distinct id, never raw email/phone.
+ */
+export function identifyLead(props?: Record<string, unknown>): void {
+  if (typeof window === "undefined") return;
+  const id = getSessionId();
+  if (!id) return;
+  const ph = (window as unknown as { posthog?: { identify: (id: string, p?: Record<string, unknown>) => void } }).posthog;
+  ph?.identify(id, props);
 }
 
 /** Convenience alias so call sites can read as <AnalyticsEvent name=... />-style. */

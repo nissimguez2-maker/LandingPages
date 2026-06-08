@@ -22,7 +22,11 @@ export default function MediaFigure({
       <img
         src={asset.src}
         alt={asset.alt}
-        loading="lazy"
+        width={1100}
+        height={825}
+        loading={aspect === "hero" ? "eager" : "lazy"}
+        fetchPriority={aspect === "hero" ? "high" : undefined}
+        decoding="async"
         className={`${ratio} w-full rounded-2xl object-cover ${className}`}
       />
     );

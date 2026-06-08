@@ -20,7 +20,7 @@ import {
   STRESS_PAYOFF,
   STRESS_ENRICH,
 } from "@/content/stressTest";
-import { track } from "@/lib/analytics";
+import { track, identifyLead } from "@/lib/analytics";
 import { scoreLead, bandEvent } from "@/lib/leadScoring";
 import { computeCompleteness } from "@/lib/completeness";
 import { getStoredUtm } from "@/lib/utm";
@@ -83,6 +83,13 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
   const summaryRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const calTriggerRef = useRef<HTMLButtonElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const viewedRef = useRef(false);
+  const confirmedRef = useRef(false);
+  const advanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const contactRef = useRef(contact);
+  contactRef.current = contact;
+  useEffect(() => () => { if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current); }, []);
 
   const result = useMemo(() => runStressTest(answers as StressAnswers), [answers]);
   const fix = useMemo(() => fixFirst(answers as StressAnswers), [answers]);
@@ -164,14 +171,33 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
     [buildPayload, contact.email, contact.firstName, vertical.slug],
   );
 
+  // Fire booking_confirmed exactly once per booking, no matter which surface
+  // (inline embed, floating bubble, or gate popup) reports it.
+  const onBookingConfirmed = useCallback(
+    (source: string) => {
+      if (confirmedRef.current) return;
+      confirmedRef.current = true;
+      track("booking_confirmed", { vertical: vertical.slug, source });
+    },
+    [vertical.slug],
+  );
+
   // Exit-intent escalation (desktop): if a visitor is at the contact step and
   // looks like they're leaving without giving info, open the cal.com popup once
-  // so we get a booked call instead of a bounce. Mobile relies on the bubble.
+  // so we get a booked call instead of a bounce. Suppressed while they are
+  // actively filling the form, and only armed after a short dwell so it never
+  // hijacks someone mid-type. Mobile relies on the always-on bubble.
   useEffect(() => {
     if (!CALCOM_ENABLED || phase !== "result" || unlocked) return;
     getCalNs(); // make sure the embed + namespace are primed for the trigger
+    let armed = false;
+    const armTimer = setTimeout(() => { armed = true; }, 4000);
     const open = () => {
-      if (exitFiredRef.current || partialSavedRef.current || bookedRef.current) return;
+      if (!armed || exitFiredRef.current || partialSavedRef.current || bookedRef.current) return;
+      const ae = document.activeElement;
+      if (ae && ["INPUT", "TEXTAREA", "SELECT"].includes(ae.tagName)) return;
+      const c = contactRef.current;
+      if (c.firstName || c.businessName || c.phone || c.email) return;
       exitFiredRef.current = true;
       track("booking_exit_intent", { vertical: vertical.slug });
       calTriggerRef.current?.click();
@@ -180,7 +206,7 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
       if (e.clientY <= 0 && !e.relatedTarget) open();
     };
     document.addEventListener("mouseout", onMouseOut);
-    return () => document.removeEventListener("mouseout", onMouseOut);
+    return () => { clearTimeout(armTimer); document.removeEventListener("mouseout", onMouseOut); };
   }, [phase, unlocked, vertical.slug]);
 
   const start = () => {
@@ -212,11 +238,13 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
   };
 
   const back = () => {
+    if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
     if (phase === "result") {
       setUnlocked(false);
-      setSkipped(false);
       setPhase("step");
-      setStepIdx(STEPS - 1);
+      // A skipper never answered the questions, so send them to Q1, not Q5.
+      if (skipped) { setSkipped(false); setStepIdx(0); }
+      else setStepIdx(STEPS - 1);
       return;
     }
     setStepIdx((i) => Math.max(0, i - 1));
@@ -232,15 +260,42 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
   };
   // tap
   const choose = (field: string, value: string) => setAnswers((a) => ({ ...a, [field]: value }));
+  // tap + auto-advance: the answer IS the Next, with a short beat to read the mirror.
+  const chooseAndAdvance = (field: string, value: string, stepId: string) => {
+    choose(field, value);
+    if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
+    advanceTimerRef.current = setTimeout(() => nextFrom(stepId, value), 550);
+  };
 
-  if (phase === "result" && !shownRef.current) {
-    shownRef.current = true;
-    track("stresstest_result_shown", { vertical: vertical.slug, tier: result.tier, exposure: result.exposure });
-  }
-  if (phase === "result" && !unlocked && !contactShownRef.current) {
-    contactShownRef.current = true;
-    track("stresstest_contact_shown", { vertical: vertical.slug });
-  }
+  // View / result-shown / contact-shown events fire from effects, never during render.
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el || viewedRef.current) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting && !viewedRef.current) {
+          viewedRef.current = true;
+          track("stresstest_viewed", { vertical: vertical.slug });
+          io.disconnect();
+        }
+      },
+      { threshold: 0.3 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [vertical.slug]);
+
+  useEffect(() => {
+    if (phase !== "result") return;
+    if (!shownRef.current) {
+      shownRef.current = true;
+      track("stresstest_result_shown", { vertical: vertical.slug, tier: result.tier, exposure: result.exposure, strength: result.strength });
+    }
+    if (!unlocked && !contactShownRef.current) {
+      contactShownRef.current = true;
+      track("stresstest_contact_shown", { vertical: vertical.slug });
+    }
+  }, [phase, unlocked, result.tier, result.exposure, result.strength, vertical.slug]);
 
   const setC = (k: keyof Contact, v: string | boolean) => {
     setContact((p) => ({ ...p, [k]: v }));
@@ -262,13 +317,16 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
     setSubmitting(true);
     const payload = buildPayload(true);
     partialSavedRef.current = true;
+    const { band, score } = scoreLead(payload);
+    track(bandEvent(band), { vertical: vertical.slug, score, context: "stresstest" });
+    identifyLead({ lead: true, band, vertical: vertical.slug });
+    track("stresstest_contact_captured", { vertical: vertical.slug });
     try {
-      const { band, score } = scoreLead(payload);
-      track(bandEvent(band), { vertical: vertical.slug, score, context: "stresstest" });
-      track("partial_lead_saved", { vertical: vertical.slug, completion: computeCompleteness(payload).percentage });
-      track("stresstest_contact_captured", { vertical: vertical.slug });
-      track("stresstest_lead_saved", { vertical: vertical.slug });
-      await fetch("/api/lead", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload), keepalive: true });
+      const res = await fetch("/api/lead", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload), keepalive: true });
+      if (res.ok) {
+        track("partial_lead_saved", { vertical: vertical.slug, completion: computeCompleteness(payload).percentage });
+        track("stresstest_lead_saved", { vertical: vertical.slug, band, score });
+      }
     } catch {
       /* best effort */
     }
@@ -293,8 +351,10 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
   };
 
   const errorList = Object.values(errors).filter(Boolean);
-  const progress = Math.round((stepIdx / STEPS) * 100);
-  const calNotes = `${vertical.title} | ${reveal.label} | needs: ${labelFor(USE_OPTIONS, answers.useOfFunds) ?? ""}`;
+  const progress = Math.round(((stepIdx + 1) / STEPS) * 100);
+  const calNotes = skipped
+    ? `${vertical.title} | direct booking`
+    : `${vertical.title} | ${reveal.label} | needs: ${labelFor(USE_OPTIONS, answers.useOfFunds) ?? ""}`;
 
   const summaryLine = (() => {
     const pain = labelFor(USE_OPTIONS, answers.useOfFunds)?.toLowerCase();
@@ -308,7 +368,7 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
   })();
 
   return (
-    <section id="estimate" className="scroll-mt-16 bg-white py-10 sm:py-14">
+    <section ref={sectionRef} id="estimate" className="scroll-mt-16 bg-white py-10 sm:py-14">
       <div className="container-content max-w-3xl">
         <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lift">
           {/* INTRO */}
@@ -354,12 +414,8 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
                     </figure>
                   )}
                   <h2 ref={headingRef} tabIndex={-1} className="sr-only focus:outline-none">If you had more cash this week, where would it go first?</h2>
-                  <RadioCards legend="If you had more cash this week, where would it go first?" options={USE_OPTIONS as readonly Option[]} value={answers.useOfFunds} onChange={(v: string) => choose("useOfFunds", v)} columns={1} />
+                  <RadioCards legend="If you had more cash this week, where would it go first?" options={USE_OPTIONS as readonly Option[]} value={answers.useOfFunds} onChange={(v: string) => chooseAndAdvance("useOfFunds", v, "use")} columns={1} />
                   <p className="mt-4 min-h-[1.5rem] text-sm font-medium text-brand-800">{answers.useOfFunds && USE_MIRROR[answers.useOfFunds]}</p>
-                  <div className="mt-4 flex items-center justify-between">
-                    <span />
-                    <button type="button" onClick={() => nextFrom("use", answers.useOfFunds)} disabled={!answers.useOfFunds} className="btn-primary">Next</button>
-                  </div>
                 </div>
               )}
 
@@ -367,11 +423,10 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
               {stepIdx === 1 && (
                 <div className="mt-6">
                   <h2 ref={headingRef} tabIndex={-1} className="sr-only focus:outline-none">{REVENUE_STEP.prompt}</h2>
-                  <RadioCards legend={REVENUE_STEP.prompt} help={REVENUE_STEP.help} options={REVENUE_STEP.options as readonly Option[]} value={answers.monthlyRevenue} onChange={(v: string) => choose("monthlyRevenue", v)} columns={1} />
+                  <RadioCards legend={REVENUE_STEP.prompt} help={REVENUE_STEP.help} options={REVENUE_STEP.options as readonly Option[]} value={answers.monthlyRevenue} onChange={(v: string) => chooseAndAdvance("monthlyRevenue", v, "revenue")} columns={1} />
                   <p className="mt-4 min-h-[1.5rem] text-sm font-medium text-brand-800">{answers.monthlyRevenue && REVENUE_STEP.mirror[answers.monthlyRevenue]}</p>
-                  <div className="mt-4 flex items-center justify-between">
+                  <div className="mt-4">
                     <button type="button" onClick={back} className="inline-flex min-h-[44px] items-center text-sm font-medium text-slate-500 hover:text-slate-800">← Back</button>
-                    <button type="button" onClick={() => nextFrom("revenue", answers.monthlyRevenue)} disabled={!answers.monthlyRevenue} className="btn-primary">Next</button>
                   </div>
                 </div>
               )}
@@ -380,11 +435,10 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
               {stepIdx === 2 && (
                 <div className="mt-6">
                   <h2 ref={headingRef} tabIndex={-1} className="sr-only focus:outline-none">{TIME_STEP.prompt}</h2>
-                  <RadioCards legend={TIME_STEP.prompt} help={TIME_STEP.help} options={TIME_STEP.options as readonly Option[]} value={answers.timeInBusiness} onChange={(v: string) => choose("timeInBusiness", v)} columns={2} />
+                  <RadioCards legend={TIME_STEP.prompt} help={TIME_STEP.help} options={TIME_STEP.options as readonly Option[]} value={answers.timeInBusiness} onChange={(v: string) => chooseAndAdvance("timeInBusiness", v, "time")} columns={2} />
                   <p className="mt-4 min-h-[1.5rem] text-sm font-medium text-brand-800">{answers.timeInBusiness && TIME_STEP.mirror[answers.timeInBusiness]}</p>
-                  <div className="mt-4 flex items-center justify-between">
+                  <div className="mt-4">
                     <button type="button" onClick={back} className="inline-flex min-h-[44px] items-center text-sm font-medium text-slate-500 hover:text-slate-800">← Back</button>
-                    <button type="button" onClick={() => nextFrom("time", answers.timeInBusiness)} disabled={!answers.timeInBusiness} className="btn-primary">Next</button>
                   </div>
                 </div>
               )}
@@ -406,11 +460,10 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
               {stepIdx === 4 && (
                 <div className="mt-6">
                   <h2 ref={headingRef} tabIndex={-1} className="sr-only focus:outline-none">{URGENCY_STEP.prompt}</h2>
-                  <RadioCards legend={URGENCY_STEP.prompt} help={URGENCY_STEP.help} options={URGENCY_STEP.options as readonly Option[]} value={answers.urgency} onChange={(v: string) => choose("urgency", v)} columns={2} />
+                  <RadioCards legend={URGENCY_STEP.prompt} help={URGENCY_STEP.help} options={URGENCY_STEP.options as readonly Option[]} value={answers.urgency} onChange={(v: string) => chooseAndAdvance("urgency", v, "urgency")} columns={2} />
                   <p className="mt-4 min-h-[1.5rem] text-sm font-medium text-brand-800">{answers.urgency && URGENCY_STEP.mirror[answers.urgency]}</p>
-                  <div className="mt-4 flex items-center justify-between">
+                  <div className="mt-4">
                     <button type="button" onClick={back} className="inline-flex min-h-[44px] items-center text-sm font-medium text-slate-500 hover:text-slate-800">← Back</button>
-                    <button type="button" onClick={() => nextFrom("urgency", answers.urgency)} disabled={!answers.urgency} className="btn-primary">See my read</button>
                   </div>
                 </div>
               )}
@@ -452,7 +505,7 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
                 <div className="p-6 sm:p-9">
                   {/* Fallback capture: a floating cal.com bubble + exit-intent popup so a
                       visitor who will not type can still book a call instead of bouncing. */}
-                  {CALCOM_ENABLED && <BookCallFloating vertical={vertical.slug} notes={calNotes} onBooked={onCalBooked} />}
+                  {CALCOM_ENABLED && <BookCallFloating vertical={vertical.slug} notes={calNotes} onBooked={onCalBooked} onConfirmed={() => onBookingConfirmed("floating")} />}
 
                   {/* cost of waiting, on screen while they decide */}
                   <div className="rounded-2xl border border-slate-200 bg-brand-50/50 p-5 sm:p-6">
@@ -535,7 +588,7 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
                         <p className="font-semibold text-brand-900 font-display">{STRESS_PAYOFF.bookTitle}</p>
                         <p className="mt-1 text-sm text-slate-600">{STRESS_PAYOFF.bookSub}</p>
                         <div className="mt-4">
-                          <BookCallInline vertical={vertical.slug} name={contact.firstName} email={contact.email} notes={calNotes} />
+                          <BookCallInline vertical={vertical.slug} name={contact.firstName} email={contact.email} notes={calNotes} onConfirmed={() => onBookingConfirmed("inline")} />
                         </div>
                       </>
                     ) : (

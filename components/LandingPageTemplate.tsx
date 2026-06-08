@@ -5,6 +5,7 @@ import SiteHeader from "./SiteHeader";
 import SiteFooter from "./SiteFooter";
 import HeroSection from "./HeroSection";
 import TrustBar from "./TrustBar";
+import PainReliefSection from "./PainReliefSection";
 import SocialProofSection from "./SocialProofSection";
 import Timeline from "./Timeline";
 import FitComparisonTable from "./FitComparisonTable";
@@ -33,6 +34,8 @@ export default function LandingPageTemplate({ vertical }: { vertical: VerticalCo
       <main>
         <HeroSection vertical={vertical} />
         <TrustBar items={vertical.heroHighlights} />
+
+        <PainReliefSection vertical={vertical} />
 
         <CashFlowStressTest vertical={vertical} />
         <ReassuranceStrip vertical={vertical} />

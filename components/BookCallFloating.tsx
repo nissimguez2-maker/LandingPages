@@ -34,16 +34,20 @@ export default function BookCallFloating({
   notes,
   buttonText = "Book a quick call",
   onBooked,
+  onConfirmed,
 }: {
   vertical: string;
   notes?: string;
   buttonText?: string;
   onBooked?: (info: { email?: string; name?: string }) => void;
+  onConfirmed?: () => void;
 }) {
-  // Keep the latest callback without making it an effect dependency (no churn / no
+  // Keep the latest callbacks without making them effect dependencies (no churn / no
   // duplicate floating buttons while the user types in the form below).
   const onBookedRef = useRef(onBooked);
   onBookedRef.current = onBooked;
+  const onConfirmedRef = useRef(onConfirmed);
+  onConfirmedRef.current = onConfirmed;
 
   useEffect(() => {
     if (!CALCOM_ENABLED) return;
@@ -62,7 +66,7 @@ export default function BookCallFloating({
       cal("on", {
         action: "bookingSuccessful",
         callback: (e: unknown) => {
-          track("booking_confirmed", { vertical, source: "floating" });
+          onConfirmedRef.current?.();
           onBookedRef.current?.(extractAttendee(e));
         },
       });

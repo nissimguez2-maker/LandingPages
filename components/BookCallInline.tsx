@@ -16,11 +16,13 @@ export default function BookCallInline({
   name,
   email,
   notes,
+  onConfirmed,
 }: {
   vertical: string;
   name?: string;
   email?: string;
   notes?: string;
+  onConfirmed?: () => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -34,10 +36,10 @@ export default function BookCallInline({
       cal("inline", {
         elementOrSelector: el,
         calLink: CALCOM_HANDLE,
-        config: { name: name || "", email: email || "", notes: notes || "", layout: "month_view", theme: "auto" },
+        config: { name: name || "", email: email || "", notes: notes || "", layout: "month_view", theme: "auto", useSlotsViewOnSmallScreen: "true" },
       });
       cal("ui", { hideEventTypeDetails: true, layout: "month_view" });
-      cal("on", { action: "bookingSuccessful", callback: () => track("booking_confirmed", { vertical, source: "inline" }) });
+      cal("on", { action: "bookingSuccessful", callback: () => onConfirmed?.() });
       track("booking_opened", { vertical, source: "inline" });
     } catch {
       /* ignore */

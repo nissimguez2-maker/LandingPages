@@ -31,7 +31,7 @@ export default function Analytics() {
             session_recording: { maskAllInputs: true },
           });
           (window as unknown as { posthog?: unknown }).posthog = posthog;
-          posthog.capture("$pageview");
+          // First pageview is owned by the pathname effect below (avoids a double count).
         })
         .catch(() => {});
     }

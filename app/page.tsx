@@ -5,6 +5,7 @@ import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import HeroSection from "@/components/HeroSection";
 import TrustBar from "@/components/TrustBar";
+import PainReliefSection from "@/components/PainReliefSection";
 import CashFlowStressTest from "@/components/CashFlowStressTest";
 import OfferingsSection from "@/components/OfferingsSection";
 import DayInCashFlowSection from "@/components/DayInCashFlowSection";
@@ -39,6 +40,8 @@ export default function HomePage() {
       <main>
         <HeroSection vertical={v} />
         <TrustBar />
+
+        <PainReliefSection vertical={v} />
 
         <CashFlowStressTest vertical={v} />
         <ReassuranceStrip vertical={v} />

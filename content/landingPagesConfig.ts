@@ -173,7 +173,7 @@ const baseReview = (): string[] => [
   "Unable to provide bank statements right now",
 ];
 
-const defaultCta = { primary: "See Where Your Cash Runs Short" };
+const defaultCta = { primary: "See What You May Qualify For" };
 
 export const landingPages: VerticalConfig[] = [
   {

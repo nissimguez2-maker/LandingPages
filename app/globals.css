@@ -17,8 +17,8 @@
   --accent-700: 4 120 87;
   --accent-800: 6 95 70;
   --accent-900: 6 78 59;
-  --accent-cta: 5 150 105;
-  --accent-cta-hover: 4 120 87;
+  --accent-cta: 4 120 87;
+  --accent-cta-hover: 6 95 70;
 }
 
 html {
@@ -34,6 +34,7 @@ body {
 :where(a, button, input, select, textarea):focus-visible {
   outline: 2px solid theme("colors.brand.500");
   outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.6);
   border-radius: 4px;
 }
 
