@@ -14,6 +14,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
   RadioCards,
+  Select,
   TextField,
 } from "@/components/prequal/Fields";
 import {
@@ -38,7 +39,9 @@ import {
   computeApplicationProgress,
   formatCurrency,
   formatEin,
+  formatZip,
   isValidSsn,
+  parseCurrency,
   readApplicationDraft,
   readApplicationPrefill,
   saveApplicationDraft,
@@ -49,6 +52,7 @@ import {
 import {
   CREDIT_SCORE_OPTIONS,
   ENTITY_TYPE_OPTIONS,
+  US_STATES,
   USE_OF_FUNDS_OPTIONS,
   YES_NO_OPTIONS,
   type CreditScoreValue,
@@ -349,11 +353,15 @@ export default function ApplicationWizard({
 
     const submission: ApplicationSubmission = {
       ...lead,
+      // Normalize capitalRequested to a clean dollar string and add a numeric
+      // companion so automations receive a number without parsing "$" strings.
+      capitalRequested: lead.capitalRequested,
+      capitalRequestedAmount: lead.capitalRequested ? parseCurrency(lead.capitalRequested) : undefined,
       applicationStatus: "submitted",
       signedAt: new Date().toISOString(),
       ssn: ssn || undefined,
       signatureDataUrl: lead.signatureName ? makeSignatureImage(lead.signatureName) : undefined,
-    };
+    } as ApplicationSubmission & { capitalRequestedAmount?: number };
 
     try {
       const res = await fetch("/api/application/submit", {
@@ -416,8 +424,8 @@ export default function ApplicationWizard({
             <TextField label="Business street address" value={lead.businessStreet ?? ""} onChange={(v) => setField("businessStreet", v)} autoComplete="street-address" error={errors.businessStreet} />
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-6">
               <div className="sm:col-span-3"><TextField label="City" value={lead.businessCity ?? ""} onChange={(v) => setField("businessCity", v)} autoComplete="address-level2" error={errors.businessCity} /></div>
-              <div className="sm:col-span-1"><TextField label="State" value={lead.businessState ?? ""} onChange={(v) => setField("businessState", v)} autoComplete="address-level1" error={errors.businessState} /></div>
-              <div className="sm:col-span-2"><TextField label="ZIP" value={lead.businessZip ?? ""} onChange={(v) => setField("businessZip", v)} inputMode="numeric" autoComplete="postal-code" error={errors.businessZip} /></div>
+              <div className="sm:col-span-1"><Select label="State" value={lead.businessState ?? ""} onChange={(v) => setField("businessState", v)} options={US_STATES} placeholder="State" autoComplete="address-level1" error={errors.businessState} /></div>
+              <div className="sm:col-span-2"><TextField label="ZIP" value={lead.businessZip ?? ""} onChange={(v) => setField("businessZip", formatZip(v))} inputMode="numeric" autoComplete="postal-code" error={errors.businessZip} /></div>
             </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <TextField label="Years under current ownership" value={lead.ownershipLengthYears ?? ""} onChange={(v) => setField("ownershipLengthYears", v)} inputMode="numeric" />
@@ -465,8 +473,8 @@ export default function ApplicationWizard({
             <TextField label="Home street address" value={lead.ownerStreet ?? ""} onChange={(v) => setField("ownerStreet", v)} autoComplete="street-address" error={errors.ownerStreet} />
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-6">
               <div className="sm:col-span-3"><TextField label="City" value={lead.ownerCity ?? ""} onChange={(v) => setField("ownerCity", v)} autoComplete="address-level2" error={errors.ownerCity} /></div>
-              <div className="sm:col-span-1"><TextField label="State" value={lead.ownerState ?? ""} onChange={(v) => setField("ownerState", v)} autoComplete="address-level1" error={errors.ownerState} /></div>
-              <div className="sm:col-span-2"><TextField label="ZIP" value={lead.ownerZip ?? ""} onChange={(v) => setField("ownerZip", v)} inputMode="numeric" autoComplete="postal-code" error={errors.ownerZip} /></div>
+              <div className="sm:col-span-1"><Select label="State" value={lead.ownerState ?? ""} onChange={(v) => setField("ownerState", v)} options={US_STATES} placeholder="State" autoComplete="address-level1" error={errors.ownerState} /></div>
+              <div className="sm:col-span-2"><TextField label="ZIP" value={lead.ownerZip ?? ""} onChange={(v) => setField("ownerZip", formatZip(v))} inputMode="numeric" autoComplete="postal-code" error={errors.ownerZip} /></div>
             </div>
             <TextField label="Your ownership %" value={lead.ownershipPercent ?? ""} onChange={(v) => setField("ownershipPercent", v)} inputMode="numeric" placeholder="100" />
             <RadioCards<CreditScoreValue> legend="Roughly, your personal credit range" options={CREDIT_SCORE_OPTIONS} value={lead.creditScoreBand} onChange={(v) => setField("creditScoreBand", v)} columns={2} error={errors.creditScoreBand} />

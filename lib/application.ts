@@ -55,6 +55,44 @@ export function formatCurrency(v: string): string {
   return "$" + Number(d).toLocaleString("en-US");
 }
 
+/**
+ * "$12,345" or "12345" → 12345 (number). Returns 0 if unparseable.
+ * Use at submit/normalization so automations receive a clean number.
+ */
+export function parseCurrency(v: string): number {
+  const d = digitsOnly(v);
+  return d ? Number(d) : 0;
+}
+
+/**
+ * Progressive display format for US phone numbers.
+ * "5551234567" → "+1 (555) 123-4567"
+ * Formats partially as the user types (up to 10 digits, always prefixed +1).
+ */
+export function formatPhoneDisplay(raw: string): string {
+  const d = digitsOnly(raw).slice(0, 10);
+  if (!d) return "";
+  if (d.length <= 3) return `+1 (${d}`;
+  if (d.length <= 6) return `+1 (${d.slice(0, 3)}) ${d.slice(3)}`;
+  return `+1 (${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`;
+}
+
+/** E.164 normalized phone: "+15551234567". Returns empty string if fewer than 10 digits. */
+export function normalizePhone(raw: string): string {
+  const d = digitsOnly(raw).slice(0, 10);
+  return d.length === 10 ? `+1${d}` : "";
+}
+
+/** 5-digit ZIP only (digits, max 5). */
+export function formatZip(raw: string): string {
+  return digitsOnly(raw).slice(0, 5);
+}
+
+/** True for exactly 5 digits. */
+export function isValidZip(v: string): boolean {
+  return digitsOnly(v).length === 5;
+}
+
 /* ── Validators ─────────────────────────────────────────────────────────── */
 
 export function isValidSsn(v: string): boolean {
@@ -77,6 +115,11 @@ export function isEmail(v: string): boolean {
 
 export function isPhone(v: string): boolean {
   return digitsOnly(v).length >= 10;
+}
+
+/** True for exactly 10 US digits. */
+export function isValidPhone(v: string): boolean {
+  return digitsOnly(v).length === 10;
 }
 
 /* ── Step model ─────────────────────────────────────────────────────────── */
@@ -125,8 +168,9 @@ export function validateStep(step: ApplicationStepId, lead: LeadData): Record<st
       if (!lead.entityType) e.entityType = "Pick your business type.";
       need("businessStreet", "Add your business street address.");
       need("businessCity", "Add the city.");
-      need("businessState", "Add the state.");
-      need("businessZip", "Add the ZIP code.");
+      if (!lead.businessState || lead.businessState.trim().length !== 2) e.businessState = "Select the state.";
+      if (lead.businessZip && !isValidZip(lead.businessZip)) e.businessZip = "ZIP must be 5 digits.";
+      else if (!lead.businessZip) e.businessZip = "Add the ZIP code.";
       break;
     case "funding":
       need("capitalRequested", "How much capital are you looking for?");
@@ -138,8 +182,9 @@ export function validateStep(step: ApplicationStepId, lead: LeadData): Record<st
       need("ownerDob", "Add the owner's date of birth.");
       need("ownerStreet", "Add the home street address.");
       need("ownerCity", "Add the city.");
-      need("ownerState", "Add the state.");
-      need("ownerZip", "Add the ZIP code.");
+      if (!lead.ownerState || lead.ownerState.trim().length !== 2) e.ownerState = "Select the state.";
+      if (lead.ownerZip && !isValidZip(lead.ownerZip)) e.ownerZip = "ZIP must be 5 digits.";
+      else if (!lead.ownerZip) e.ownerZip = "Add the ZIP code.";
       if (!lead.creditScoreBand) e.creditScoreBand = "Pick the range that fits.";
       // SSN: required to submit, but the owner can choose to give it to a specialist
       // by phone instead. Never a hard dead-end.

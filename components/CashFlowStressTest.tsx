@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { LeadData, VerticalConfig, AmountValue, BankStatementsValue, Option } from "@/lib/types";
-import { AMOUNT_OPTIONS, BANK_STATEMENTS_OPTIONS } from "@/lib/types";
+import { AMOUNT_OPTIONS, BANK_STATEMENTS_OPTIONS, US_STATES } from "@/lib/types";
 import { runStressTest, buildPrefill, fixFirst, type StressAnswers } from "@/lib/stressTest";
 import { saveApplicationPrefill } from "@/lib/application";
 import {
@@ -25,7 +25,7 @@ import { scoreLead, bandEvent } from "@/lib/leadScoring";
 import { computeCompleteness } from "@/lib/completeness";
 import { getStoredUtm } from "@/lib/utm";
 import { SITE_NAME } from "@/lib/site";
-import { RadioCards, TextField } from "./prequal/Fields";
+import { PhoneField, RadioCards, Select, TextField } from "./prequal/Fields";
 import AnimatedNumber from "./motion/AnimatedNumber";
 import Reveal from "./motion/Reveal";
 import DisclaimerBlock from "./DisclaimerBlock";
@@ -534,7 +534,7 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
                   <div className="mt-5 grid gap-5 sm:grid-cols-2">
                     <TextField label={STRESS_CONTACT.fields.firstName.label} value={contact.firstName} onChange={(v) => setC("firstName", v)} autoComplete="given-name" error={errors.firstName} help={STRESS_CONTACT.fields.firstName.help} />
                     <TextField label={STRESS_CONTACT.fields.businessName.label} value={contact.businessName} onChange={(v) => setC("businessName", v)} autoComplete="organization" error={errors.businessName} help={STRESS_CONTACT.fields.businessName.help} />
-                    <TextField label={STRESS_CONTACT.fields.phone.label} type="tel" inputMode="tel" value={contact.phone} onChange={(v) => setC("phone", v)} autoComplete="tel" error={errors.phone} help={STRESS_CONTACT.fields.phone.help} />
+                    <PhoneField label={STRESS_CONTACT.fields.phone.label} value={contact.phone} onChange={(v) => setC("phone", v)} error={errors.phone} help={STRESS_CONTACT.fields.phone.help} />
                     <TextField label={STRESS_CONTACT.fields.email.label} type="email" inputMode="email" value={contact.email} onChange={(v) => setC("email", v)} autoComplete="email" help={STRESS_CONTACT.fields.email.help} />
                   </div>
 
@@ -629,7 +629,7 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
                         <RadioCards legend={STRESS_ENRICH.amount} options={AMOUNT_OPTIONS} value={amountNeeded} onChange={(v: AmountValue) => setAmount(v)} columns={2} />
                         <RadioCards legend={STRESS_ENRICH.bank} options={BANK_STATEMENTS_OPTIONS} value={bankStatements} onChange={(v: BankStatementsValue) => setBank(v)} columns={3} />
                         <div className="grid gap-4 sm:grid-cols-2">
-                          <TextField label={STRESS_ENRICH.state.label} value={state} onChange={setState} autoComplete="address-level1" help={STRESS_ENRICH.state.help} />
+                          <Select label={STRESS_ENRICH.state.label} value={state} onChange={setState} options={US_STATES} placeholder="Select state" autoComplete="address-level1" help={STRESS_ENRICH.state.help} />
                           <TextField label={STRESS_ENRICH.lastName.label} value={lastName} onChange={setLastName} autoComplete="family-name" />
                         </div>
                       </div>
