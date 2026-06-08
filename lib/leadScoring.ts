@@ -129,11 +129,6 @@ function bandFor(score: number): LeadBand {
   return "red";
 }
 
-/** Internal band -> HubSpot lead_category option value (hot/warm/cold). */
-export function bandToHubSpotCategory(band: LeadBand): "hot" | "warm" | "cold" {
-  return band === "green" ? "hot" : band === "yellow" ? "warm" : "cold";
-}
-
 /** Analytics event name for a band. */
 export function bandEvent(band: LeadBand): "green_lead" | "yellow_lead" | "red_lead" {
   return `${band}_lead` as "green_lead" | "yellow_lead" | "red_lead";

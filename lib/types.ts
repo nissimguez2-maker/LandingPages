@@ -1,7 +1,7 @@
 /**
- * Central type system + the option sets that power the progressive form,
- * the lead-scoring engine, and the HubSpot mapping. Defining options once here
- * keeps the form UI, scoring, and CRM mapping perfectly in sync.
+ * Central type system + the option sets that power the progressive form and the
+ * lead-scoring engine. Defining the options once here keeps the form UI and
+ * scoring in sync (and gives a future backend a single shape to map from).
  */
 
 import type { AccentName } from "./themes";
@@ -367,7 +367,7 @@ export interface VerticalConfig {
   glossary?: GlossaryTerm[];
   /** Trade-specific "questions owners like you ask" (kept OUT of FAQ JSON-LD). */
   commonQuestions?: FAQItem[];
-  /** Maps to HubSpot company industry_focus when it fits one of HubSpot's options. */
+  /** Optional industry category for the vertical (handy when mapping to a CRM later). */
   industryFocus?: "technology" | "healthcare" | "finance" | "retail";
   /** Free-text tag stored for segmentation / future campaign routing. */
   campaignTag: string;

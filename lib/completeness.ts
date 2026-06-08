@@ -1,6 +1,6 @@
 /**
- * Form completeness — shared by the client (to display/track progress) and the
- * server (authoritative values written to HubSpot). One definition keeps the
+ * Form completeness — a single definition the client uses to display/track
+ * progress and that a backend can reuse for authoritative values. Keeps the
  * "form_completion_percentage" and "missing_information" fields consistent.
  */
 

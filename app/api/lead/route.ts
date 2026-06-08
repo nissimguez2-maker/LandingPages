@@ -1,62 +1,27 @@
 /**
- * Secure lead intake endpoint. Runs as a Netlify serverless function.
- * Handles BOTH partial saves (lead.partial === true) and full submissions.
+ * Lead intake — PLACEHOLDER. No backend is wired yet (by design).
  *
- * Responds 200 as soon as the contact is validated; the multi-call CRM write
- * runs after the response (via after()) so the request never risks the function
- * timeout, and CRM errors are logged server-side.
+ * The landing page POSTs every capture (partial + full) to this endpoint. Right
+ * now it just acknowledges the request so the form completes and the visitor
+ * sees the thank-you page. Nothing is stored, scored, emailed, or forwarded.
+ *
+ * Wire your backend here from scratch — e.g. forward the payload to an n8n
+ * webhook, or call a CRM / email service directly.
  */
 
-import { NextResponse, after } from "next/server";
-import { submitLeadToCRM } from "@/lib/crm";
-import { emitLeadCaptured } from "@/lib/n8n";
-import { computeCompleteness } from "@/lib/completeness";
-import type { LeadData } from "@/lib/types";
+import { NextResponse } from "next/server";
 
-// Force the Node.js runtime (needs process.env + fetch to HubSpot).
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request): Promise<NextResponse> {
-  let body: LeadData & { honeypot?: string };
   try {
-    body = (await req.json()) as LeadData & { honeypot?: string };
+    await req.json(); // accept the payload (ignored until a backend is wired)
   } catch {
     return NextResponse.json({ ok: false, error: "invalid_json" }, { status: 400 });
   }
 
-  // Honeypot: real users never fill the hidden field; bots do. Silently accept
-  // (so bots don't learn) but drop the submission.
-  if (typeof body.honeypot === "string" && body.honeypot.trim() !== "") {
-    return NextResponse.json({ ok: true });
-  }
-  const lead: LeadData = body;
+  // TODO: wire your backend here (n8n webhook, CRM, email, …).
 
-  // Don't persist anonymous noise. Require at least one way to reach the lead.
-  if (!lead.email && !lead.phone) {
-    return NextResponse.json({ ok: false, error: "missing_contact" }, { status: 422 });
-  }
-  // Reject malformed emails server-side (don't store junk that will bounce).
-  if (lead.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(lead.email)) {
-    return NextResponse.json({ ok: false, error: "invalid_email" }, { status: 422 });
-  }
-
-  // Authoritative completeness (never trust the client's numbers).
-  const { percentage, missing } = computeCompleteness(lead);
-  lead.formCompletionPercentage = percentage;
-  lead.missingInformation = missing;
-
-  // Respond immediately; run the multi-call CRM write after the response is sent
-  // so the request never risks the serverless function timeout.
-  after(async () => {
-    try {
-      await submitLeadToCRM(lead);
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error("[lead] CRM write failed:", err instanceof Error ? err.message : err);
-    }
-    // Signed lead.captured event to the n8n hub (no-op until N8N_INGEST_URL is set).
-    await emitLeadCaptured(lead);
-  });
   return NextResponse.json({ ok: true });
 }

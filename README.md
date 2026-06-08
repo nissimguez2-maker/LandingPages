@@ -1,430 +1,126 @@
-# FundVella — MCA / SMB Funding Landing Pages
+# FundVella — Funding Landing Pages
 
-Conversion-optimized, compliance-aware landing pages for 12 funding verticals.
-**One codebase → one Netlify site → 12 routes → one centralized HubSpot CRM.**
+Conversion-optimized, compliance-aware landing pages for SMB / MCA funding
+verticals. **One codebase → one site → many routes**, all driven by a shared
+config.
 
-The landing pages are front-end acquisition routes only. The backend system of
-record is **HubSpot** — one CRM, one lead database, one qualification engine, one
-funding pipeline.
-
----
-
-## Table of contents
-
-1. [Architecture (one site, not twelve)](#architecture)
-2. [Run locally](#run-locally)
-3. [Project structure](#project-structure)
-4. [Edit a vertical's content](#edit-content)
-5. [Add a new vertical](#add-vertical)
-6. [Configure HubSpot](#configure-hubspot)
-7. [Edit the HubSpot field mapping](#field-mapping)
-8. [Build the HubSpot funding pipeline (manual)](#pipeline)
-9. [How lead scoring works](#lead-scoring)
-10. [The progressive form + partial lead capture](#the-form)
-11. [Analytics events](#analytics)
-12. [SEO](#seo)
-13. [Deploy to Netlify](#deploy)
-14. [Future: multiple domains (Option C)](#multi-domain)
-15. [Future: crawler / traffic automation hooks](#crawlers)
+This repo is the **landing page (front end) only** — a clean slate. There is
+**no backend wired yet**: the form POSTs to a placeholder endpoint that simply
+acknowledges the capture. You'll build the backend (CRM, email, routing,
+automation) from scratch.
 
 ---
 
-<a name="architecture"></a>
-## 1. Architecture — one site, not twelve
-
-**Decision: Option A, built "C-ready."** One Next.js (App Router) + TypeScript +
-Tailwind codebase, deployed to a single Netlify site, serving all 12 routes from
-a shared config. This is the lowest-maintenance option and consolidates SEO
-authority on one domain. You never maintain 12 sites.
-
-- **Pages** are statically generated (fast, SEO-friendly).
-- **Lead submission** runs server-side in `app/api/lead/route.ts` (a Netlify
-  serverless function) so the HubSpot token is never exposed to the browser.
-- **All content** lives in `content/landingPagesConfig.ts` — pages are rendered
-  by one template, not hand-built 12 times.
-
-If you ever need **separate domains per vertical**, you don't rewrite anything —
-see [Future: multiple domains](#multi-domain).
-
-The 12 routes:
-
-```
-/restaurant-business-funding      /medical-practice-funding
-/trucking-business-funding        /dental-practice-funding
-/construction-business-funding    /beauty-salon-med-spa-funding
-/ecommerce-inventory-funding      /retail-store-funding
-/auto-repair-shop-funding         /hvac-plumbing-business-funding
-/cleaning-business-funding        /bad-credit-business-funding
-```
-
----
-
-<a name="run-locally"></a>
-## 2. Run locally
+## 1. Run locally
 
 ```bash
 npm install
-cp .env.example .env.local   # fill in values (see "Configure HubSpot")
+cp .env.example .env.local   # fill in values as needed
 npm run dev                  # http://localhost:3000
 ```
 
 Other scripts:
 
 ```bash
-npm run build      # production build (what Netlify runs)
+npm run build      # production build
 npm run start      # serve the production build
 npm run typecheck  # TypeScript only
 ```
 
-You can develop the UI without any HubSpot credentials — submissions will be
-logged and skipped server-side until a token is set.
+The full UI works with no configuration. The lead form submits to
+`app/api/lead`, which currently just returns `{ ok: true }` — nothing is stored
+or sent anywhere yet.
 
 ---
 
-<a name="project-structure"></a>
-## 3. Project structure
+## 2. Project structure
 
 ```
 app/
   layout.tsx               Root layout + base SEO metadata
   page.tsx                 Home (index of all verticals)
-  [vertical]/page.tsx      All 12 landing pages (SSG) + FAQ JSON-LD
+  [vertical]/page.tsx      All landing pages (SSG) + FAQ JSON-LD
   thank-you/page.tsx       Neutral confirmation page (noindex)
-  api/lead/route.ts        Secure lead intake (full + partial) → CRM
+  api/lead/route.ts        PLACEHOLDER lead endpoint (no backend wired)
+  privacy · terms · disclosures   Legal pages (linked in the footer)
   sitemap.ts · robots.ts   Generated SEO routes
 components/
   LandingPageTemplate.tsx  Assembles every section in conversion order
-  HeroSection · UseCasesSection · HowItWorksSection
-  QualificationCriteriaSection · FitComparisonTable · FAQSection
-  CTASection · TrustBar · DisclaimerBlock · CTAButton · PageViewTracker
-  SiteHeader · SiteFooter · ThankYou
-  prequal/
-    PrequalificationFlow.tsx  4-step progressive form + partial capture
-    FormStep · ProgressIndicator · Fields
+  HeroSection · OfferingsSection · HowItWorksSection · SocialProofSection · …
+  CashFlowStressTest.tsx   Tap-only diagnostic that captures intel + pre-fills the form
+  prequal/                 Progressive prequalification form
 content/
-  landingPagesConfig.ts    ← ALL vertical copy/SEO/FAQ/criteria
+  landingPagesConfig.ts    ← ALL vertical copy / SEO / FAQ / criteria
+  stressTest.ts            Stress-test copy
 lib/
-  hubspotFieldMap.ts       ← ALL HubSpot property names + value maps + pipeline
-  crm.ts                   submitLeadToCRM() — CRM-agnostic entrypoint
-  hubspot.ts               submitLeadToHubSpot() — server-only implementation
-  leadScoring.ts           Scoring + Green/Yellow/Red bands
+  leadScoring.ts           Scoring + Green/Yellow/Red bands (drives the stress-test UX)
   completeness.ts          Form completion % + missing info
-  analytics.ts · utm.ts    Event hooks + UTM capture
-  types.ts · site.ts       Types/option sets + site constants
+  analytics.ts · utm.ts    Vendor-neutral events + UTM capture
+  stressTest.ts            Stress-test scoring math
+  site.ts · themes.ts · structuredData.ts · calcom.ts · types.ts
 ```
 
 ---
 
-<a name="edit-content"></a>
-## 4. Edit a vertical's content
+## 3. Edit a vertical's content
 
 Everything visible on a page comes from one object in
-`content/landingPagesConfig.ts`. Find the vertical by its `slug` and edit any of:
+`content/landingPagesConfig.ts`. Find the vertical by its `slug` (which becomes
+the route, `/<slug>`) and edit any of: `heroHeadline`, `heroSubheadline`,
+`heroHighlights`, `useCases`, `qualificationNotes`, `goodFitCriteria`,
+`reviewCriteria`, `fitTable`, `faqs`, `cta`, `seoTitle`, `seoDescription`,
+`painRelief`, `cashFlowSignature`.
 
-`heroHeadline`, `heroSubheadline`, `heroHighlights`, `useCases`,
-`qualificationNotes`, `goodFitCriteria`, `reviewCriteria`, `fitTable`, `faqs`,
-`cta`, `seoTitle`, `seoDescription`.
-
-Shared building blocks (`baseFaqs()`, `baseFitTable()`, `WHAT_WE_LOOK_AT`) keep
-copy consistent — edit them once to change every page.
+### Add a new vertical
+Append a new entry to `landingPages` in `content/landingPagesConfig.ts` (copy an
+existing one). The dynamic route, sitemap, footer links, and home grid all read
+from the config — `generateStaticParams()` builds the new page on the next deploy.
 
 > **Compliance:** keep the approved language ("you may qualify", "approval
-> depends on underwriting", "no obligation to accept an offer", "clean files can
-> move faster") and avoid prohibited claims (guaranteed/instant approval, lowest
-> rates, no risk, bank loan, everyone qualifies, no documents needed). The
-> disclaimer in `DisclaimerBlock.tsx` renders near every form and in the footer.
+> depends on underwriting", "no obligation to accept an offer") and avoid
+> prohibited claims (guaranteed/instant approval, lowest rates, no risk, bank
+> loan, everyone qualifies). The disclaimer renders near every form and in the
+> footer (`components/DisclaimerBlock.tsx`).
 
 ---
 
-<a name="add-vertical"></a>
-## 5. Add a new vertical
+## 4. The lead form (wire your backend here)
 
-1. Append a new `VerticalConfig` object to `landingPages` in
-   `content/landingPagesConfig.ts` (copy an existing one as a template). The
-   `slug` becomes the route (`/<slug>`).
-2. That's it. The dynamic route, sitemap, footer links, and home grid all read
-   from the config — `generateStaticParams()` will build the new page on the next
-   deploy.
-3. (Optional) If the vertical maps to a HubSpot `industry_focus` option
-   (technology/healthcare/finance/retail), set `industryFocus`, or add a mapping
-   in `SLUG_TO_INDUSTRY_FOCUS` in `lib/hubspot.ts`.
+`app/api/lead/route.ts` is a **placeholder**. The form (and the Cash-Flow Stress
+Test) POST their captures there; it currently just returns `{ ok: true }` so the
+flow completes. Build your backend from scratch by replacing the body of that
+route — e.g. forward the JSON payload to an n8n webhook, or call a CRM / email
+service. The payload shape is the `LeadData` type in `lib/types.ts`.
+
+Nothing else in this repo talks to a backend.
 
 ---
 
-<a name="configure-hubspot"></a>
-## 6. Configure HubSpot
+## 5. Analytics
 
-Submissions use a long-lived **server-side bearer token** — a HubSpot **Service
-Key** (recommended) or a legacy Private App token. It creates/updates
-Contact → Company → Deal with associations.
-
-1. HubSpot → **Settings → Integrations → Private Apps**. HubSpot's 2025 platform
-   migration may route this to **Legacy Apps**; when prompted, choose **"Use
-   Service Keys instead"** — the supported path for single-account API access.
-   (Avoid OAuth/"public" apps — those tokens expire in minutes.)
-2. Scopes (least privilege): `crm.objects.contacts.read/write`,
-   `crm.objects.companies.read/write`, `crm.objects.deals.read/write`. Selecting
-   scopes your account isn't provisioned for makes key creation fail.
-3. Copy the key and set environment variables (locally in
-   `.env.local`, and in Netlify → Site settings → Environment variables):
-
-```
-HUBSPOT_PRIVATE_APP_TOKEN=...              # required: Service Key OR Private App token (bearer secret)
-HUBSPOT_PORTAL_ID=148647134                # optional
-HUBSPOT_FORM_ID=                           # optional (form mirror, not required)
-HUBSPOT_DEAL_PIPELINE_ID=default           # see "Build the pipeline"
-HUBSPOT_DEAL_DEFAULT_STAGE_ID=appointmentscheduled
-NEXT_PUBLIC_SITE_URL=https://yourdomain.com
-SITE_VERTICAL=                             # leave empty (Option C only)
-```
-
-**Never commit secrets.** `.env*` is gitignored.
-
-**What gets written on a full submission**
-
-- **Contact** (upserted by email): name, email, phone, `lead_source`,
-  `funding_readiness_score`, `lead_category`, `lead_urgency`,
-  `original_landing_page_url`, `form_completion_percentage`,
-  `missing_information`, preferred time/channel, `marketing_consent_status`, UTM.
-- **Company** (upserted by domain, else created): name, revenue → `monthly_gross_revenue`,
-  `time_in_business` (years), `amount_requested`, bank-statement / NSF / existing-debt
-  booleans, advance count, payment burden, current funder/balance, use of funds.
-- **Deal** (created + associated): `dealname`, `amount`, `amount_requested`,
-  `product_type` (merchant_cash_advance), `deal_status`, `funding_readiness_score`,
-  `lead_category`, pipeline + stage.
-
-**Partial leads** create **Contact (+ Company) only — no Deal** (per architecture
-decision), so the pipeline stays clean.
-
-> **Verified field-name notes** (already handled in the field map):
-> - `estimated_card_sales__processor_volume` (double underscore)
-> - `estimated_current_dailyweekly_payment_burden` (no underscore in "dailyweekly")
-> - `dba_trade_name` was **not found** in the portal — it's left out of writes
->   until you create it or correct the name in `lib/hubspotFieldMap.ts`.
-> - Internal **Green/Yellow/Red** bands map to HubSpot `lead_category`
->   **hot/warm/cold**; urgency maps to **high/medium/low**.
+Vendor-neutral by design (`lib/analytics.ts`). Every event is pushed to
+`window.dataLayer` (GTM-ready) and dispatched as a `CustomEvent`. PostHog and
+Clarity turn on only if their `NEXT_PUBLIC_*` keys are set; otherwise events are
+still emitted locally.
 
 ---
 
-<a name="field-mapping"></a>
-## 7. Edit the HubSpot field mapping
+## 6. SEO
 
-**One file:** `lib/hubspotFieldMap.ts`. It centralizes every HubSpot internal
-property name, the enum value maps (band→category, urgency→enum, channel→enum),
-the representative numeric maps (revenue/amount/time-in-business), and the
-pipeline config. If HubSpot renames a property, change it here and nowhere else.
-No property name is hardcoded anywhere else in the codebase.
+Per page: title, meta description, **canonical URL**, OpenGraph + Twitter tags,
+and **FAQ JSON-LD**. Site-wide: generated `sitemap.xml` and `robots.txt` (`/api`
+and `/thank-you` disallowed). Set `NEXT_PUBLIC_SITE_URL` so canonical/OG/sitemap
+use your real domain.
 
 ---
 
-<a name="pipeline"></a>
-## 8. Build the HubSpot funding pipeline (manual)
+## 7. Deploy
 
-⚠️ The 18-stage MCA pipeline **must be created manually** — it cannot be created
-from code with the current integration, and only the default "Sales Pipeline"
-exists today. Until you build it, deals land in the default pipeline at
-"Appointment Scheduled" (configurable via env).
+Connect this repo to **Netlify** (settings come from `netlify.toml`; the official
+`@netlify/plugin-nextjs` runtime) or to Vercel. Set at least
+`NEXT_PUBLIC_SITE_URL`. Build command `npm run build`, Node 20.
 
-**Create it:** HubSpot → Settings → Objects → **Deals → Pipelines → Create
-pipeline**. Name it e.g. "MCA Funding Pipeline" and add these stages in order:
-
-1. New Lead
-2. Prequalification Needed
-3. Prequalified — Green
-4. Prequalified — Yellow / Needs Review
-5. Documents Requested
-6. Documents Received
-7. Statement Review
-8. Submitted to Underwriting
-9. Offer Received
-10. Offer Presented
-11. Contracts Sent
-12. Contracts Signed
-13. Closing Stips
-14. Funded
-15. Declined
-16. Lost / Not Interested
-17. Nurture
-18. Renewal Opportunity
-
-**Then wire it up:**
-
-- Find the **pipeline id** and each **stage id** (Settings → Deals → Pipelines →
-  the pipeline → each stage shows its internal id, or via the CRM API).
-- Set `HUBSPOT_DEAL_PIPELINE_ID` and `HUBSPOT_DEAL_DEFAULT_STAGE_ID` in Netlify.
-- (Optional) Paste the stage ids into `MCA_PIPELINE_STAGES` in
-  `lib/hubspotFieldMap.ts` so future routing logic can reference stable keys.
-
-A natural default mapping: full **Green** → "Prequalified — Green", full
-**Yellow** → "Prequalified — Yellow", **partial** → "Prequalification Needed".
-
----
-
-<a name="lead-scoring"></a>
-## 9. How lead scoring works
-
-Implemented in `lib/leadScoring.ts` (used both client-side for analytics and
-server-side for the authoritative HubSpot write):
-
-| Signal | Points |
-|---|---|
-| Monthly revenue $20k+ | +25 |
-| Monthly revenue $10k–$20k | +10 |
-| Monthly revenue under $10k | −20 |
-| Time in business 12+ months | +20 |
-| Time in business 3–12 months | +5 |
-| Time in business under 3 months | −25 |
-| Can provide bank statements | +20 |
-| Existing MCA / loan | −5 |
-| Multiple existing advances | −20 |
-| Recent NSFs / negative days | −25 |
-| Urgency today / this week | +10 |
-| Clear productive use of funds | +10 |
-
-**Hard rules:** missing contact details ⇒ **cannot be Green**; refusing key
-documents ⇒ **downgrade**.
-
-**Bands:** `70+` = **Green** (strong fit) · `45–69` = **Yellow** (needs review) ·
-`<45` = **Red** (may not be ready).
-
-Bands drive **internal routing only** (`funding_readiness_score` + `lead_category`
-hot/warm/cold). The visitor always sees the same neutral thank-you — no rejection
-language is ever shown.
-
----
-
-<a name="the-form"></a>
-## 10. The progressive form + partial lead capture
-
-`components/prequal/PrequalificationFlow.tsx` is a 4-step flow (not one long
-form), ordered low-friction → sensitive:
-
-1. **Business** — revenue, time in business, amount, urgency
-2. **Details** — existing financing, payment burden, NSFs, use of funds, can
-   provide statements (sensitive fields allow **"Prefer to discuss" / "Not sure"**)
-3. **Contact** — name, business, phone, email, state, preferred time/channel, consent
-4. **Optional** — website, current funder/balance, notes → submit
-
-**Partial capture:** the moment contact info is captured (end of step 3), the
-lead is saved to HubSpot in the background (`partial: true`). A `beforeunload`
-beacon is a safety net if the visitor leaves before submitting. Partial leads
-store completion %, missing info, source page, vertical, UTM, urgency, and
-computed band/score — and create **Contact (+ Company) only**.
-
----
-
-<a name="analytics"></a>
-## 11. Analytics events
-
-No paid tool is wired up yet (by design), but hooks are ready in
-`lib/analytics.ts`. Every event is pushed to `window.dataLayer` (GTM-ready) and
-dispatched as a `CustomEvent` (`analytics`). Swap the body of `track()` to send
-to GA4/Segment/PostHog without touching call sites.
-
-Events: `landing_page_view`, `cta_clicked`, `prequal_form_started`,
-`prequal_step_completed`, `prequal_contact_captured`, `prequal_form_submitted`,
-`partial_lead_saved`, `green_lead`, `yellow_lead`, `red_lead`.
-
----
-
-<a name="seo"></a>
-## 12. SEO
-
-Per page: title, meta description, **canonical URL**, OpenGraph + Twitter tags
-(in `app/[vertical]/page.tsx`), and **FAQ JSON-LD** structured data.
-Site-wide: generated `sitemap.xml` and `robots.txt` (`/api` and `/thank-you`
-disallowed). Set `NEXT_PUBLIC_SITE_URL` so canonical/OG/sitemap use your real
-domain.
-
----
-
-<a name="deploy"></a>
-## 13. Deploy to Netlify
-
-1. Connect this repo to a new Netlify site (build settings come from
-   `netlify.toml`; the official `@netlify/plugin-nextjs` runtime is used so the
-   API route deploys as a function).
-2. Add the environment variables from [Configure HubSpot](#configure-hubspot)
-   (at minimum `HUBSPOT_PRIVATE_APP_TOKEN` and `NEXT_PUBLIC_SITE_URL`).
-3. Deploy. Point your domain at the site.
-
-Build command `npm run build`, Node 20 (pinned in `netlify.toml`).
-
----
-
-<a name="multi-domain"></a>
-## 14. Future: multiple domains (Option C) — without losing central maintenance
-
-If a vertical ever needs its own domain (brand or paid-media reason), you keep
-**one repo**:
-
-1. Create another Netlify site pointed at **this same repo**.
-2. Set `SITE_VERTICAL=<slug>` in that site's environment.
-
-That deployment then serves only that vertical (home, sitemap, footer, and
-`generateStaticParams` all respect `SITE_VERTICAL` via `getActiveVerticals()`),
-on its own domain — while every site still builds from the same source and feeds
-the **same HubSpot backend**. One codebase remains the single source of truth.
-
----
-
-<a name="crawlers"></a>
-## 15. Future: crawler / traffic automation hooks (not built yet)
-
-This foundation is designed so automation can plug in later **without rework**:
-
-- **Config-driven pages:** new campaign / city / industry pages = new entries in
-  `landingPagesConfig.ts`. A future generator can append configs programmatically.
-- **CRM-agnostic intake:** `submitLeadToCRM()` + `/api/lead` accept the same
-  `LeadData` shape, so imported lead lists or outreach tools can post leads
-  through the identical path (with scoring + partial logic applied).
-- **UTM-native:** every lead already carries UTM attribution for campaign routing.
-- **Event stream:** the `analytics` CustomEvent / `dataLayer` can feed content
-  ideas, trigger-based outreach, and dashboards.
-
-No crawlers or automated posting are included in this build (out of scope).
-
----
-
-## 16. Conversion overhaul (audit-driven) — what's new & how to populate it
-
-An 18-lens expert audit drove a comprehensive overhaul. The new pieces are all
-config-driven:
-
-### Add real images
-`components/MediaFigure.tsx` shows a branded placeholder until a real image exists.
-To use real photos: drop files in `public/media/...` and set `heroImage.src` on the
-vertical in `content/landingPagesConfig.ts` (alt text is already set). Use-case icons
-come from the inline-SVG registry in `components/icons/Icon.tsx` (no image files).
-
-### Add real social proof (never fabricate)
-`SocialProofSection` always shows compliant trust signals (`DEFAULT_TRUST_SIGNALS`).
-Testimonials/stats/logos render **only when populated with real data** — set
-`testimonials`, `stats`, and/or `logos` on a vertical in `landingPagesConfig.ts`.
-Leave them empty to show nothing.
-
-### Cash-Flow Stress Test (the `#estimate` game)
-`components/CashFlowStressTest.tsx` is a client-only, tap-only diagnostic that
-surfaces *why* a merchant needs working capital (no dollar amount, no offer),
-captures lead intel, and pre-fills the prequal via `sessionStorage["mca_prefill"]`.
-Copy lives in `content/stressTest.ts`; pure scoring/exposure math in
-`lib/stressTest.ts`. The per-vertical `cashFlowSignature` is the Step-1 "Sound
-familiar?" hook. Funding products are presented (MCA-led) via the shared
-`OFFERINGS` constant + `components/OfferingsSection.tsx`; the "Sound familiar?"
-pain→relief blocks come from each vertical's `painRelief` in `landingPagesConfig.ts`.
-
-### Legal pages — fill the placeholders
-`app/privacy`, `app/terms`, `app/disclosures` are live and linked in the footer.
-Replace `[your contact email]` / `[your state/jurisdiction]` and have counsel review.
-
-### Analytics events (added)
-`session_id` on every event, plus `prequal_step_abandoned`, `prequal_validation_error`,
-and `calculator_used` (see `lib/analytics.ts`; still vendor-neutral).
-
-### HubSpot lifecycle fields + nurture (optional)
-The integration also writes — only if the properties exist — `captured_at`,
-`lead_capture_stage` (full/partial), `last_form_activity_date`, and consent
-timestamp/source. Unknown properties are **auto-dropped** (they never break a
-submission), so create them in HubSpot only when you want them. Suggested workflows
-to build manually: Green → fast follow-up, Yellow → docs/reassurance, Red → nurture,
-and a partial-lead **win-back** at ~7 days for ≥60% completion.
+### Future: multiple domains
+If a vertical needs its own domain, keep **one repo**: create another site
+pointed at this repo and set `SITE_VERTICAL=<slug>` in its environment. That
+deployment serves only that vertical, on its own domain, from the same source.
