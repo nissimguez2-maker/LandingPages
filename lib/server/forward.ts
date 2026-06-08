@@ -24,6 +24,9 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 function signedHeaders(body: string): Record<string, string> {
   const headers: Record<string, string> = { "content-type": "application/json" };
   if (SECRET) {
+    // Static shared key the n8n gateway checks (simple, reliable auth).
+    headers["x-fundvella-key"] = SECRET;
+    // HMAC signature (timestamp + body) for replay-proof verification when enabled.
     const ts = Date.now().toString();
     const sig = createHmac("sha256", SECRET).update(`${ts}.${body}`).digest("hex");
     headers["x-fundvella-timestamp"] = ts;
