@@ -9,7 +9,8 @@ import type { LeadProfile } from "@/lib/application";
  */
 
 const RESEND_KEY = process.env.RESEND_API_KEY;
-const FROM = process.env.RESUME_EMAIL_FROM || "FundVella <funding@fundvella.com>";
+// Honour the site's existing RESEND_FROM, then our own var, then a safe default.
+const FROM = process.env.RESEND_FROM || process.env.RESUME_EMAIL_FROM || "FundVella <funding@fundvella.com>";
 
 export interface ResumeEmailInput {
   to: string;
