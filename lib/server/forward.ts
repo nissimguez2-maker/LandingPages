@@ -15,7 +15,9 @@ import { makeEnvelope, type FvEnvelope, type FvEventType } from "./events";
  *   is unset — so NOTHING is lost before n8n is wired. Replay the store later.
  */
 
-const WEBHOOK = process.env.APPLICATION_WEBHOOK_URL;
+// Default to the live n8n W0 gateway; the webhook is key-authenticated (x-fundvella-key),
+// so the URL is not a secret. Override per-environment with APPLICATION_WEBHOOK_URL.
+const WEBHOOK = process.env.APPLICATION_WEBHOOK_URL || "https://nissimguez2.app.n8n.cloud/webhook/fundvella-events";
 const SECRET = process.env.NURTURE_SECRET;
 const TIMEOUT_MS = Number(process.env.EVENT_FORWARD_TIMEOUT_MS || 2500);
 
