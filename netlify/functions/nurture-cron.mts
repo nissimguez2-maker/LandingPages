@@ -3,7 +3,7 @@
 // tested over HTTP). This just calls it on a schedule with the shared secret.
 
 export default async () => {
-  const base = (process.env.URL || process.env.NEXT_PUBLIC_SITE_URL || "https://mcapages.netlify.app").replace(/\/+$/, "");
+  const base = (process.env.URL || process.env.NEXT_PUBLIC_SITE_URL || "https://fundvella.com").replace(/\/+$/, "");
   const secret = process.env.NURTURE_SECRET || "";
   try {
     const res = await fetch(`${base}/api/nurture/run`, {
@@ -19,4 +19,5 @@ export default async () => {
   return new Response("ok");
 };
 
-export const config = { schedule: "@hourly" };
+// Every 15 minutes so the partial win-back (first offset = 15 min) is timely.
+export const config = { schedule: "*/15 * * * *" };

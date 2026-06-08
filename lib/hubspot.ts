@@ -156,6 +156,11 @@ function buildContactProps(lead: LeadData, score: LeadScore): Props {
   setProp(p, CONTACT.utmContent, lead.utm?.utm_content);
   setProp(p, CONTACT.utmTerm, lead.utm?.utm_term);
 
+  setProp(p, CONTACT.leadNotes, lead.notes);
+  if (lead.pollResponses && Object.keys(lead.pollResponses).length) {
+    setProp(p, CONTACT.stressTestAnswers, JSON.stringify(lead.pollResponses));
+  }
+
   // Lifecycle fields are OFF by default because they don't exist in the portal
   // yet (sending them would force a wasteful drop-and-retry on every submit).
   // To enable: create these properties in HubSpot, then set
@@ -225,7 +230,7 @@ function buildDealProps(lead: LeadData, score: LeadScore): Props {
     lead.businessName ||
     [lead.firstName, lead.lastName].filter(Boolean).join(" ") ||
     "New lead";
-  setProp(p, DEAL.dealname, `${who} — ${lead.verticalTitle || "Business Funding"}`);
+  setProp(p, DEAL.dealname, `${who} - ${lead.verticalTitle || "Business Funding"}`);
 
   if (lead.amountNeeded) {
     setProp(p, DEAL.amount, AMOUNT_NUMERIC[lead.amountNeeded]);
@@ -369,13 +374,12 @@ export async function submitLeadToHubSpot(lead: LeadData): Promise<CrmResult> {
   const score = scoreLead(lead);
 
   try {
-    const contactId = await upsertContact(buildContactProps(lead, score), lead.email);
-
-    let companyId: string | null = null;
-    if (lead.businessName) {
-      companyId = await upsertCompany(buildCompanyProps(lead));
-      if (companyId) await associateDefault("contacts", contactId, "companies", companyId);
-    }
+    // Independent calls run in parallel to stay well under the function timeout.
+    const [contactId, companyId] = await Promise.all([
+      upsertContact(buildContactProps(lead, score), lead.email),
+      lead.businessName ? upsertCompany(buildCompanyProps(lead)) : Promise.resolve<string | null>(null),
+    ]);
+    if (companyId) await associateDefault("contacts", contactId, "companies", companyId);
 
     // Partial leads stop here — Contact (+ Company) only, no Deal.
     if (lead.partial) {
@@ -391,8 +395,10 @@ export async function submitLeadToHubSpot(lead: LeadData): Promise<CrmResult> {
       dealId = existingDealId;
     } else {
       dealId = await createDeal(buildDealProps(lead, score));
-      await associateDefault("deals", dealId, "contacts", contactId);
-      if (companyId) await associateDefault("deals", dealId, "companies", companyId);
+      await Promise.all([
+        associateDefault("deals", dealId, "contacts", contactId),
+        companyId ? associateDefault("deals", dealId, "companies", companyId) : Promise.resolve(),
+      ]);
     }
 
     return { ok: true, contactId, companyId: companyId ?? undefined, dealId, band: score.band, score: score.score };

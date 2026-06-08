@@ -13,14 +13,7 @@
 export type AnalyticsEventName =
   | "landing_page_view"
   | "cta_clicked"
-  | "prequal_form_started"
-  | "prequal_step_completed"
-  | "prequal_step_abandoned"
-  | "prequal_validation_error"
-  | "prequal_contact_captured"
-  | "prequal_form_submitted"
   | "partial_lead_saved"
-  | "calculator_used"
   | "stresstest_viewed"
   | "stresstest_started"
   | "stresstest_step"
@@ -40,7 +33,6 @@ export type AnalyticsEventName =
   | "industries_menu_opened"
   | "industry_menu_clicked"
   | "industry_picker_routed"
-  | "experiment_variant"
   | "green_lead"
   | "yellow_lead"
   | "red_lead";

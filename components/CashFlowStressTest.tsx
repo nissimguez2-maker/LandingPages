@@ -159,7 +159,8 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
         notes: "Booked a discovery call via cal.com.",
       };
       try {
-        const payload = buildPayload(true, extra);
+        // A booked call is a hot signal: send a full (non-partial) lead so the CRM creates a Deal.
+        const payload = buildPayload(false, extra);
         if (payload.email || payload.phone) {
           partialSavedRef.current = true;
           void fetch("/api/lead", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload), keepalive: true });

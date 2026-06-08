@@ -7,7 +7,7 @@
  * the payload and logged server-side.
  */
 
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { submitLeadToCRM } from "@/lib/crm";
 import { computeCompleteness } from "@/lib/completeness";
 import type { LeadData } from "@/lib/types";
@@ -45,6 +45,15 @@ export async function POST(req: Request): Promise<NextResponse> {
   lead.formCompletionPercentage = percentage;
   lead.missingInformation = missing;
 
-  const crm = await submitLeadToCRM(lead);
-  return NextResponse.json({ ok: true, crm });
+  // Respond immediately; run the multi-call CRM write after the response is sent
+  // so the request never risks the serverless function timeout.
+  after(async () => {
+    try {
+      await submitLeadToCRM(lead);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("[lead] CRM write failed:", err instanceof Error ? err.message : err);
+    }
+  });
+  return NextResponse.json({ ok: true });
 }

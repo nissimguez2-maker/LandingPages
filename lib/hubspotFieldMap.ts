@@ -51,6 +51,8 @@ export const CONTACT = {
   lastFormActivityDate: "last_form_activity_date", // datetime
   consentTimestamp: "consent_timestamp", // datetime
   consentSourcePage: "consent_source_page", // text
+  leadNotes: "lead_notes", // text — free-form notes (e.g. "booked a discovery call")
+  stressTestAnswers: "stress_test_answers", // text — raw stress-test swipe answers (JSON)
 } as const;
 
 /* ── COMPANY properties ─────────────────────────────────────────────────── */
@@ -180,7 +182,7 @@ export const TIB_YEARS: Record<string, number> = {
 
 /** Representative requested amount (USD) for amount_requested / deal amount. */
 export const AMOUNT_NUMERIC: Record<string, number> = {
-  under_25k: 15000,
+  under_25k: 25000,
   "25k_50k": 37500,
   "50k_100k": 75000,
   "100k_250k": 175000,

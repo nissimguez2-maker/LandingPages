@@ -24,7 +24,7 @@ const READ_PROPS = [
 // ── Cold-lead triage tuning (all env-overridable) ──────────────────────────
 // A red/cold lead whose readiness score still lands at or above this is treated
 // as "potential warm/hot hiding in the cold pile" and handed to the human.
-const PROMISING_MIN = Number(process.env.NURTURE_PROMISING_MIN || 30);
+const PROMISING_MIN = Number(process.env.NURTURE_PROMISING_MIN || 20);
 // Only disqualify a weak cold lead after it has had the full cold sequence.
 const DISQUALIFY_DAYS = Number(process.env.NURTURE_DISQUALIFY_DAYS || 25);
 // Off by default. When "true", disqualified leads are also archived in HubSpot
@@ -274,8 +274,10 @@ async function triageCold(
 
       const createdate = Date.parse(c.properties.createdate || "");
       const oldEnough = Number.isFinite(createdate) && ctx.now - createdate >= DISQUALIFY_DAYS * 86400000;
-      if (oldEnough) {
-        // Tried the full cold sequence, still weak. Clear it out of the pipeline.
+      const exhausted =
+        c.properties.nurture_track === "cold" && Number(c.properties.nurture_step || "0") >= COLD_OFFSETS.length;
+      if (exhausted && oldEnough) {
+        // Only after the full cold sequence has actually run, and it is still weak. Clear it out.
         await hsPatch(ctx.token, c.id, { hs_lead_status: "UNQUALIFIED" });
         disqualified++;
         if (DELETE_IRRELEVANT) {

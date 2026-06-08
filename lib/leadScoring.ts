@@ -5,9 +5,13 @@
  *  - client-side, to fire green_lead / yellow_lead / red_lead analytics events
  *  - server-side (authoritative), to write funding_readiness_score + lead_category
  *
- * Bands:  70+  = Green (strong fit for review)
- *         45-69 = Yellow (needs review)
- *         < 45  = Red (may not be ready)
+ * Bands:  55+  = Green (strong fit for review)
+ *         30-54 = Yellow (needs review)
+ *         < 30  = Red (may not be ready)
+ *
+ * Thresholds are tuned to the live 5-question quiz, which does NOT collect bank
+ * statements or NSFs (those come later via optional enrichment / the SDR). Those
+ * signals still score when present, but their absence must never cap the band.
  *
  * Visitors NEVER see harsh rejection language — bands drive internal routing only.
  */
@@ -32,15 +36,19 @@ export function scoreLead(lead: LeadData): LeadScore {
     reasons.push(`${points >= 0 ? "+" : ""}${points} ${reason}`);
   };
 
-  // Monthly revenue
+  // Monthly revenue (the dominant MCA signal; tiered so a big shop outscores a small one)
   switch (lead.monthlyRevenue) {
-    case "20k_50k":
-    case "50k_150k":
     case "150k_plus":
-      add(25, "monthly revenue $20k+");
+      add(30, "monthly revenue $150k+");
+      break;
+    case "50k_150k":
+      add(27, "monthly revenue $50k to $150k");
+      break;
+    case "20k_50k":
+      add(25, "monthly revenue $20k to $50k");
       break;
     case "10k_20k":
-      add(10, "monthly revenue $10k–$20k");
+      add(10, "monthly revenue $10k to $20k");
       break;
     case "under_10k":
       add(-20, "monthly revenue under $10k");
@@ -85,6 +93,8 @@ export function scoreLead(lead: LeadData): LeadScore {
   // Urgency
   if (lead.urgency === "immediately" || lead.urgency === "this_week") {
     add(10, "near-term urgency");
+  } else if (lead.urgency === "this_month") {
+    add(5, "buying window this month");
   }
 
   // Productive use of funds
@@ -114,8 +124,8 @@ export function scoreLead(lead: LeadData): LeadScore {
 }
 
 function bandFor(score: number): LeadBand {
-  if (score >= 70) return "green";
-  if (score >= 45) return "yellow";
+  if (score >= 55) return "green";
+  if (score >= 30) return "yellow";
   return "red";
 }
 

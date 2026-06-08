@@ -1551,9 +1551,9 @@ export const generalFunding: VerticalConfig = {
     closer: "Almost every business runs on that gap. With money in place, you cover what is due now. You may qualify on revenue and bank activity, not credit alone. No obligation, and payments fit your cash flow.",
   },
   exampleUses: [
-    { label: "Cover a cash gap", rangeLow: 5000, rangeHigh: 50000, when: "when bills come before pay" },
-    { label: "Buy inventory or supplies", rangeLow: 5000, rangeHigh: 40000, when: "ahead of demand" },
-    { label: "Repair or add equipment", rangeLow: 3000, rangeHigh: 30000, when: "when something breaks" },
+    { label: "Cover a cash gap", rangeLow: 25000, rangeHigh: 75000, when: "when bills come before pay" },
+    { label: "Buy inventory or supplies", rangeLow: 25000, rangeHigh: 60000, when: "ahead of demand" },
+    { label: "Repair or add equipment", rangeLow: 25000, rangeHigh: 50000, when: "when something breaks" },
   ],
   reassurance: [
     "Most industries are welcome here.",
