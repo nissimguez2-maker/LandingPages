@@ -73,6 +73,12 @@ export const IconPhone = ({ className = base }: IconProps) => (
     <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2Z" />
   </svg>
 );
+export const IconMail = ({ className = base }: IconProps) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
+    <rect x="3" y="5" width="18" height="14" rx="2" />
+    <path d="m3 7 9 6 9-6" />
+  </svg>
+);
 export const IconArrowRight = ({ className = base }: IconProps) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
     <path d="M5 12h14M13 6l6 6-6 6" />
@@ -178,7 +184,7 @@ export function Stepper({
 
 /* ── TrustPanel — quiet, specific, human ────────────────────────────────── */
 
-export function TrustPanel({ phone }: { phone?: string }) {
+export function TrustPanel({ email }: { email?: string }) {
   return (
     <div
       className="rounded-xl border p-4"
@@ -201,12 +207,12 @@ export function TrustPanel({ phone }: { phone?: string }) {
           No obligation, and no hard credit pull from this form
         </li>
       </ul>
-      {phone && (
+      {email && (
         <a
-          href={`tel:${phone.replace(/[^\d+]/g, "")}`}
+          href={`mailto:${email}`}
           className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-brand-700 hover:text-brand-900"
         >
-          <IconPhone className="h-3.5 w-3.5" /> Questions? Call {phone}
+          <IconMail className="h-3.5 w-3.5" /> Questions? {email}
         </a>
       )}
     </div>
@@ -338,7 +344,8 @@ export function SsnField({
         <span className="flex items-center text-sm font-semibold text-brand-900">
           Social Security Number
           <Tooltip label="?">
-            Funders confirm your identity to release funds (KYC). It&apos;s used to verify you, not to decline you.
+            You saw your check with no credit pull — that was real. This only verifies your identity (KYC) to release
+            funds. No hard pull, no score impact.
           </Tooltip>
         </span>
         <span className="lock-note">
@@ -384,11 +391,10 @@ export function SsnField({
         </button>
       </div>
 
-      {/* Specific, calm, benefit-framed — reconciles the prequal's "no credit check" promise */}
-      <p className="mt-1.5 flex items-start gap-1.5 text-xs text-slate-500">
-        <IconShield className="mt-px h-3.5 w-3.5 flex-none text-accent-600" />
-        Earlier we checked with no credit pull — that was real. This step only verifies your identity. It does{" "}
-        <strong className="font-semibold text-slate-600">not</strong> trigger a hard pull and won&apos;t affect your score.
+      {/* One short line; the full reconciliation lives in the tap-to-open "?" so a reader doesn't stall. */}
+      <p className="mt-1.5 flex items-center gap-1.5 text-xs text-slate-500">
+        <IconShield className="h-3.5 w-3.5 flex-none text-accent-600" />
+        Soft check to verify you. No hard pull, no score impact.
       </p>
 
       {error && <span className="mt-1 block text-sm text-red-700">{error}</span>}
@@ -399,7 +405,7 @@ export function SsnField({
           onClick={() => onDefer(true)}
           className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-brand-700 hover:text-brand-900"
         >
-          <IconPhone className="h-3.5 w-3.5" /> Rather give it by phone? A specialist can take it
+          <IconPhone className="h-3.5 w-3.5" /> Rather not type it here? A specialist can take it with you
         </button>
       )}
     </label>

@@ -21,7 +21,7 @@ import {
   IconArrowRight,
   IconCheck,
   IconLock,
-  IconPhone,
+  IconMail,
   MaskedInput,
   SecureSection,
   SignatureBlock,
@@ -30,6 +30,7 @@ import {
   TrustPanel,
   type UploadItem,
 } from "@/components/apply/Fields";
+import { PlaidLink } from "@/components/apply/PlaidLink";
 import { track } from "@/lib/analytics";
 import {
   APPLICATION_STEPS,
@@ -84,12 +85,11 @@ function makeSignatureImage(name: string): string | undefined {
 export default function ApplicationWizard({
   slug,
   verticalTitle,
-  phone,
 }: {
   slug: string;
   verticalTitle: string;
-  phone?: string;
 }) {
+  const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL || "funding@fundvella.com";
   const [lead, setLead] = useState<LeadData>({ industry: slug, applicationStatus: "started" });
   const [ssn, setSsn] = useState(""); // formatted, kept out of LeadData
   const [stepIdx, setStepIdx] = useState(0);
@@ -118,18 +118,43 @@ export default function ApplicationWizard({
   const setField = <K extends keyof LeadData>(k: K, v: LeadData[K]) =>
     setLead((l) => ({ ...l, [k]: v }));
 
-  /* ── Mount: hydrate from prequal handoff + any local draft ────────────── */
+  /* ── Mount: hydrate from a resume token, the prequal handoff, or a draft ─ */
   useEffect(() => {
-    const prefill = readApplicationPrefill();
-    const draft = readApplicationDraft();
-    const merged: LeadData = { industry: slug, applicationStatus: "in_progress", ...prefill, ...(draft ?? {}) };
-    // Seed owner full name from the prequal contact if we have it.
-    if (!merged.ownerFullName && (merged.firstName || merged.lastName)) {
-      merged.ownerFullName = [merged.firstName, merged.lastName].filter(Boolean).join(" ");
+    let cancelled = false;
+    async function hydrate() {
+      const prefill = readApplicationPrefill();
+      const draft = readApplicationDraft();
+      let merged: LeadData = { industry: slug, applicationStatus: "in_progress", ...prefill, ...(draft ?? {}) };
+      let resumed = Boolean(draft);
+
+      const token = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("app") : null;
+      if (token) {
+        try {
+          const res = await fetch(`/api/application?app=${encodeURIComponent(token)}`);
+          if (res.ok) {
+            const data = (await res.json()) as { lead?: LeadData };
+            if (data?.lead) {
+              merged = { ...merged, ...data.lead, applicationId: token };
+              resumed = true;
+            }
+          }
+        } catch {
+          /* fall back to local prefill/draft */
+        }
+      }
+
+      if (cancelled) return;
+      if (!merged.ownerFullName && (merged.firstName || merged.lastName)) {
+        merged.ownerFullName = [merged.firstName, merged.lastName].filter(Boolean).join(" ");
+      }
+      if (!merged.businessLegalName && merged.businessName) merged.businessLegalName = merged.businessName;
+      setLead(merged);
+      track(resumed ? "deepapp_resumed" : "deepapp_started", { vertical: slug });
     }
-    if (!merged.businessLegalName && merged.businessName) merged.businessLegalName = merged.businessName;
-    setLead(merged);
-    track(draft ? "deepapp_resumed" : "deepapp_started", { vertical: slug });
+    void hydrate();
+    return () => {
+      cancelled = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug]);
 
@@ -151,7 +176,7 @@ export default function ApplicationWizard({
       try {
         navigator.sendBeacon(
           "/api/application",
-          new Blob([JSON.stringify({ ...leadRef.current, partial: true })], { type: "application/json" }),
+          new Blob([JSON.stringify({ ...leadRef.current, partial: true, abandoned: true })], { type: "application/json" }),
         );
       } catch {
         /* best effort */
@@ -346,11 +371,9 @@ export default function ApplicationWizard({
               <li className="flex gap-2"><IconCheck className="mt-px h-4 w-4 flex-none text-accent-600" /> You review terms — no obligation to accept.</li>
             </ul>
           </div>
-          {phone && (
-            <a href={`tel:${phone.replace(/[^\d+]/g, "")}`} className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-700 hover:text-brand-900">
-              <IconPhone className="h-4 w-4" /> Need it faster? Call {phone}
-            </a>
-          )}
+          <a href={`mailto:${contactEmail}`} className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-700 hover:text-brand-900">
+            <IconMail className="h-4 w-4" /> Questions? {contactEmail}
+          </a>
         </div>
       </div>
     );
@@ -429,13 +452,26 @@ export default function ApplicationWizard({
 
       case "documents":
         return (
-          <SecureSection eyebrow={`Step 4 of 5`} title={step.title} subtitle={step.subtitle}>
-            {lead.canProvideBankStatements === "yes" && (
-              <p className="rounded-lg bg-accent-50 px-3 py-2 text-sm text-accent-800">
-                You said you can share these earlier — drop in your last 3 months and you&apos;re basically done.
-              </p>
+          <SecureSection eyebrow="Step 4 of 5" title={step.title} subtitle={step.subtitle}>
+            {lead.bankConnected ? (
+              <div className="secure-surface flex items-center gap-2 p-4 text-sm font-medium text-brand-900">
+                <IconCheck className="h-4 w-4 flex-none text-accent-600" /> Bank connected securely. You&apos;re set for this step.
+              </div>
+            ) : (
+              <>
+                <PlaidLink
+                  applicationId={lead.applicationId}
+                  onConnected={(itemId) => {
+                    setLead((l) => ({ ...l, bankConnected: true, plaidItemId: itemId, bankStatementsDeferred: false }));
+                    track("deepapp_upload_succeeded", { vertical: slug, method: "plaid" });
+                  }}
+                />
+                <div className="flex items-center gap-3 text-xs text-slate-400">
+                  <span className="h-px flex-1 bg-slate-200" /> or upload <span className="h-px flex-1 bg-slate-200" />
+                </div>
+                <FileUpload items={files} onPick={handlePick} onRemove={removeFile} deferred={!!lead.bankStatementsDeferred} onToggleDefer={toggleDocsDefer} />
+              </>
             )}
-            <FileUpload items={files} onPick={handlePick} onRemove={removeFile} deferred={!!lead.bankStatementsDeferred} onToggleDefer={toggleDocsDefer} />
           </SecureSection>
         );
 
@@ -472,7 +508,7 @@ export default function ApplicationWizard({
         <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">
           <Stepper steps={APPLICATION_STEPS} current={stepIdx} progress={progress} />
           <div className="hidden lg:block">
-            <TrustPanel phone={phone} />
+            <TrustPanel email={contactEmail} />
           </div>
         </aside>
 

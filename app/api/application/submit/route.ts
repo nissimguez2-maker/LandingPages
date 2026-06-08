@@ -1,22 +1,18 @@
 /**
- * Final application submit.
- *
- * This is the ONE request that carries the raw SSN and the signature image. The
- * handler:
- *   1. encrypts the SSN server-side (AES-256-GCM) — or drops it if no key is set,
- *   2. redacts both secrets before anything is logged or forwarded,
- *   3. forwards a SAFE summary (last-4 only) to your CRM/automation webhook.
- *
- * The raw SSN and signature image are never logged, never put in analytics, and
- * never sent to the CRM in the clear.
+ * Final application submit — the one request carrying the raw SSN + signature.
+ *   1. encrypt the SSN server-side (AES-256-GCM); drop it if no key is set,
+ *   2. persist the redacted record (+ ciphertext) keyed by token,
+ *   3. forward a SAFE summary + leadProfile (the who/what/why for AI emails).
+ * The raw SSN / signature are never logged, never analytics, never sent in clear.
  */
 
 import { randomUUID } from "crypto";
 
 import { NextResponse } from "next/server";
 
-import { digitsOnly, redactSensitive, type ApplicationSubmission } from "@/lib/application";
+import { buildLeadProfile, digitsOnly, redactSensitive, type ApplicationSubmission } from "@/lib/application";
 import { encryptSecret } from "@/lib/server/secure";
+import { upsertApplication } from "@/lib/server/store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -46,16 +42,20 @@ export async function POST(req: Request): Promise<NextResponse> {
   const id = body.applicationId || randomUUID();
   const ssnDigits = body.ssn ? digitsOnly(body.ssn) : "";
   const ssnCiphertext = ssnDigits ? encryptSecret(ssnDigits) : null;
-
-  // Safe view for logs + CRM: secrets stripped, only last-4 retained.
   const safe = redactSensitive({ ...body, applicationId: id });
+  const profile = buildLeadProfile(body);
 
-  // TODO (Supabase): persist `safe` + `ssnCiphertext` (or null) and move the
-  // signature image / bank statements into a private bucket. `ssnCiphertext`
-  // is null when APPLICATION_ENC_KEY is unset — in that case do NOT store the SSN.
-  void ssnCiphertext;
+  await upsertApplication({
+    token: id,
+    vertical: body.industry,
+    status: "submitted",
+    email: body.email,
+    lead: safe,
+    ssn_ciphertext: ssnCiphertext,
+    plaid_item_id: body.plaidItemId ?? null,
+  });
 
-  await forward(safe);
+  await forward({ ...safe, leadProfile: profile });
 
   return NextResponse.json({ ok: true, id });
 }

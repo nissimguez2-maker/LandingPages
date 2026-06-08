@@ -241,6 +241,8 @@ export interface LeadData {
   // ── Deep application: documents + signature ─────────────────────────────
   bankStatementFiles?: UploadedFileMeta[];
   bankStatementsDeferred?: boolean;
+  bankConnected?: boolean; // linked read-only via Plaid instead of uploading
+  plaidItemId?: string;
   creditAuthConsent?: boolean;
   esignConsent?: boolean;
   signatureName?: string;

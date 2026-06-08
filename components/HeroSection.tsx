@@ -33,8 +33,15 @@ export default function HeroSection({ vertical }: { vertical: VerticalConfig }) 
           {hook && <p className="mt-4 text-base leading-relaxed text-brand-200">{hook}</p>}
           <p className="mt-3 max-w-xl text-lg leading-relaxed text-brand-100">{vertical.heroSubheadline}</p>
 
-          <div className="mt-8">
+          <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
             <CTAButton label={vertical.cta.primary} target="#estimate" location="hero" vertical={vertical.slug} />
+            {/* Express lane: a ready buyer skips the check and applies directly. */}
+            <a
+              href={`/apply/${vertical.slug}`}
+              className="inline-flex min-h-[44px] items-center gap-1.5 text-sm font-semibold text-white/90 underline-offset-4 hover:text-white hover:underline"
+            >
+              Ready now? Apply directly →
+            </a>
           </div>
 
           <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-brand-100">

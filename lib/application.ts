@@ -99,36 +99,11 @@ export interface ApplicationStepDef {
  * gate), then a single review + signature. This is the whole conversion thesis.
  */
 export const APPLICATION_STEPS: readonly ApplicationStepDef[] = [
-  {
-    id: "business",
-    label: "Business",
-    title: "About your business",
-    subtitle: "The basics on your company. Most of this is already filled in from your check.",
-  },
-  {
-    id: "funding",
-    label: "Funding",
-    title: "Your funding request",
-    subtitle: "What you need and a couple of quick business details.",
-  },
-  {
-    id: "owner",
-    label: "Owner",
-    title: "About you, the owner",
-    subtitle: "Funders verify the owner before releasing capital — same as opening a business account. About a minute.",
-  },
-  {
-    id: "documents",
-    label: "Documents",
-    title: "Recent bank statements",
-    subtitle: "Your last 3 months. A PDF or a clear photo works — and you can send them later if they aren't handy.",
-  },
-  {
-    id: "review",
-    label: "Review & sign",
-    title: "Review and sign",
-    subtitle: "Confirm everything looks right and authorize us to review your file.",
-  },
+  { id: "business", label: "Business", title: "About your business", subtitle: "Most of this is already filled in." },
+  { id: "funding", label: "Funding", title: "Your funding request", subtitle: "What you need, in numbers." },
+  { id: "owner", label: "Owner", title: "About you, the owner", subtitle: "Quick identity check. About a minute." },
+  { id: "documents", label: "Documents", title: "Recent bank statements", subtitle: "Connect your bank or upload — your choice." },
+  { id: "review", label: "Review & sign", title: "Review and sign", subtitle: "Confirm and sign." },
 ] as const;
 
 /** Index of a step id within APPLICATION_STEPS. */
@@ -262,6 +237,35 @@ export function clearApplicationStorage(): void {
   } catch {
     /* non-fatal */
   }
+}
+
+/* ── Lead profile — the "who / what / why" for AI email personalization ──── */
+
+export interface LeadProfile {
+  vertical?: string; // landing-page slug the lead came through
+  industry?: string; // what they do (free text if given, else the vertical)
+  intent?: string; // WHY they want funding (use of funds) — the sales angle
+  urgency?: string; // how soon — drives tone/cadence
+  amount?: string; // requested figure or band
+  businessName?: string;
+  firstName?: string;
+  email?: string;
+  phone?: string;
+}
+
+/** Compact, automation-friendly snapshot so downstream AI knows how to write. */
+export function buildLeadProfile(lead: LeadData): LeadProfile {
+  return {
+    vertical: lead.industry,
+    industry: lead.natureOfBusiness || lead.industry,
+    intent: lead.useOfFunds,
+    urgency: lead.urgency,
+    amount: lead.capitalRequested || lead.amountNeeded,
+    businessName: lead.businessLegalName || lead.businessName,
+    firstName: lead.firstName,
+    email: lead.email,
+    phone: lead.phone,
+  };
 }
 
 /* ── The wire shape + redaction (shared with the server route) ──────────── */
