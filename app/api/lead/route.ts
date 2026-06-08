@@ -2,9 +2,9 @@
  * Secure lead intake endpoint. Runs as a Netlify serverless function.
  * Handles BOTH partial saves (lead.partial === true) and full submissions.
  *
- * Always responds 200 once contact info is present, so the visitor's UX never
- * breaks even if HubSpot is briefly unavailable — the CRM status is reported in
- * the payload and logged server-side.
+ * Responds 200 as soon as the contact is validated; the multi-call CRM write
+ * runs after the response (via after()) so the request never risks the function
+ * timeout, and CRM errors are logged server-side.
  */
 
 import { NextResponse, after } from "next/server";
@@ -31,7 +31,7 @@ export async function POST(req: Request): Promise<NextResponse> {
   }
   const lead: LeadData = body;
 
-  // Don't persist anonymous noise — require at least one way to reach the lead.
+  // Don't persist anonymous noise. Require at least one way to reach the lead.
   if (!lead.email && !lead.phone) {
     return NextResponse.json({ ok: false, error: "missing_contact" }, { status: 422 });
   }

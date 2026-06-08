@@ -23,7 +23,7 @@ function extractAttendee(e: unknown): { email?: string; name?: string } {
 }
 
 /**
- * Cal.com FLOATING popup bubble (bottom-right) — the fallback capture path. A
+ * Cal.com FLOATING popup bubble (bottom-right), the fallback capture path. A
  * visitor who will not fill the form can still book a call in one tap, so we do
  * not lose them. Mounted only while it earns its place (the qualify step) and
  * removed on unmount. On a successful booking it reports the attendee up so the

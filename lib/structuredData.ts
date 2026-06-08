@@ -13,7 +13,9 @@ export function buildOrganizationJsonLd() {
     "@type": "Organization",
     name: SITE_NAME,
     url: base,
-    // `logo` / `sameAs` intentionally omitted until real assets exist.
+    description:
+      "FundVella connects small business owners with working capital specialists. FundVella is not a lender. You may qualify; approval depends on underwriting.",
+    // `logo` / `sameAs` intentionally omitted until real brand + social assets exist.
   };
 }
 

@@ -20,18 +20,36 @@ import StickyCTA from "@/components/StickyCTA";
 import Reveal from "@/components/motion/Reveal";
 import { generalFunding } from "@/content/landingPagesConfig";
 import { accentCssVars } from "@/lib/themes";
-import { SITE_NAME } from "@/lib/site";
+import { SITE_NAME, getSiteUrl } from "@/lib/site";
+import { buildFaqJsonLd, buildOrganizationJsonLd } from "@/lib/structuredData";
+
+const HOME_TITLE = `${SITE_NAME}, Small business funding, reviewed on revenue`;
+const HOME_DESCRIPTION =
+  "Working capital for almost any operating business, reviewed on revenue and bank activity, not credit alone. Take the cash-flow check. Approval depends on underwriting.";
 
 export const metadata: Metadata = {
-  title: `${SITE_NAME}, Small business funding, reviewed on revenue`,
-  description:
-    "Working capital for almost any operating business, reviewed on revenue and bank activity, not credit alone. Take the 2-minute cash-flow check. Approval depends on underwriting.",
+  title: HOME_TITLE,
+  description: HOME_DESCRIPTION,
+  alternates: { canonical: getSiteUrl() },
+  openGraph: { title: HOME_TITLE, description: HOME_DESCRIPTION, url: getSiteUrl(), type: "website", siteName: SITE_NAME },
+  twitter: { card: "summary_large_image", title: HOME_TITLE, description: HOME_DESCRIPTION },
 };
 
 export default function HomePage() {
   const v = generalFunding;
   return (
-    <div style={accentCssVars(v.theme?.accent)}>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildOrganizationJsonLd()) }}
+      />
+      {v.faqs?.length ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(buildFaqJsonLd(v.faqs)) }}
+        />
+      ) : null}
+      <div style={accentCssVars(v.theme?.accent)}>
       <a href="#estimate" className="skip-link">
         Skip to the cash-flow check
       </a>
@@ -75,6 +93,7 @@ export default function HomePage() {
       </main>
       <SiteFooter />
       <StickyCTA vertical="home" label={v.cta.primary} />
-    </div>
+      </div>
+    </>
   );
 }
