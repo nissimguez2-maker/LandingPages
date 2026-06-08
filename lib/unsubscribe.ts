@@ -12,7 +12,12 @@ import { createHmac, timingSafeEqual, randomBytes } from "crypto";
 const FALLBACK_SECRET = randomBytes(32).toString("hex");
 
 function secret(): string {
-  return process.env.NURTURE_SECRET || process.env.HUBSPOT_PRIVATE_APP_TOKEN || FALLBACK_SECRET;
+  return (
+    process.env.UNSUB_SIGNING_SECRET ||
+    process.env.NURTURE_SECRET ||
+    process.env.HUBSPOT_PRIVATE_APP_TOKEN ||
+    FALLBACK_SECRET
+  );
 }
 
 function sig(email: string): string {

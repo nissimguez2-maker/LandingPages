@@ -4,7 +4,7 @@
 
 export default async () => {
   const base = (process.env.URL || process.env.NEXT_PUBLIC_SITE_URL || "https://fundvella.com").replace(/\/+$/, "");
-  const secret = process.env.NURTURE_SECRET || "";
+  const secret = process.env.NURTURE_RUN_SECRET || process.env.NURTURE_SECRET || "";
   try {
     const res = await fetch(`${base}/api/nurture/run`, {
       method: "POST",

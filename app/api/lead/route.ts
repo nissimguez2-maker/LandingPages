@@ -9,6 +9,7 @@
 
 import { NextResponse, after } from "next/server";
 import { submitLeadToCRM } from "@/lib/crm";
+import { emitLeadCaptured } from "@/lib/n8n";
 import { computeCompleteness } from "@/lib/completeness";
 import type { LeadData } from "@/lib/types";
 
@@ -54,6 +55,8 @@ export async function POST(req: Request): Promise<NextResponse> {
       // eslint-disable-next-line no-console
       console.error("[lead] CRM write failed:", err instanceof Error ? err.message : err);
     }
+    // Signed lead.captured event to the n8n hub (no-op until N8N_INGEST_URL is set).
+    await emitLeadCaptured(lead);
   });
   return NextResponse.json({ ok: true });
 }

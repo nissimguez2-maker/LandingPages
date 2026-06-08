@@ -295,7 +295,7 @@ async function triageCold(
 }
 
 export async function POST(req: Request): Promise<NextResponse> {
-  const secret = process.env.NURTURE_SECRET;
+  const secret = process.env.NURTURE_RUN_SECRET || process.env.NURTURE_SECRET;
   const provided = req.headers.get("x-nurture-secret") || "";
   if (!secret || !safeEqual(provided, secret)) {
     return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
