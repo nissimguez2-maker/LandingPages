@@ -99,6 +99,31 @@ export const CHANNEL_OPTIONS = [
   { value: "text", label: "Text message" },
 ] as const satisfies readonly Option[];
 
+/* ── Deep application: underwriting selects ─────────────────────────────── */
+
+export const ENTITY_TYPE_OPTIONS = [
+  { value: "sole_prop", label: "Sole proprietorship" },
+  { value: "llc", label: "LLC" },
+  { value: "s_corp", label: "S corporation" },
+  { value: "c_corp", label: "C corporation" },
+  { value: "partnership", label: "Partnership" },
+  { value: "other", label: "Other" },
+] as const satisfies readonly Option[];
+
+export const CREDIT_SCORE_OPTIONS = [
+  { value: "720_plus", label: "Excellent (720+)" },
+  { value: "680_719", label: "Good (680 to 719)" },
+  { value: "640_679", label: "Fair (640 to 679)" },
+  { value: "580_639", label: "Building (580 to 639)" },
+  { value: "under_580", label: "Under 580" },
+  { value: "unsure", label: "Not sure" },
+] as const satisfies readonly Option[];
+
+export const YES_NO_OPTIONS = [
+  { value: "yes", label: "Yes" },
+  { value: "no", label: "No" },
+] as const satisfies readonly Option[];
+
 /* ── Derived value unions ───────────────────────────────────────────────── */
 
 export type RevenueValue = (typeof REVENUE_OPTIONS)[number]["value"];
@@ -112,6 +137,9 @@ export type UseOfFundsValue = (typeof USE_OF_FUNDS_OPTIONS)[number]["value"];
 export type BankStatementsValue = (typeof BANK_STATEMENTS_OPTIONS)[number]["value"];
 export type ContactTimeValue = (typeof CONTACT_TIME_OPTIONS)[number]["value"];
 export type ChannelValue = (typeof CHANNEL_OPTIONS)[number]["value"];
+export type EntityTypeValue = (typeof ENTITY_TYPE_OPTIONS)[number]["value"];
+export type CreditScoreValue = (typeof CREDIT_SCORE_OPTIONS)[number]["value"];
+export type YesNoValue = (typeof YES_NO_OPTIONS)[number]["value"];
 
 /* ── UTM + lead data ────────────────────────────────────────────────────── */
 
@@ -129,6 +157,15 @@ export interface LeadScore {
   score: number;
   band: LeadBand;
   reasons: string[];
+}
+
+/** Metadata for an uploaded document (the binary lives in private storage). */
+export interface UploadedFileMeta {
+  name: string;
+  size: number;
+  type: string;
+  /** Object key/path in the private bucket once the signed-URL upload completes. */
+  storageKey?: string;
 }
 
 /**
@@ -166,6 +203,52 @@ export interface LeadData {
   currentFunderName?: string;
   currentBalanceOwed?: string;
   notes?: string;
+
+  // ── Deep application: business ──────────────────────────────────────────
+  businessLegalName?: string;
+  businessDba?: string;
+  ein?: string; // formatted "12-3456789" — a business identifier, not personal PII
+  entityType?: EntityTypeValue;
+  natureOfBusiness?: string;
+  productService?: string;
+  businessStreet?: string;
+  businessCity?: string;
+  businessState?: string;
+  businessZip?: string;
+  dateOfIncorporation?: string; // ISO yyyy-mm-dd
+  ownershipLengthYears?: string;
+  capitalRequested?: string; // specific figure the owner types (distinct from the amountNeeded band)
+  acceptsCreditCards?: YesNoValue;
+  openMcaPositions?: YesNoValue;
+  openMcaPositionsCount?: string;
+
+  // ── Deep application: owner ─────────────────────────────────────────────
+  ownerFullName?: string;
+  ownerDob?: string; // ISO yyyy-mm-dd
+  ownerStreet?: string;
+  ownerCity?: string;
+  ownerState?: string;
+  ownerZip?: string;
+  ownershipPercent?: string;
+  creditScoreBand?: CreditScoreValue;
+  // Raw SSN is NEVER stored on LeadData (this shape feeds analytics + CRM). The
+  // wizard sends the raw value once over POST; the server tokenizes it and keeps
+  // only the last four here. See ApplicationSubmission in lib/application.ts.
+  ssnLast4?: string;
+  ssnProvided?: boolean;
+  ssnDeferred?: boolean; // owner chose to give it to a specialist by phone instead
+
+  // ── Deep application: documents + signature ─────────────────────────────
+  bankStatementFiles?: UploadedFileMeta[];
+  bankStatementsDeferred?: boolean;
+  creditAuthConsent?: boolean;
+  esignConsent?: boolean;
+  signatureName?: string;
+  signedAt?: string; // ISO timestamp set at submit
+
+  // ── Deep application: lifecycle ─────────────────────────────────────────
+  applicationId?: string;
+  applicationStatus?: "started" | "in_progress" | "submitted";
 
   // Stress-test extras (rich signal from the interactive questions)
   priorities?: string[]; // full drag-rank order of cash-flow pains

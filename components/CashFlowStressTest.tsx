@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { LeadData, VerticalConfig, AmountValue, BankStatementsValue, Option } from "@/lib/types";
 import { AMOUNT_OPTIONS, BANK_STATEMENTS_OPTIONS } from "@/lib/types";
 import { runStressTest, buildPrefill, fixFirst, type StressAnswers } from "@/lib/stressTest";
+import { saveApplicationPrefill } from "@/lib/application";
 import {
   STRESS_INTRO,
   USE_OPTIONS,
@@ -567,6 +568,25 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
                   <p className="eyebrow mt-7">Your best match</p>
                   <h3 className="mt-2 text-xl font-bold text-brand-900 font-display">{fit.title}</h3>
                   <p className="mt-2 text-slate-600">{fit.rationale}</p>
+
+                  {/* Self-serve handoff to the full underwriting application (pre-filled from here). */}
+                  <div className="mt-7 rounded-2xl border-2 border-accent-300 bg-white p-5 shadow-card sm:p-6">
+                    <p className="font-display font-semibold text-brand-900">Ready to get a real number?</p>
+                    <p className="mt-1 text-sm text-slate-600">
+                      Finish your application and our team reviews your file, usually the same day. You&apos;re already about 60% done.
+                    </p>
+                    <a
+                      href={`/apply/${vertical.slug}`}
+                      onClick={() => {
+                        saveApplicationPrefill(buildPayload(false));
+                        track("stresstest_cta", { vertical: vertical.slug, target: "apply" });
+                      }}
+                      className="btn-primary mt-4 inline-flex"
+                    >
+                      Start your funding application
+                      <span aria-hidden>→</span>
+                    </a>
+                  </div>
 
                   {/* Booking or callback */}
                   <div className="mt-7 rounded-2xl border border-slate-200 bg-brand-50/50 p-5 sm:p-6">

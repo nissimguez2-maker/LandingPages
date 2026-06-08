@@ -19,6 +19,11 @@
   --accent-900: 6 78 59;
   --accent-cta: 4 120 87;
   --accent-cta-hover: 6 95 70;
+
+  /* Semantic "secure / verified" — reuses the accent ramp, just names the intent. */
+  --secure-fg: var(--accent-700);
+  --secure-bg: var(--accent-50);
+  --secure-ring: var(--accent-200);
 }
 
 html {
@@ -80,6 +85,18 @@ body {
   /* Display headings use the tighter display face. */
   .font-display {
     font-family: theme("fontFamily.display");
+  }
+
+  /* Shared "this box is protected" surface for the SSN, upload, and signature zones. */
+  .secure-surface {
+    @apply rounded-xl border bg-white shadow-card;
+    border-color: rgb(var(--secure-ring));
+  }
+
+  /* Inline "encrypted" affordance — quiet, accent-tinted, paired with a lock glyph. */
+  .lock-note {
+    @apply inline-flex items-center gap-1.5 text-xs font-medium;
+    color: rgb(var(--secure-fg));
   }
 }
 
