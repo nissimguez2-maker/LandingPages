@@ -12,7 +12,6 @@ import DayInCashFlowSection from "@/components/DayInCashFlowSection";
 import ExampleUsesSection from "@/components/ExampleUsesSection";
 import ReassuranceStrip from "@/components/ReassuranceStrip";
 import QuestionsSection from "@/components/QuestionsSection";
-import IndustryPicker from "@/components/IndustryPicker";
 import HowItWorksSection from "@/components/HowItWorksSection";
 import SocialProofSection from "@/components/SocialProofSection";
 import CTASection from "@/components/CTASection";
@@ -63,22 +62,6 @@ export default function HomePage() {
         <DayInCashFlowSection vertical={v} />
         <ExampleUsesSection vertical={v} />
         <OfferingsSection />
-
-        <section className="bg-white py-10 sm:py-14">
-          <div className="container-content">
-            <p className="eyebrow">Built for your industry</p>
-            <h2 className="mt-2 text-3xl font-bold tracking-tight text-brand-900 font-display">
-              Find the page built for your business
-            </h2>
-            <p className="mt-3 max-w-2xl text-slate-600">
-              We have dedicated pages for these industries, and we fund plenty that aren&apos;t listed.
-              Tell us what you do and we&apos;ll point you to the right place.
-            </p>
-            <div className="mt-8">
-              <IndustryPicker />
-            </div>
-          </div>
-        </section>
 
         <HowItWorksSection />
         <Reveal>
