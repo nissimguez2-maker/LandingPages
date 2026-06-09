@@ -85,44 +85,44 @@ export const HOW_IT_WORKS_STEPS = [
  */
 export const OFFERINGS = {
   eyebrow: "Funding options",
-  headline: "One conversation. The funding option that actually fits.",
+  headline: "One conversation. The option that fits how you get paid.",
   intro:
-    "There's no single right way to fund a business, it depends on what the money is for and how you get paid. A funding specialist reviews your file and matches you to the option that fits your cash flow, starting with the one most small businesses reach for first.",
+    "The right funding depends on what the money is for and how the cash comes in. A specialist reads your file and matches you to the fit, usually starting here.",
   products: [
     {
       name: "Working Capital Advance",
       icon: "spark",
       hero: true,
-      bestWhen: "Best when you need to cover a gap or move on an opportunity fast.",
-      body: "Funding based on your revenue and bank activity rather than credit alone, repaid as a small, automatic share of your deposits, so it flexes with a slow week instead of fighting it. A factor rate (not an APR) sets the cost up front; you may qualify, and approval depends on underwriting.",
+      bestWhen: "Best for covering a gap or moving on an opportunity fast.",
+      body: "Funding based on your revenue, not credit alone, repaid as a small automatic share of deposits, so it flexes with a slow week. A factor rate sets the cost up front; it is not an APR.",
     },
     {
       name: "Business Line of Credit",
       icon: "scale",
-      bestWhen: "Best when the need is recurring and you want to draw and repay as cash flow moves.",
-      body: "A revolving limit you draw from when you need it and pay down when you don't, so capital is there for the next gap without reapplying. You only carry what you actually use; access and terms depend on underwriting.",
+      bestWhen: "Best when the need keeps coming back.",
+      body: "A revolving limit you draw on when you need it and pay down when you don't, so you only carry what you use.",
     },
     {
       name: "Term Loan",
       icon: "clock",
-      bestWhen: "Best when you have a defined, one-time use and want a predictable monthly payment.",
-      body: "A fixed amount repaid over a set term in predictable payments, straightforward to plan around for a specific project or purchase. Amount and term depend on underwriting and the strength of the file.",
+      bestWhen: "Best for a one-time use with a predictable payment.",
+      body: "A fixed amount over a set term, straightforward to plan a project or purchase around.",
     },
     {
       name: "Equipment Financing",
       icon: "tools",
-      bestWhen: "Best when you're buying equipment, new or used, and want to preserve cash.",
-      body: "Finance the truck, oven, chair, or machine so you can put it to work now while keeping cash free for payroll and the day-to-day. The equipment itself typically anchors the deal; new and used both qualify, subject to underwriting.",
+      bestWhen: "Best when you're buying equipment, new or used.",
+      body: "Finance the truck, oven, chair, or machine so it earns now while your cash stays free for payroll.",
     },
     {
       name: "Invoice Factoring",
       icon: "inventory",
-      bestWhen: "Best when capital is tied up in unpaid invoices and you can't wait on net-30/60.",
-      body: "Turn outstanding invoices into cash now instead of waiting weeks for customers to pay, so a slow-paying client doesn't stall payroll or your next job. Availability is based on your receivables and your customers' credit, subject to review.",
+      bestWhen: "Best when cash is stuck in unpaid invoices.",
+      body: "Turn outstanding invoices into cash now instead of waiting on net-30 or net-60.",
     },
   ],
   footnote:
-    "FundVella is not a lender. We connect business owners with funding specialists who review your file and match you to available options. A factor rate is not an APR. You may qualify; approval depends on underwriting, payments must fit your cash flow, and there's no obligation to accept an offer.",
+    "FundVella is not a lender. We connect you with specialists who review your file and match available options. A factor rate is not an APR. You may qualify; approval depends on underwriting, payments must fit your cash flow, and there's no obligation to accept.",
 } satisfies import("@/lib/types").OfferingsSection;
 
 /** Shared, compliance-safe FAQs. Verticals prepend 2+ vertical-specific ones. */

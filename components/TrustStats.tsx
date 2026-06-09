@@ -1,9 +1,9 @@
 /**
- * Industry context strip (replaces the empty testimonials slot until real,
- * owner-provided testimonials exist). Every figure is a REAL, third-party
- * statistic with an attributed source link — never a fabricated FundVella stat.
- * Purpose: show that the cash-flow gap is common and that revenue-based funding
- * addresses a mainstream, well-documented need (trust / "this isn't a scam").
+ * Industry context strip — the headed top of the single Proof band (the thin
+ * SocialProof trust strip sits directly beneath it). Every figure is a REAL,
+ * third-party statistic with an attributed source link — never a fabricated
+ * FundVella stat. Shows the cash-flow gap is common and that revenue-based
+ * funding addresses a mainstream, documented need (trust / "this isn't a scam").
  */
 
 type Stat = { value: string; label: string; source: string; href: string };
@@ -41,19 +41,18 @@ const STATS: Stat[] = [
 
 export default function TrustStats() {
   return (
-    <section className="border-y border-slate-100 bg-slate-50 py-12 sm:py-16">
+    <section className="bg-slate-50 py-14 sm:py-20">
       <div className="container-content">
         <p className="eyebrow">You are not the only one</p>
-        <h2 className="mt-2 max-w-2xl text-2xl font-bold tracking-tight text-brand-900 font-display sm:text-3xl">
+        <h2 className="mt-3 max-w-2xl font-display text-3xl font-bold leading-tight tracking-tight text-brand-900 sm:text-4xl">
           The cash-flow gap is normal. It is not a verdict on your business.
         </h2>
-        <p className="mt-3 max-w-2xl leading-relaxed text-slate-600">
-          The squeeze between money going out and money coming in is one of the most common pressures in
-          small business. Independent research from the Federal Reserve and the JPMorgan Chase Institute
-          shows how widespread it is, and how often capital is about timing, not trouble.
+        <p className="mt-4 max-w-2xl leading-relaxed text-slate-600">
+          The squeeze between money out and money in is one of the most common pressures in small business, and
+          research from the Federal Reserve and the JPMorgan Chase Institute shows how widespread it is.
         </p>
 
-        <dl className="mt-8 grid grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
+        <dl className="mt-10 grid grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
           {STATS.map((s) => (
             <div key={s.value}>
               <dt className="font-display text-3xl font-bold text-brand-900 sm:text-4xl">{s.value}</dt>
@@ -71,11 +70,6 @@ export default function TrustStats() {
             </div>
           ))}
         </dl>
-
-        <p className="mt-8 max-w-2xl text-sm leading-relaxed text-slate-500">
-          FundVella is not a lender. We connect operating businesses with funding specialists who review on
-          revenue and bank activity, not credit alone. You may qualify; approval depends on underwriting.
-        </p>
       </div>
     </section>
   );
