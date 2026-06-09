@@ -474,3 +474,52 @@ export interface VerticalConfig {
   // ── Optional per-vertical calculator override ──
   calculator?: Partial<CalculatorConfig>;
 }
+
+/* ── Resources / articles hub ───────────────────────────────────────────── */
+
+/**
+ * One rendered block in an article body. Keeping long-form copy as typed data
+ * (mirroring landingPagesConfig.ts) keeps it compliance-reviewable in TS and the
+ * renderer a thin server component. Inside `p` text and `ul`/`ol` items you may
+ * use inline markdown links: `[anchor text](/path)` — the renderer turns those
+ * into internal <Link>s (only same-origin paths starting with "/").
+ */
+export type ArticleBlock =
+  | { type: "p"; text: string }
+  | { type: "h2"; text: string }
+  | { type: "h3"; text: string }
+  | { type: "ul"; items: string[] }
+  | { type: "ol"; items: string[] }
+  | { type: "callout"; title?: string; text: string };
+
+export type ArticleKind = "pillar" | "article" | "glossary";
+
+/** A single resource-hub entry (pillar guide, cluster article, or the glossary). */
+export interface ResourceArticle {
+  slug: string;
+  kind: ArticleKind;
+  /** Visible H1 (and card title). */
+  title: string;
+  /** <title> tag — keep ≤ ~60 chars. */
+  seoTitle: string;
+  /** Meta description — keep ≤ ~155 chars. */
+  seoDescription: string;
+  /** One-line summary for the hub card + social/OG. */
+  excerpt: string;
+  /** Topic label shown on cards + the breadcrumb (e.g. "Costs & Terms"). */
+  category: string;
+  primaryKeyword: string;
+  /** Path to the money page this piece funnels to: a vertical path like
+   *  "/restaurant-business-funding", or "/" for general small-business funding. */
+  moneyPagePath: string;
+  /** Related resource slugs (siblings/parent), for the "Keep reading" rail. */
+  related?: string[];
+  publishedAt: string; // ISO yyyy-mm-dd
+  updatedAt?: string; // ISO yyyy-mm-dd
+  readingMinutes?: number;
+  body: ArticleBlock[];
+  /** Rendered as visible Q&A + FAQPage JSON-LD when present. */
+  faqs?: FAQItem[];
+  /** Glossary terms (only when kind === "glossary"). */
+  terms?: GlossaryTerm[];
+}
