@@ -1,19 +1,23 @@
 /**
  * FinBiz lead import — Pipe 2.
  *
- * Guarded batch upsert into HubSpot, tagged lead_brand=FinBiz. Point a Google
- * Sheet at this (n8n Sheets -> HTTP, or any script) to load a freelance client's
- * leads. Auth: the same shared key as the n8n gateway (x-fundvella-key).
+ * A freelance client's leads (a Google Sheet) are POSTed here in batches. Each
+ * lead is scored and emitted onto the SAME signed event bus as FundVella
+ * captures — tagged lead_brand=FinBiz — so the n8n brain enriches, routes, and
+ * writes them (Supabase + the thin HubSpot deal) exactly like every other
+ * stream. The streams stay distinct by tag; the engine stays single.
  *
- * Body: { "leads": [ { "email": "...", "firstName": "...", "lastName": "...",
- *         "phone": "...", "businessName": "..." }, ... ] }
- * Field mapping is intentionally generic — extend leadToContactProps when the
- * client's columns are known.
+ * Auth: the same shared key as the n8n gateway (x-fundvella-key).
+ * Body: { "leads": [ { "email", "firstName", "lastName", "phone", "businessName" }, ... ] }
  */
 
 import { NextResponse } from "next/server";
 
-import { upsertHubspotContacts } from "@/lib/server/hubspot";
+import { buildLeadProfile } from "@/lib/application";
+import { scoreLead } from "@/lib/leadScoring";
+import { leadDedupeKey, temperatureFor } from "@/lib/server/events";
+import { emit } from "@/lib/server/forward";
+import { STREAMS } from "@/lib/streams";
 import type { LeadData } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -42,6 +46,28 @@ export async function POST(req: Request): Promise<NextResponse> {
     return NextResponse.json({ ok: false, error: "no_leads" }, { status: 400 });
   }
 
-  const imported = await upsertHubspotContacts(leads, { brand: "FinBiz" });
-  return NextResponse.json({ ok: true, imported, received: leads.length });
+  const stream = STREAMS.finbiz;
+  const results = await Promise.all(
+    leads.map((lead) => {
+      const score = scoreLead(lead);
+      return emit(
+        "lead.captured",
+        leadDedupeKey(lead.email, lead.phone, lead.industry, "imported"),
+        {
+          ...lead,
+          leadBrand: stream.leadBrand,
+          leadProfile: buildLeadProfile(lead),
+          band: score.band,
+          score: score.score,
+          temperature: temperatureFor(lead.urgency),
+          stage: "imported",
+        },
+        stream.leadBrand,
+        stream.source,
+      );
+    }),
+  );
+
+  const emitted = results.filter(Boolean).length;
+  return NextResponse.json({ ok: true, emitted, received: leads.length });
 }

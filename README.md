@@ -1,13 +1,48 @@
-# FundVella — Funding Landing Pages
+# FundVella — Funding Funnel + Capture Engine
 
 Conversion-optimized, compliance-aware landing pages for SMB / MCA funding
-verticals. **One codebase → one site → many routes**, all driven by a shared
-config.
+verticals, **plus a thin capture backend** that feeds an automation-driven CRM.
+**One codebase → one site → many routes**, all driven by a shared config.
 
-This repo is the **landing page (front end) only** — a clean slate. There is
-**no backend wired yet**: the form POSTs to a placeholder endpoint that simply
-acknowledges the capture. You'll build the backend (CRM, email, routing,
-automation) from scratch.
+---
+
+## Architecture — the engine
+
+```
+  FundVella (self-generated) ── landing pages → prequal / stress-test / deep application ─┐
+                                                                                          ├─►  capture
+  FinBiz (handed over) ──────── Google Sheet → POST /api/import/finbiz ───────────────────┘      │
+                                                                                                 │  score server-side,
+                                                                                                 │  tag with `leadBrand`,
+                                                                                                 ▼  emit ONE signed event
+                                                                                               n8n  ── the brain
+                                                                                                 │   enrich · route · warm
+                                                          ┌──────────────────────────────────────┴───────────────────────────┐
+                                                          ▼                                                                    ▼
+                                               Supabase (system of record)                                      HubSpot (the human's board)
+                                               leads · enrichment · activity                                    thin deal on a per-stream
+                                               — the machine's flexible layer                                   pipeline, worked → FUNDED
+```
+
+- **Two distinct streams, one engine.** FundVella (this funnel) and FinBiz
+  (imported) both flow through the *same* signed event bus, kept distinct only by
+  `leadBrand`. Streams are defined once in [`lib/streams.ts`](lib/streams.ts) —
+  adding a third is a config entry, not new plumbing.
+- **The site never writes to the CRM.** It captures, scores, and emits a signed,
+  idempotent domain event ([`lib/server/events.ts`](lib/server/events.ts) +
+  [`forward.ts`](lib/server/forward.ts)). **n8n owns all CRM/datastore writes.**
+  Events HMAC-sign with `NURTURE_SECRET` and dead-letter to Netlify Blobs if n8n
+  is unreachable, so nothing is lost before the brain is wired.
+- **Supabase is the malleable system-of-record; HubSpot is a thin working board.**
+  The rich data lives in Supabase (n8n-controlled, infinitely flexible). HubSpot
+  holds only the deal the closer works to funded — so its schema is set once and
+  never wrestled, and the working surface can be swapped later without data loss.
+
+### Status — what's wired vs in progress
+- ✅ Capture, server-authoritative scoring, signed event bus + dead-letter, both ingest pipes.
+- ✅ Stream registry + `leadBrand` stamped on every event (`schemaVersion: 2`).
+- 🚧 n8n consumer (writes deals → Supabase + thin HubSpot pipeline) — being built.
+- 🚧 HubSpot deal pipelines (FundVella / FinBiz) — pending Sales Hub Starter (2-pipeline tier).
 
 ---
 
@@ -27,42 +62,64 @@ npm run start      # serve the production build
 npm run typecheck  # TypeScript only
 ```
 
-The full UI works with no configuration. The lead form submits to
-`app/api/lead`, which currently just returns `{ ok: true }` — nothing is stored
-or sent anywhere yet.
+The full UI works with **no configuration**. With no `APPLICATION_WEBHOOK_URL`
+or `NURTURE_SECRET`, captures still complete and their events are written to the
+dead-letter store to replay once n8n is connected.
 
 ---
 
-## 2. Project structure
+## 2. The two lead streams
+
+Both run on one engine; they differ only by their entry and their `leadBrand` tag
+(see [`lib/streams.ts`](lib/streams.ts)).
+
+| Stream | Entry | Data | `leadBrand` |
+|---|---|---|---|
+| **FundVella** | this funnel — prequal, Cash-Flow Stress Test, deep `/apply` wizard | rich | `FundVella` |
+| **FinBiz** | `POST /api/import/finbiz` (a client's Google Sheet) | thin | `FinBiz` |
+
+The FinBiz import is key-authed (`x-fundvella-key: <NURTURE_SECRET>`) and emits
+the **same** `lead.captured` event as a web capture — so the brain enriches,
+routes, and writes both identically.
+
+```bash
+curl -X POST https://<site>/api/import/finbiz \
+  -H "x-fundvella-key: $NURTURE_SECRET" -H "content-type: application/json" \
+  -d '{"leads":[{"email":"owner@shop.com","firstName":"Sam","phone":"5551234567","businessName":"Sam'\''s Auto"}]}'
+```
+
+---
+
+## 3. Backend map
 
 ```
-app/
-  layout.tsx               Root layout + base SEO metadata
-  page.tsx                 Home (index of all verticals)
-  [vertical]/page.tsx      All landing pages (SSG) + FAQ JSON-LD
-  thank-you/page.tsx       Neutral confirmation page (noindex)
-  api/lead/route.ts        PLACEHOLDER lead endpoint (no backend wired)
-  privacy · terms · disclosures   Legal pages (linked in the footer)
-  sitemap.ts · robots.ts   Generated SEO routes
-components/
-  LandingPageTemplate.tsx  Assembles every section in conversion order
-  HeroSection · OfferingsSection · HowItWorksSection · SocialProofSection · …
-  CashFlowStressTest.tsx   Tap-only diagnostic that captures intel + pre-fills the form
-  prequal/                 Progressive prequalification form
-content/
-  landingPagesConfig.ts    ← ALL vertical copy / SEO / FAQ / criteria
-  stressTest.ts            Stress-test copy
+app/api/
+  lead/route.ts                 Prequal capture → score → emit lead.captured
+  application/route.ts          Deep-app autosave + resume; emits application.abandoned (+ T+0 resume email)
+  application/submit/route.ts   Final submit → encrypt SSN, persist, emit application.submitted
+  application/plaid/*           Plaid link-token + exchange (bank connect)
+  application/upload/route.ts   Signed-URL upload for bank statements
+  import/finbiz/route.ts        Pipe 2 — batch import → emit lead.captured (FinBiz)
 lib/
-  leadScoring.ts           Scoring + Green/Yellow/Red bands (drives the stress-test UX)
-  completeness.ts          Form completion % + missing info
-  analytics.ts · utm.ts    Vendor-neutral events + UTM capture
-  stressTest.ts            Stress-test scoring math
-  site.ts · themes.ts · structuredData.ts · calcom.ts · types.ts
+  streams.ts                    Stream registry (the per-stream config seam)
+  leadScoring.ts                Server-authoritative score + Green/Yellow/Red band
+  application.ts                Deep-app model, validation, redaction, leadProfile
+  server/events.ts              Canonical event envelope + dedup keys + temperature
+  server/forward.ts             Signed, retried, dead-lettered delivery to n8n
+  server/store.ts               Application persistence (Supabase → Netlify Blobs → memory)
+  server/secure.ts              AES-256-GCM SSN tokenization
+  server/email.ts               Magic-link resume email (Resend, optional)
 ```
+
+**The event contract** ([`lib/server/events.ts`](lib/server/events.ts)): every
+event is one `FvEnvelope` — `event`, `eventId` (audit), `idempotencyKey` (n8n
+dedups on this), `leadBrand` (the stream + attribution axis), `source`,
+`schemaVersion`, a `test` flag, and a `data` payload. Raw SSN and signature
+images **never** ride on an event — only `ssnLast4` and flags.
 
 ---
 
-## 3. Edit a vertical's content
+## 4. Edit a vertical's content
 
 Everything visible on a page comes from one object in
 `content/landingPagesConfig.ts`. Find the vertical by its `slug` (which becomes
@@ -84,18 +141,6 @@ from the config — `generateStaticParams()` builds the new page on the next dep
 
 ---
 
-## 4. The lead form (wire your backend here)
-
-`app/api/lead/route.ts` is a **placeholder**. The form (and the Cash-Flow Stress
-Test) POST their captures there; it currently just returns `{ ok: true }` so the
-flow completes. Build your backend from scratch by replacing the body of that
-route — e.g. forward the JSON payload to an n8n webhook, or call a CRM / email
-service. The payload shape is the `LeadData` type in `lib/types.ts`.
-
-Nothing else in this repo talks to a backend.
-
----
-
 ## 5. Analytics
 
 Vendor-neutral by design (`lib/analytics.ts`). Every event is pushed to
@@ -114,11 +159,31 @@ use your real domain.
 
 ---
 
-## 7. Deploy
+## 7. Environment variables
+
+All optional for the UI; set what the backend needs. Full list + notes in
+[`.env.example`](.env.example). The headline ones:
+
+| Var | Purpose |
+|---|---|
+| `NEXT_PUBLIC_SITE_URL` | Canonical/OG/sitemap base URL (set before first build). |
+| `APPLICATION_WEBHOOK_URL` | n8n webhook events are sent to. Unset → events dead-letter for replay. |
+| `NURTURE_SECRET` | Shared key: HMAC-signs events **and** authorizes the FinBiz import. |
+| `APPLICATION_ENC_KEY` | 32-byte key for AES-256-GCM SSN encryption. Unset → SSN never stored. |
+| `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` | Application persistence + system-of-record. Unset → Netlify Blobs. |
+| `PLAID_CLIENT_ID` / `PLAID_SECRET` | Optional bank-link (falls back to file upload). |
+| `RESEND_API_KEY` | Optional direct resume emails (else routed through n8n). |
+
+> The site holds **no CRM token** — HubSpot is written by n8n, which owns that
+> credential.
+
+---
+
+## 8. Deploy
 
 Connect this repo to **Netlify** (settings come from `netlify.toml`; the official
-`@netlify/plugin-nextjs` runtime) or to Vercel. Set at least
-`NEXT_PUBLIC_SITE_URL`. Build command `npm run build`, Node 20.
+`@netlify/plugin-nextjs` runtime) or to Vercel. Set at least `NEXT_PUBLIC_SITE_URL`.
+Build command `npm run build`, Node 20.
 
 ### Future: multiple domains
 If a vertical needs its own domain, keep **one repo**: create another site

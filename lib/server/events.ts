@@ -20,9 +20,10 @@ export interface FvEnvelope {
   eventId: string; // unique per delivery — audit handle
   occurredAt: string; // ISO-8601
   idempotencyKey: string; // stable per logical entity+stage — n8n dedup key
-  source: "fundvella-web";
+  leadBrand: string; // which stream this belongs to (FundVella | FinBiz | …) — n8n routes + attributes on it
+  source: string; // origin app / ingest channel (fundvella-web, finbiz-import, …)
   env: "production" | "preview" | "dev";
-  schemaVersion: 1;
+  schemaVersion: 2;
   test: boolean; // true off-production, so n8n can branch to a test pipeline
   data: Record<string, unknown>;
 }
@@ -38,6 +39,8 @@ export function makeEnvelope(
   event: FvEventType,
   idempotencyKey: string,
   data: Record<string, unknown>,
+  leadBrand: string,
+  source = "fundvella-web",
 ): FvEnvelope {
   const env = deployEnv();
   return {
@@ -45,9 +48,10 @@ export function makeEnvelope(
     eventId: randomUUID(),
     occurredAt: new Date().toISOString(),
     idempotencyKey,
-    source: "fundvella-web",
+    leadBrand,
+    source,
     env,
-    schemaVersion: 1,
+    schemaVersion: 2,
     test: env !== "production",
     data,
   };

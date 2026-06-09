@@ -14,7 +14,7 @@ import { buildLeadProfile, redactSensitive, type ApplicationSubmission } from "@
 import { scoreLead } from "@/lib/leadScoring";
 import { leadDedupeKey, temperatureFor } from "@/lib/server/events";
 import { emit } from "@/lib/server/forward";
-import { upsertHubspotContact } from "@/lib/server/hubspot";
+import { STREAMS } from "@/lib/streams";
 import type { LeadData } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -42,8 +42,10 @@ export async function POST(req: Request): Promise<NextResponse> {
   const stage = lead.partial === false ? "complete" : "partial";
 
   const temperature = temperatureFor(lead.urgency);
+  const stream = STREAMS.fundvella;
   const data = {
     ...redactSensitive(body),
+    leadBrand: stream.leadBrand,
     leadProfile: buildLeadProfile(lead),
     band: score.band,
     score: score.score,
@@ -52,11 +54,9 @@ export async function POST(req: Request): Promise<NextResponse> {
     stage,
   };
 
-  // Two pipes from one capture: the event bus (n8n) and the CRM upsert (HubSpot, tagged FundVella).
-  await Promise.all([
-    emit("lead.captured", leadDedupeKey(lead.email, lead.phone, lead.industry, stage), data),
-    upsertHubspotContact(lead, { brand: "FundVella", band: score.band, score: score.score, temperature, status: stage }),
-  ]);
+  // One capture → one signed event to n8n (the brain), which writes the record to
+  // Supabase and the thin deal to HubSpot. The site itself never touches the CRM.
+  await emit("lead.captured", leadDedupeKey(lead.email, lead.phone, lead.industry, stage), data, stream.leadBrand);
 
   return NextResponse.json({ ok: true });
 }

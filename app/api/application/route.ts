@@ -17,6 +17,7 @@ import { buildLeadProfile, redactSensitive, type ApplicationSubmission } from "@
 import { scoreLead } from "@/lib/leadScoring";
 import { temperatureFor } from "@/lib/server/events";
 import { emit } from "@/lib/server/forward";
+import { STREAMS } from "@/lib/streams";
 import { sendResumeEmail } from "@/lib/server/email";
 import { getApplication, isStoreConfigured, markResumeEmailed, upsertApplication } from "@/lib/server/store";
 import { getSiteUrl } from "@/lib/site";
@@ -73,18 +74,24 @@ export async function POST(req: Request): Promise<NextResponse> {
     }
 
     const score = scoreLead(body);
-    await emit("application.abandoned", `app:${token}:abandoned:${body.dropStep ?? "unknown"}`, {
-      ...safe,
-      leadProfile: profile,
-      band: score.band,
-      score: score.score,
-      temperature: temperatureFor(body.urgency),
-      dropStep: body.dropStep,
-      furthestStep: body.furthestStep,
-      signals: body.signals,
-      completionPct: body.formCompletionPercentage,
-      resume: { resumeUrl, emailedByApp },
-    });
+    await emit(
+      "application.abandoned",
+      `app:${token}:abandoned:${body.dropStep ?? "unknown"}`,
+      {
+        ...safe,
+        leadBrand: STREAMS.fundvella.leadBrand,
+        leadProfile: profile,
+        band: score.band,
+        score: score.score,
+        temperature: temperatureFor(body.urgency),
+        dropStep: body.dropStep,
+        furthestStep: body.furthestStep,
+        signals: body.signals,
+        completionPct: body.formCompletionPercentage,
+        resume: { resumeUrl, emailedByApp },
+      },
+      STREAMS.fundvella.leadBrand,
+    );
   }
 
   return NextResponse.json({ ok: true, id: token });
