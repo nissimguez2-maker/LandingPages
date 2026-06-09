@@ -4,7 +4,7 @@ import Collapsible from "./Collapsible";
 /** Visual timeline of the 3-step process (connected on desktop, stacked on mobile). */
 export default function Timeline() {
   return (
-    <Collapsible eyebrow="How it works" title="Three steps, no surprises" bg="bg-brand-50/50" wide>
+    <Collapsible eyebrow="How it works" title="Three steps, no surprises" wide>
       <ol className="relative grid gap-6 md:grid-cols-3 md:gap-6">
         {/* connecting line (desktop) */}
         <div className="absolute left-0 right-0 top-5 hidden h-0.5 bg-brand-200 md:block" aria-hidden="true" />

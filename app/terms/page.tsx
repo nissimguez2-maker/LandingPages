@@ -63,7 +63,7 @@ export default function TermsPage() {
       <LegalSection heading="Changes & contact">
         <p>
           We may update these terms and will revise the date above. Questions? Contact us at
-          {" "}<strong>[your contact email]</strong>.
+          {" "}<a href="mailto:funding@fundvella.com" className="underline hover:text-brand-700">funding@fundvella.com</a>.
         </p>
       </LegalSection>
     </LegalLayout>

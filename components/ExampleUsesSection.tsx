@@ -14,7 +14,7 @@ export default function ExampleUsesSection({ vertical }: { vertical: VerticalCon
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((u, i) => (
           <Reveal key={u.label} delay={i * 70}>
-            <div className="hover-lift flex h-full flex-col rounded-xl border border-slate-200 bg-white p-6 shadow-card">
+            <div className="hover-lift flex h-full flex-col rounded-2xl bg-white p-6 shadow-card">
               <p className="text-lg font-bold text-brand-900 font-display">
                 {usd(u.rangeLow)} to {usd(u.rangeHigh)}
               </p>

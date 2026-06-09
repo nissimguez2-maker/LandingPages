@@ -4,7 +4,7 @@ import Collapsible from "./Collapsible";
 /** Good fit / may-need-review comparison. Honest framing builds trust (LIFT: Anxiety down). */
 export default function FitComparisonTable({ vertical }: { vertical: VerticalConfig }) {
   return (
-    <Collapsible eyebrow="Is this a fit?" title="Good fit vs. may need a closer look" bg="bg-brand-50/50" wide>
+    <Collapsible eyebrow="Is this a fit?" title="Good fit vs. may need a closer look" wide>
       <p className="max-w-2xl text-slate-600">
         A &ldquo;may need review&rdquo; doesn&apos;t mean no, it just means a specialist will look closer.
       </p>

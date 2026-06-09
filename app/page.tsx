@@ -4,31 +4,27 @@ import PageViewTracker from "@/components/PageViewTracker";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import HeroSection from "@/components/HeroSection";
-import TrustBar from "@/components/TrustBar";
 import PainReliefSection from "@/components/PainReliefSection";
 import CashFlowStressTest from "@/components/CashFlowStressTest";
-import OfferingsSection from "@/components/OfferingsSection";
-import DayInCashFlowSection from "@/components/DayInCashFlowSection";
-import ExampleUsesSection from "@/components/ExampleUsesSection";
-import ReassuranceStrip from "@/components/ReassuranceStrip";
-import QuestionsSection from "@/components/QuestionsSection";
-import IndustryPicker from "@/components/IndustryPicker";
-import HowItWorksSection from "@/components/HowItWorksSection";
+import TrustStats from "@/components/TrustStats";
 import SocialProofSection from "@/components/SocialProofSection";
+import OfferingsSection from "@/components/OfferingsSection";
+import Timeline from "@/components/Timeline";
+import ExampleUsesSection from "@/components/ExampleUsesSection";
+import QuestionsSection from "@/components/QuestionsSection";
 import CTASection from "@/components/CTASection";
 import StickyCTA from "@/components/StickyCTA";
-import Reveal from "@/components/motion/Reveal";
 import { generalFunding } from "@/content/landingPagesConfig";
 import { accentCssVars } from "@/lib/themes";
 import { SITE_NAME, getSiteUrl } from "@/lib/site";
-import { buildFaqJsonLd, buildOrganizationJsonLd } from "@/lib/structuredData";
+import { buildFaqJsonLd } from "@/lib/structuredData";
 
-const HOME_TITLE = `${SITE_NAME}, Small business funding, reviewed on revenue`;
+const HOME_TITLE = "Small Business Funding on Your Revenue | FundVella";
 const HOME_DESCRIPTION =
-  "Working capital for almost any operating business, reviewed on revenue and bank activity, not credit alone. Take the cash-flow check. Approval depends on underwriting.";
+  "Working capital for almost any business, read on revenue and bank activity, not credit alone. You may qualify. Approval depends on underwriting.";
 
 export const metadata: Metadata = {
-  title: HOME_TITLE,
+  title: { absolute: HOME_TITLE },
   description: HOME_DESCRIPTION,
   alternates: { canonical: getSiteUrl() },
   openGraph: { title: HOME_TITLE, description: HOME_DESCRIPTION, url: getSiteUrl(), type: "website", siteName: SITE_NAME },
@@ -39,10 +35,6 @@ export default function HomePage() {
   const v = generalFunding;
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildOrganizationJsonLd()) }}
-      />
       {v.faqs?.length ? (
         <script
           type="application/ld+json"
@@ -50,49 +42,38 @@ export default function HomePage() {
         />
       ) : null}
       <div style={accentCssVars(v.theme?.accent)}>
-      <a href="#estimate" className="skip-link">
-        Skip to the cash-flow check
-      </a>
-      <PageViewTracker vertical="home" />
-      <SiteHeader vertical={v} />
-      <main>
-        <HeroSection vertical={v} />
-        <TrustBar />
+        <a href="#estimate" className="skip-link">
+          Skip to the cash-flow check
+        </a>
+        <PageViewTracker vertical="home" />
+        <SiteHeader vertical={v} />
+        <main>
+          {/* Z1 Hero */}
+          <HeroSection vertical={v} />
 
-        <PainReliefSection vertical={v} />
+          {/* Z2 Empathy — directly above the tool */}
+          <PainReliefSection vertical={v} />
 
-        <CashFlowStressTest vertical={v} />
-        <ReassuranceStrip vertical={v} />
+          {/* Z3 The cash-flow check (UNTOUCHED) */}
+          <CashFlowStressTest vertical={v} />
 
-        <DayInCashFlowSection vertical={v} />
-        <ExampleUsesSection vertical={v} />
-        <OfferingsSection />
-
-        <section className="bg-white py-10 sm:py-14">
-          <div className="container-content">
-            <p className="eyebrow">Built for your industry</p>
-            <h2 className="mt-2 text-3xl font-bold tracking-tight text-brand-900 font-display">
-              Find the page built for your business
-            </h2>
-            <p className="mt-3 max-w-2xl text-slate-600">
-              We have dedicated pages for these industries, and we fund plenty that aren&apos;t listed.
-              Tell us what you do and we&apos;ll point you to the right place.
-            </p>
-            <div className="mt-8">
-              <IndustryPicker />
-            </div>
-          </div>
-        </section>
-
-        <HowItWorksSection />
-        <Reveal>
+          {/* Z4 Proof */}
+          <TrustStats />
           <SocialProofSection vertical={v} />
-        </Reveal>
-        <QuestionsSection vertical={v} />
-        <CTASection vertical={v} />
-      </main>
-      <SiteFooter />
-      <StickyCTA vertical="home" label={v.cta.primary} />
+
+          {/* Z5 How funding works + what it's for */}
+          <OfferingsSection />
+          <Timeline />
+          <ExampleUsesSection vertical={v} />
+
+          {/* Z6 FAQ */}
+          <QuestionsSection vertical={v} />
+
+          {/* Z7 CTA */}
+          <CTASection vertical={v} />
+        </main>
+        <SiteFooter />
+        <StickyCTA vertical="home" label={v.cta.primary} />
       </div>
     </>
   );

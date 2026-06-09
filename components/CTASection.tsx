@@ -10,7 +10,7 @@ export default function CTASection({ vertical }: { vertical: VerticalConfig }) {
           The gap will not close on its own
         </h2>
         <p className="mx-auto mt-3 max-w-xl text-brand-100">
-          Take the 2-minute check and see where your money runs short, before the next slow week.
+          Take the 2-minute check and see where your cash runs short.
         </p>
         <div className="mt-7 flex justify-center">
           <CTAButton label={vertical.cta.primary} target="#estimate" location="cta_band" vertical={vertical.slug} />

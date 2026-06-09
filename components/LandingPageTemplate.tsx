@@ -4,24 +4,23 @@ import PageViewTracker from "./PageViewTracker";
 import SiteHeader from "./SiteHeader";
 import SiteFooter from "./SiteFooter";
 import HeroSection from "./HeroSection";
-import TrustBar from "./TrustBar";
 import PainReliefSection from "./PainReliefSection";
-import SocialProofSection from "./SocialProofSection";
-import Timeline from "./Timeline";
-import FitComparisonTable from "./FitComparisonTable";
-import Testimonials from "./Testimonials";
 import CashFlowStressTest from "./CashFlowStressTest";
-import DayInCashFlowSection from "./DayInCashFlowSection";
-import ExampleUsesSection from "./ExampleUsesSection";
-import ReassuranceStrip from "./ReassuranceStrip";
+import TrustStats from "./TrustStats";
+import SocialProofSection from "./SocialProofSection";
 import OfferingsSection from "./OfferingsSection";
+import Timeline from "./Timeline";
+import ExampleUsesSection from "./ExampleUsesSection";
+import FitComparisonTable from "./FitComparisonTable";
 import QuestionsSection from "./QuestionsSection";
 import CTASection from "./CTASection";
 import StickyCTA from "./StickyCTA";
 
 /**
- * One template for every vertical. Lead with the tool: the Cash-Flow Stress Test
- * (which captures the lead) sits right under the hero, then the supporting story.
+ * One template for every vertical, consolidated into 7 calm zones:
+ *   Hero → empathy → the cash-flow check → proof → how it works + options → FAQ → CTA.
+ * The Cash-Flow Stress Test stays exactly where it is, untouched, with the empathy
+ * block immediately before it (the adjacency that makes the tool convert).
  */
 export default function LandingPageTemplate({ vertical }: { vertical: VerticalConfig }) {
   return (
@@ -32,22 +31,29 @@ export default function LandingPageTemplate({ vertical }: { vertical: VerticalCo
       <PageViewTracker vertical={vertical.slug} />
       <SiteHeader vertical={vertical} />
       <main>
+        {/* Z1 Hero */}
         <HeroSection vertical={vertical} />
-        <TrustBar items={vertical.heroHighlights} />
 
+        {/* Z2 Empathy — directly above the tool */}
         <PainReliefSection vertical={vertical} />
 
+        {/* Z3 The cash-flow check (UNTOUCHED) */}
         <CashFlowStressTest vertical={vertical} />
-        <ReassuranceStrip vertical={vertical} />
 
-        <DayInCashFlowSection vertical={vertical} />
-        <ExampleUsesSection vertical={vertical} />
-        <FitComparisonTable vertical={vertical} />
+        {/* Z4 Proof — one band right after the tool */}
+        <TrustStats />
+        <SocialProofSection vertical={vertical} />
+
+        {/* Z5 How funding works + what it's for + fit */}
         <OfferingsSection />
         <Timeline />
-        <SocialProofSection vertical={vertical} />
-        <Testimonials vertical={vertical} />
+        <ExampleUsesSection vertical={vertical} />
+        <FitComparisonTable vertical={vertical} />
+
+        {/* Z6 FAQ */}
         <QuestionsSection vertical={vertical} />
+
+        {/* Z7 CTA */}
         <CTASection vertical={vertical} />
       </main>
       <SiteFooter />

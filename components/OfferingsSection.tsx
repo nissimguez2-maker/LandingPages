@@ -6,20 +6,18 @@ import Collapsible from "./Collapsible";
 /**
  * "Options a specialist matches you to", MCA-led, others available. Compliance:
  * FundVella connects merchants with specialists; it does not lend or approve.
+ * Cards carry no border/ring (shadow only); the hero option is marked by a badge
+ * and a slightly stronger shadow, not a colored ring.
  */
 export default function OfferingsSection() {
   const o = OFFERINGS;
   return (
-    <Collapsible eyebrow={o.eyebrow} title={o.headline} bg="bg-brand-50/50" wide>
+    <Collapsible eyebrow={o.eyebrow} title={o.headline} wide>
       <p className="max-w-2xl text-slate-600">{o.intro}</p>
-      <div className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {o.products.map((p, i) => (
           <Reveal key={p.name} delay={i * 80}>
-            <div
-              className={`hover-lift flex h-full flex-col rounded-2xl border bg-white p-6 shadow-card ${
-                p.hero ? "border-accent-300 ring-1 ring-accent-200" : "border-slate-200"
-              }`}
-            >
+            <div className={`hover-lift flex h-full flex-col rounded-2xl bg-white p-6 ${p.hero ? "shadow-lift" : "shadow-card"}`}>
               <div className="flex items-center gap-3">
                 <span
                   className={`flex h-10 w-10 flex-none items-center justify-center rounded-lg ${

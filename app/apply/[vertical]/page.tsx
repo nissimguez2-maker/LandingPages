@@ -2,14 +2,20 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import ApplicationWizard from "@/components/apply/ApplicationWizard";
-import { getVerticalBySlug, getActiveVerticals } from "@/content/landingPagesConfig";
+import { getVerticalBySlug, getActiveVerticals, generalFunding } from "@/content/landingPagesConfig";
 import { accentCssVars } from "@/lib/themes";
 
-// Only the configured verticals exist; unknown slugs 404 (mirrors the landing route).
+// Only the configured verticals (plus the general funding page) exist; unknown
+// slugs 404 (mirrors the landing route).
 export const dynamicParams = false;
 
+/** Resolve a vertical OR the general small-business funding page by slug. */
+function resolveVertical(slug: string) {
+  return getVerticalBySlug(slug) ?? (slug === generalFunding.slug ? generalFunding : undefined);
+}
+
 export function generateStaticParams(): { vertical: string }[] {
-  return getActiveVerticals().map((v) => ({ vertical: v.slug }));
+  return [...getActiveVerticals(), generalFunding].map((v) => ({ vertical: v.slug }));
 }
 
 export async function generateMetadata({
@@ -18,7 +24,7 @@ export async function generateMetadata({
   params: Promise<{ vertical: string }>;
 }): Promise<Metadata> {
   const { vertical: slug } = await params;
-  const v = getVerticalBySlug(slug);
+  const v = resolveVertical(slug);
   if (!v) return {};
   return {
     title: { absolute: `Apply — ${v.title} | FundVella` },
@@ -34,7 +40,7 @@ export default async function ApplyPage({
   params: Promise<{ vertical: string }>;
 }) {
   const { vertical: slug } = await params;
-  const v = getVerticalBySlug(slug);
+  const v = resolveVertical(slug);
   if (!v) notFound();
 
   // The application shell pins ONE calm accent (default emerald) regardless of the

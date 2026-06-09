@@ -14,7 +14,7 @@ export default function QuestionsSection({ vertical }: { vertical: VerticalConfi
   if (!qa.length && !glossary.length) return null;
 
   return (
-    <section className="bg-white py-12 sm:py-14">
+    <section className="bg-slate-50 py-14 sm:py-20">
       <div className="container-content max-w-3xl">
         <p className="eyebrow">Questions and plain-English terms</p>
         <h2 className="mt-2 text-2xl font-bold tracking-tight text-brand-900 font-display sm:text-3xl">
