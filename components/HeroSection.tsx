@@ -26,9 +26,11 @@ export default function HeroSection({ vertical }: { vertical: VerticalConfig }) 
       />
       <div className="container-content relative grid gap-6 py-16 lg:grid-cols-12 lg:py-20">
         <div className="lg:col-span-6">
-          <p className="eyebrow text-accent-300">Working capital, built for {vertical.title.replace(" Funding", "").toLowerCase()}</p>
-          <h1 className="mt-3 text-4xl font-bold leading-tight tracking-tight font-display sm:text-5xl">
-            {vertical.heroHeadline}
+          <h1 className="font-display">
+            <span className="eyebrow block text-accent-300">{vertical.title}</span>
+            <span className="mt-3 block text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
+              {vertical.heroHeadline}
+            </span>
           </h1>
           {hook && <p className="mt-4 text-base leading-relaxed text-brand-200">{hook}</p>}
           <p className="mt-3 max-w-xl text-lg leading-relaxed text-brand-100">{vertical.heroSubheadline}</p>
