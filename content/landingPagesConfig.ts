@@ -179,9 +179,9 @@ export const landingPages: VerticalConfig[] = [
   {
     slug: "restaurant-business-funding",
     title: "Restaurant Business Funding",
-    seoTitle: "Restaurant Business Funding, Working Capital on Your Deposits",
+    seoTitle: "Restaurant Business Funding | FundVella",
     seoDescription:
-      "Working capital for restaurants, reviewed on card-batch deposits and bank activity. You may qualify. Approval depends on underwriting.",
+      "A slow Friday, COD produce, rent due Monday, all before the weekend's card batches settle. Restaurant funding read on your deposits, not credit alone.",
     theme: { accent: "amber" },
     heroHeadline: "Capital that keeps the line moving",
     heroSubheadline:
@@ -289,9 +289,9 @@ export const landingPages: VerticalConfig[] = [
   {
     slug: "trucking-business-funding",
     title: "Trucking Business Funding",
-    seoTitle: "Trucking Business Funding, Working Capital for Carriers",
+    seoTitle: "Trucking & Owner-Operator Funding | FundVella",
     seoDescription:
-      "Working capital for owner-operators and fleets, reviewed on settlements and bank activity. You may qualify. Approval depends on underwriting.",
+      "Factoring takes its cut, the broker pays net-45, then a blown turbo parks the truck. Carrier funding read on your settlements, not just credit.",
     theme: { accent: "orange" },
     heroHeadline: "Keep rolling between settlements",
     heroSubheadline:
@@ -399,9 +399,9 @@ export const landingPages: VerticalConfig[] = [
   {
     slug: "construction-business-funding",
     title: "Construction Contractor Funding",
-    seoTitle: "Construction Contractor Funding, Bridge Jobs & Payroll",
+    seoTitle: "Construction Contractor Funding | FundVella",
     seoDescription:
-      "Working capital for contractors and subs, reviewed on deposits across jobs. You may qualify. Approval depends on underwriting.",
+      "Materials and payroll are due now, but the draw is three weeks out and the GC still has to sign off. Contractor funding read on your deposits.",
     theme: { accent: "yellow" },
     heroHeadline: "Cover materials and crew before the draw lands",
     heroSubheadline:
@@ -508,9 +508,9 @@ export const landingPages: VerticalConfig[] = [
   {
     slug: "ecommerce-inventory-funding",
     title: "E-commerce Inventory Funding",
-    seoTitle: "E-commerce Inventory Funding, Fund Stock & Growth",
+    seoTitle: "E-commerce Inventory Funding | FundVella",
     seoDescription:
-      "Inventory and growth capital for online sellers, reviewed on processor volume and bank activity. You may qualify. Approval depends on underwriting.",
+      "Q4 nears and the supplier wants 50% down on an 8-week lead, before the sales land. E-commerce inventory funding read on your processor volume.",
     theme: { accent: "violet" },
     heroHeadline: "Stock the winners before the peak hits",
     heroSubheadline:
@@ -618,9 +618,9 @@ export const landingPages: VerticalConfig[] = [
   {
     slug: "auto-repair-shop-funding",
     title: "Auto Repair Shop Funding",
-    seoTitle: "Auto Repair Shop Funding, Working Capital for Shops",
+    seoTitle: "Auto Repair Shop Funding | FundVella",
     seoDescription:
-      "Working capital for auto repair shops, reviewed on ticket deposits and bank activity. You may qualify. Approval depends on underwriting.",
+      "Three cars on the lifts, parts are COD, and techs get paid Friday whether the work clears or not. Auto repair shop funding read on your deposits.",
     theme: { accent: "red" },
     heroHeadline: "Keep the bays full and the parts moving",
     heroSubheadline:
@@ -727,9 +727,9 @@ export const landingPages: VerticalConfig[] = [
   {
     slug: "medical-practice-funding",
     title: "Medical Practice Funding",
-    seoTitle: "Medical Practice Funding, Working Capital With Lag Built In",
+    seoTitle: "Medical Practice Funding | FundVella",
     seoDescription:
-      "Working capital for medical practices, reviewed on collections with reimbursement lag in mind. You may qualify. Approval depends on underwriting.",
+      "Payroll runs every two weeks; the insurer reimburses in 60, and the new unit cannot wait for AR. Medical practice funding read on your collections.",
     theme: { accent: "teal" },
     heroHeadline: "Don't let reimbursement lag stall the practice",
     heroSubheadline:
@@ -837,9 +837,9 @@ export const landingPages: VerticalConfig[] = [
   {
     slug: "dental-practice-funding",
     title: "Dental Practice Funding",
-    seoTitle: "Dental Practice Funding, Working Capital for Dentists",
+    seoTitle: "Dental Practice Funding | FundVella",
     seoDescription:
-      "Working capital for dental practices, reviewed on collections and bank activity. You may qualify. Approval depends on underwriting.",
+      "Schedule packed, hygienist hired, but insurance pays in 30 to 60 days while the lab bill is due this week. Dental practice funding on your collections.",
     theme: { accent: "cyan" },
     heroHeadline: "Add the operatory now. Let collections catch up.",
     heroSubheadline:
@@ -947,9 +947,9 @@ export const landingPages: VerticalConfig[] = [
   {
     slug: "beauty-salon-med-spa-funding",
     title: "Beauty Salon / Med Spa Funding",
-    seoTitle: "Beauty Salon & Med Spa Funding, Working Capital",
+    seoTitle: "Beauty Salon & Med Spa Funding | FundVella",
     seoDescription:
-      "Working capital for salons and med spas, reviewed on appointment deposits and bank activity. You may qualify. Approval depends on underwriting.",
+      "A new chair, a laser, a stylist to hire, all due now while the books are still light from a slow stretch. Salon and med spa funding on your deposits.",
     theme: { accent: "rose" },
     heroHeadline: "Add the chair before the calendar fills.",
     heroSubheadline:
@@ -1057,9 +1057,9 @@ export const landingPages: VerticalConfig[] = [
   {
     slug: "retail-store-funding",
     title: "Retail Store Funding",
-    seoTitle: "Retail Store Funding, Inventory & Working Capital",
+    seoTitle: "Retail Store Funding | FundVella",
     seoDescription:
-      "Working capital for retail stores, reviewed on sales, processor volume and bank activity. You may qualify. Approval depends on underwriting.",
+      "The vendor wants the holiday order paid now, but the sell-through that covers it starts in November. Retail store funding read on your sales.",
     theme: { accent: "blue" },
     heroHeadline: "Buy the season before it sells",
     heroSubheadline:
@@ -1167,9 +1167,9 @@ export const landingPages: VerticalConfig[] = [
   {
     slug: "hvac-plumbing-business-funding",
     title: "HVAC / Plumbing Business Funding",
-    seoTitle: "HVAC & Plumbing Business Funding, Working Capital",
+    seoTitle: "HVAC & Plumbing Business Funding | FundVella",
     seoDescription:
-      "Working capital for HVAC and plumbing businesses, reviewed on deposits and bank activity. You may qualify. Approval depends on underwriting.",
+      "The first heat wave triples your calls overnight, so you stock parts and staff crews before one invoice is paid. HVAC and plumbing funding on deposits.",
     theme: { accent: "sky" },
     heroHeadline: "Stock the trucks before the first heat wave.",
     heroSubheadline:
@@ -1276,9 +1276,9 @@ export const landingPages: VerticalConfig[] = [
   {
     slug: "cleaning-business-funding",
     title: "Cleaning Business Funding",
-    seoTitle: "Cleaning Business Funding, Working Capital for Crews",
+    seoTitle: "Cleaning Business Funding | FundVella",
     seoDescription:
-      "Working capital for cleaning businesses, reviewed on recurring-contract deposits. You may qualify. Approval depends on underwriting.",
+      "Crews get paid every Friday, but your new commercial accounts pay net-60. Cleaning business funding read on your recurring contracts.",
     theme: { accent: "emerald" },
     heroHeadline: "Win the contract. Cover the crew.",
     heroSubheadline:
@@ -1385,9 +1385,9 @@ export const landingPages: VerticalConfig[] = [
   {
     slug: "bad-credit-business-funding",
     title: "Bad Credit Business Funding",
-    seoTitle: "Bad Credit Business Funding, Reviewed on Revenue",
+    seoTitle: "Bad Credit Business Funding | FundVella",
     seoDescription:
-      "Funding options that weigh business revenue and bank activity, not just credit score. You may qualify. Approval depends on underwriting.",
+      "Your deposits never stopped, but one credit score keeps ending the conversation. We weigh revenue and bank activity, not just credit. You may qualify.",
     theme: { accent: "emerald" },
     heroHeadline: "Bad credit? Your deposits get read first.",
     heroSubheadline:
@@ -1502,9 +1502,9 @@ export const landingPages: VerticalConfig[] = [
 export const generalFunding: VerticalConfig = {
   slug: "business-funding",
   title: "Small Business Funding",
-  seoTitle: "Small Business Funding, Working Capital on Revenue",
+  seoTitle: "Small Business Funding & Working Capital | FundVella",
   seoDescription:
-    "Working capital for small businesses, reviewed on revenue and bank activity, not credit alone. You may qualify. Approval depends on underwriting.",
+    "The bill is due now; the receivables land next month, and a repair or a hire will not wait. Small business funding read on your revenue, not credit alone.",
   theme: { accent: "emerald" },
   heroHeadline: "Working capital, reviewed on your revenue",
   heroSubheadline:
