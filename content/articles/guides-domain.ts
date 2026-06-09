@@ -43,7 +43,7 @@ export const guidesDomain: ResourceArticle[] = [
       },
       {
         type: "p",
-        text: "The standard ask is three to four months of business bank statements, all pages. That window is long enough to show a real pattern and short enough to reflect how your business is running right now. If you want to see how this fits the whole process, the [working capital guide](/) walks through what happens after you share statements.",
+        text: "The standard ask is three to four months of business bank statements, all pages. That window is long enough to show a real pattern and short enough to reflect how your business is running right now. If you want to see how this fits the whole process, the [working capital guide](/resources/working-capital-guide) walks through what happens after you share statements.",
       },
       { type: "h2", text: "Average monthly deposits" },
       {
@@ -105,7 +105,7 @@ export const guidesDomain: ResourceArticle[] = [
       },
       {
         type: "p",
-        text: "None of this is a scorecard you can game, and none of it guarantees an outcome. It is simply what underwriting reads. When you understand it, you can tell at a glance whether your file is likely to be an easy yes or one that needs a conversation. Next, see how those deposits translate into [minimum revenue to qualify](/) and the full [list of documents you will need](/).",
+        text: "None of this is a scorecard you can game, and none of it guarantees an outcome. It is simply what underwriting reads. When you understand it, you can tell at a glance whether your file is likely to be an easy yes or one that needs a conversation. Next, see how those deposits translate into [minimum revenue to qualify](/resources/minimum-revenue-to-qualify) and the full [list of documents you will need](/resources/documents-needed-for-funding).",
       },
       {
         type: "p",
@@ -196,13 +196,13 @@ export const guidesDomain: ResourceArticle[] = [
         items: [
           "Consistency: steady months read better than one huge month and three thin ones.",
           "Frequency: many smaller deposits across the month often signal more reliable cash flow than one large lump.",
-          "Balance: an [average daily balance](/) that holds above zero shows there is room for a payment.",
+          "Balance: an [average daily balance](/resources/glossary) that holds above zero shows there is room for a payment.",
           "NSFs: frequent negative days work against a file even when deposits look fine.",
         ],
       },
       {
         type: "p",
-        text: "For the full breakdown of how those statements are read, see [what lenders actually read in your bank statements](/).",
+        text: "For the full breakdown of how those statements are read, see [what lenders actually read in your bank statements](/resources/what-lenders-read-bank-statements).",
       },
       { type: "h2", text: "How deposits translate into an amount" },
       {
@@ -300,7 +300,7 @@ export const guidesDomain: ResourceArticle[] = [
       { type: "h3", text: "Bank statements" },
       {
         type: "p",
-        text: "Statements are where revenue-based underwriting lives. They show average monthly deposits, how often money lands, the average daily balance, and any negative or NSF days. Send all pages, even the blank summary page, because a missing page reads as an incomplete file. For the full picture of what gets read, see [what lenders actually read in your bank statements](/).",
+        text: "Statements are where revenue-based underwriting lives. They show average monthly deposits, how often money lands, the average daily balance, and any negative or NSF days. Send all pages, even the blank summary page, because a missing page reads as an incomplete file. For the full picture of what gets read, see [what lenders actually read in your bank statements](/resources/what-lenders-read-bank-statements).",
       },
       { type: "h3", text: "ID and proof of ownership" },
       {
@@ -338,7 +338,7 @@ export const guidesDomain: ResourceArticle[] = [
       },
       {
         type: "p",
-        text: "Once your documents are together, the next questions are usually how much your revenue supports, covered in [minimum revenue to qualify](/), and how the cost is quoted, covered in the [working capital guide](/). A funding specialist can review your file and tell you whether anything is missing before it goes to underwriting.",
+        text: "Once your documents are together, the next questions are usually how much your revenue supports, covered in [minimum revenue to qualify](/resources/minimum-revenue-to-qualify), and how the cost is quoted, covered in the [working capital guide](/resources/working-capital-guide). A funding specialist can review your file and tell you whether anything is missing before it goes to underwriting.",
       },
     ],
     faqs: [
@@ -438,7 +438,7 @@ export const guidesDomain: ResourceArticle[] = [
       },
       {
         type: "p",
-        text: "For the full breakdown of what an underwriter reads line by line, see [what lenders actually read in your bank statements](/).",
+        text: "For the full breakdown of what an underwriter reads line by line, see [what lenders actually read in your bank statements](/resources/what-lenders-read-bank-statements).",
       },
       { type: "h2", text: "How payments are structured around lumpy cash flow" },
       {
@@ -523,7 +523,7 @@ export const guidesDomain: ResourceArticle[] = [
       },
       {
         type: "p",
-        text: "Each term below is defined in one or two plain sentences, with an example where it helps. The goal is not legal precision, it is so you recognize what a specialist or a contract means when they use the word. For a fuller walkthrough of how the cost works, see the [working capital guide](/) and [factor rate vs APR](/). This is general education, not financial, legal, or tax advice.",
+        text: "Each term below is defined in one or two plain sentences, with an example where it helps. The goal is not legal precision, it is so you recognize what a specialist or a contract means when they use the word. For a fuller walkthrough of how the cost works, see the [working capital guide](/resources/working-capital-guide) and [factor rate vs APR](/resources/factor-rate-vs-apr). This is general education, not financial, legal, or tax advice.",
       },
       {
         type: "callout",
