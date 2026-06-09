@@ -1600,6 +1600,26 @@ export function getActiveVerticals(): VerticalConfig[] {
   return landingPages;
 }
 
+/**
+ * Short, professional labels for the header Industries menu — no redundant
+ * "Funding" suffix on every item (the word lives once in the dropdown heading).
+ * Full titles are still used for page <title>, footer SEO anchors, and breadcrumbs.
+ */
+export const INDUSTRY_NAV_LABELS: Record<string, string> = {
+  "restaurant-business-funding": "Restaurants",
+  "trucking-business-funding": "Trucking & Freight",
+  "construction-business-funding": "Construction",
+  "ecommerce-inventory-funding": "E-commerce",
+  "auto-repair-shop-funding": "Auto Repair",
+  "medical-practice-funding": "Medical Practices",
+  "dental-practice-funding": "Dental Practices",
+  "beauty-salon-med-spa-funding": "Beauty & Med Spa",
+  "retail-store-funding": "Retail",
+  "hvac-plumbing-business-funding": "HVAC & Plumbing",
+  "cleaning-business-funding": "Cleaning",
+  "bad-credit-business-funding": "Bad Credit",
+};
+
 /** Keywords → vertical slug, for the homepage industry picker. */
 const INDUSTRY_KEYWORDS: { slug: string; words: string[] }[] = [
   { slug: "restaurant-business-funding", words: ["restaurant", "cafe", "café", "diner", "bar", "food", "bakery", "catering", "coffee", "pizzeria", "kitchen"] },

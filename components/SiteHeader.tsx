@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { VerticalConfig } from "@/lib/types";
-import { getActiveVerticals } from "@/content/landingPagesConfig";
+import { getActiveVerticals, INDUSTRY_NAV_LABELS } from "@/content/landingPagesConfig";
 import CTAButton from "./CTAButton";
 import IndustryMenu from "./IndustryMenu";
 import ResourcesMenu from "./ResourcesMenu";
@@ -8,9 +8,14 @@ import MobileMenu from "./MobileMenu";
 import Logo from "./Logo";
 
 /** Sticky header: brand lockup, primary nav (Industries · Resources · About),
- *  the canonical CTA, and a mobile menu. */
+ *  the canonical CTA, and a mobile menu. Industries use short, clean labels
+ *  (the word "Funding" lives in the dropdown heading, not on every item). */
 export default function SiteHeader({ vertical }: { vertical?: VerticalConfig }) {
-  const industries = getActiveVerticals().map((v) => ({ slug: v.slug, title: v.title }));
+  const industries = getActiveVerticals().map((v) => ({
+    slug: v.slug,
+    title: v.title,
+    label: INDUSTRY_NAV_LABELS[v.slug] ?? v.title,
+  }));
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur">

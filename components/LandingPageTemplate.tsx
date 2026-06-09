@@ -9,7 +9,7 @@ import PainReliefSection from "./PainReliefSection";
 import SocialProofSection from "./SocialProofSection";
 import Timeline from "./Timeline";
 import FitComparisonTable from "./FitComparisonTable";
-import Testimonials from "./Testimonials";
+import TrustStats from "./TrustStats";
 import CashFlowStressTest from "./CashFlowStressTest";
 import DayInCashFlowSection from "./DayInCashFlowSection";
 import ExampleUsesSection from "./ExampleUsesSection";
@@ -46,7 +46,7 @@ export default function LandingPageTemplate({ vertical }: { vertical: VerticalCo
         <OfferingsSection />
         <Timeline />
         <SocialProofSection vertical={vertical} />
-        <Testimonials vertical={vertical} />
+        <TrustStats />
         <QuestionsSection vertical={vertical} />
         <CTASection vertical={vertical} />
       </main>

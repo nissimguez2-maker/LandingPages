@@ -18,8 +18,8 @@ const caret = (
 
 /** Mobile (<md) navigation: hamburger toggles a full-width slide-down panel with
  *  accordion sections. Desktop nav (IndustryMenu/ResourcesMenu/About) is hidden
- *  at this breakpoint by the header. */
-export default function MobileMenu({ industries }: { industries: { slug: string; title: string }[] }) {
+ *  at this breakpoint by the header. Industries use short, clean labels. */
+export default function MobileMenu({ industries }: { industries: { slug: string; title: string; label?: string }[] }) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -59,7 +59,7 @@ export default function MobileMenu({ industries }: { industries: { slug: string;
                 {industries.map((v) => (
                   <li key={v.slug}>
                     <Link href={`/${v.slug}`} onClick={close} className={itemClass}>
-                      {v.title}
+                      {v.label ?? v.title}
                     </Link>
                   </li>
                 ))}

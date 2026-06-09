@@ -6,14 +6,14 @@ import { track } from "@/lib/analytics";
 
 /**
  * Header "Industries" menu. A click-to-open dropdown that sends owners straight
- * to the page built for their trade. Keyboard and screen-reader friendly. The
- * data comes from the server (SiteHeader) so this island stays light.
+ * to the page built for their trade. Items use short, clean labels; the word
+ * "Funding" lives once in the panel heading. Keyboard and screen-reader friendly.
  */
 export default function IndustryMenu({
   industries,
   vertical,
 }: {
-  industries: { slug: string; title: string }[];
+  industries: { slug: string; title: string; label?: string }[];
   vertical?: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -71,8 +71,11 @@ export default function IndustryMenu({
         <nav
           id="industry-menu-panel"
           aria-label="Industries"
-          className="absolute left-0 z-50 mt-2 w-[min(92vw,560px)] rounded-xl border border-slate-200 bg-white p-2 shadow-lift"
+          className="absolute left-0 z-50 mt-2 w-[min(92vw,520px)] rounded-xl border border-slate-200 bg-white p-2 shadow-lift"
         >
+          <p className="px-3 pb-1.5 pt-1 text-xs font-semibold uppercase tracking-wide text-slate-400">
+            Funding by industry
+          </p>
           <ul className="grid grid-cols-1 gap-0.5 sm:grid-cols-2 sm:gap-x-2">
             {industries.map((v) => (
               <li key={v.slug}>
@@ -81,7 +84,7 @@ export default function IndustryMenu({
                   onClick={() => onPick(v.slug, v.title)}
                   className="flex min-h-[40px] items-center rounded-lg px-3 py-2 text-sm leading-snug text-slate-700 transition hover:bg-brand-50 hover:text-brand-900"
                 >
-                  {v.title}
+                  {v.label ?? v.title}
                 </Link>
               </li>
             ))}

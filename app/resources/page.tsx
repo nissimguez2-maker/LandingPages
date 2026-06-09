@@ -4,6 +4,7 @@ import Link from "next/link";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import TrustStats from "@/components/TrustStats";
 import { getPillars, getArticlesByCategory, getGlossary } from "@/content/articlesConfig";
 import { SITE_NAME, getSiteUrl } from "@/lib/site";
 import { buildBreadcrumbsJsonLd } from "@/lib/structuredData";
@@ -105,6 +106,8 @@ export default function ResourcesHubPage() {
             </Link>
           ) : null}
         </section>
+
+        <TrustStats />
 
         <section className="container-content pb-16">
           <div className="rounded-2xl border border-accent-200 bg-accent-50 px-6 py-6 sm:flex sm:items-center sm:justify-between sm:gap-6">
