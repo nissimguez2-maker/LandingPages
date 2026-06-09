@@ -21,14 +21,14 @@ import Reveal from "@/components/motion/Reveal";
 import { generalFunding } from "@/content/landingPagesConfig";
 import { accentCssVars } from "@/lib/themes";
 import { SITE_NAME, getSiteUrl } from "@/lib/site";
-import { buildFaqJsonLd, buildOrganizationJsonLd } from "@/lib/structuredData";
+import { buildFaqJsonLd } from "@/lib/structuredData";
 
-const HOME_TITLE = `${SITE_NAME}, Small business funding, reviewed on revenue`;
+const HOME_TITLE = "Small Business Funding on Your Revenue | FundVella";
 const HOME_DESCRIPTION =
-  "Working capital for almost any operating business, reviewed on revenue and bank activity, not credit alone. Take the cash-flow check. Approval depends on underwriting.";
+  "Working capital for almost any business, read on revenue and bank activity, not credit alone. You may qualify. Approval depends on underwriting.";
 
 export const metadata: Metadata = {
-  title: HOME_TITLE,
+  title: { absolute: HOME_TITLE },
   description: HOME_DESCRIPTION,
   alternates: { canonical: getSiteUrl() },
   openGraph: { title: HOME_TITLE, description: HOME_DESCRIPTION, url: getSiteUrl(), type: "website", siteName: SITE_NAME },
@@ -39,10 +39,6 @@ export default function HomePage() {
   const v = generalFunding;
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildOrganizationJsonLd()) }}
-      />
       {v.faqs?.length ? (
         <script
           type="application/ld+json"

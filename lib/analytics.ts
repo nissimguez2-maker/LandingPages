@@ -33,6 +33,8 @@ export type AnalyticsEventName =
   | "industries_menu_opened"
   | "industry_menu_clicked"
   | "industry_picker_routed"
+  | "resources_menu_opened"
+  | "resources_menu_clicked"
   | "deepapp_started"
   | "deepapp_resumed"
   | "deepapp_step_viewed"

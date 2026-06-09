@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import LandingPageTemplate from "@/components/LandingPageTemplate";
 import { getVerticalBySlug, getActiveVerticals } from "@/content/landingPagesConfig";
 import { getSiteUrl } from "@/lib/site";
-import { buildFaqJsonLd, buildBreadcrumbJsonLd } from "@/lib/structuredData";
+import { buildFaqJsonLd, buildBreadcrumbJsonLd, buildServiceJsonLd } from "@/lib/structuredData";
 import { accentCssVars } from "@/lib/themes";
 
 // Only the configured verticals exist; unknown slugs 404.
@@ -56,6 +56,10 @@ export default async function VerticalPage({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(buildBreadcrumbJsonLd(v.title, v.slug)) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildServiceJsonLd(v.title, v.slug)) }}
       />
       <div style={accentCssVars(v.theme?.accent)}>
         <LandingPageTemplate vertical={v} />

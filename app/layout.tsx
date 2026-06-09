@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { Inter, Sora } from "next/font/google";
 import "./globals.css";
 import { SITE_NAME, SITE_TAGLINE, getSiteUrl } from "@/lib/site";
-import { buildOrganizationJsonLd } from "@/lib/structuredData";
+import { buildOrganizationJsonLd, buildWebSiteJsonLd } from "@/lib/structuredData";
 import Analytics from "@/components/analytics/Analytics";
 
 // Self-hosted at build time, no runtime fetch, no layout shift.
@@ -28,6 +28,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(buildOrganizationJsonLd()) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(buildWebSiteJsonLd()) }}
         />
         {children}
         <Analytics />
