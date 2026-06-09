@@ -68,7 +68,7 @@ export const guidesIndustry: ResourceArticle[] = [
       { type: "h3", text: "Stage 2: Application and review" },
       {
         type: "p",
-        text: "If the file looks viable and you decide to move forward, a funder reviews it more closely. At this point a funder may run a soft pull to get a fuller picture alongside your bank activity. Because revenue-based funding leans heavily on your deposits and bank statements, your credit score is usually one input among several, not the deciding factor. You can read more about that in [what lenders read on your bank statements](/what-lenders-read-bank-statements).",
+        text: "If the file looks viable and you decide to move forward, a funder reviews it more closely. At this point a funder may run a soft pull to get a fuller picture alongside your bank activity. Because revenue-based funding leans heavily on your deposits and bank statements, your credit score is usually one input among several, not the deciding factor. You can read more about that in [what lenders read on your bank statements](/resources/what-lenders-read-bank-statements).",
       },
       { type: "h3", text: "Stage 3: Offer and funding" },
       {
@@ -87,12 +87,12 @@ export const guidesIndustry: ResourceArticle[] = [
           "Prequalify first. It does not trigger a hard pull, and it tells you whether moving forward is even worth it.",
           "Ask each funder, before you authorize anything, when a soft pull and a hard pull would happen.",
           "If you are comparing options, try to keep any hard inquiries inside a short window. Scoring models often treat multiple similar inquiries in a tight period as a single shopping event.",
-          "Have your recent business bank statements ready. Strong, steady deposits give a funder more to work with and put less weight on your score. See [the documents you may need](/documents-needed-for-funding).",
+          "Have your recent business bank statements ready. Strong, steady deposits give a funder more to work with and put less weight on your score. See [the documents you may need](/resources/documents-needed-for-funding).",
         ],
       },
       {
         type: "p",
-        text: "If your credit is not where you want it to be, that is not the end of the conversation. Revenue-based funding is often reviewed on your business deposits and bank activity first. There is more on that in our [business funding with bad credit guide](/business-funding-bad-credit-guide).",
+        text: "If your credit is not where you want it to be, that is not the end of the conversation. Revenue-based funding is often reviewed on your business deposits and bank activity first. There is more on that in our [business funding with bad credit guide](/resources/business-funding-bad-credit-guide).",
       },
       {
         type: "p",
@@ -167,7 +167,7 @@ export const guidesIndustry: ResourceArticle[] = [
       { type: "h2", text: "What working capital actually does here" },
       {
         type: "p",
-        text: "Working capital is short-term funding meant to smooth the gap between money going out and money coming in. It is not for buying a building or financing a ten-year project. It is for the COD order, the payroll run, the cooler repair, and the slow stretch you can see coming. If you want the broader picture, start with our [working capital guide](/working-capital-guide).",
+        text: "Working capital is short-term funding meant to smooth the gap between money going out and money coming in. It is not for buying a building or financing a ten-year project. It is for the COD order, the payroll run, the cooler repair, and the slow stretch you can see coming. If you want the broader picture, start with our [working capital guide](/resources/working-capital-guide).",
       },
       {
         type: "p",
@@ -287,12 +287,12 @@ export const guidesIndustry: ResourceArticle[] = [
       },
       {
         type: "p",
-        text: "Wondering whether your volume is enough to be reviewed? Our guide on the [minimum revenue to qualify](/minimum-revenue-to-qualify) walks through where most files start.",
+        text: "Wondering whether your volume is enough to be reviewed? Our guide on the [minimum revenue to qualify](/resources/minimum-revenue-to-qualify) walks through where most files start.",
       },
       { type: "h2", text: "The funding options sellers use for inventory" },
       {
         type: "p",
-        text: "The most common fit is a merchant cash advance, a purchase of a portion of your future sales rather than a loan. It tends to suit online sellers because the deposits are steady and easy to verify, and an option can be sized on your volume without waiting on tax returns. If the term is new to you, our [merchant cash advance explained](/merchant-cash-advance-explained) breaks it down.",
+        text: "The most common fit is a merchant cash advance, a purchase of a portion of your future sales rather than a loan. It tends to suit online sellers because the deposits are steady and easy to verify, and an option can be sized on your volume without waiting on tax returns. If the term is new to you, our [merchant cash advance explained](/resources/merchant-cash-advance-explained) breaks it down.",
       },
       {
         type: "callout",
@@ -381,7 +381,7 @@ export const guidesIndustry: ResourceArticle[] = [
       },
       {
         type: "p",
-        text: "None of that means the business is unhealthy. It means the timing of fixed costs does not match the timing of settlements. That mismatch is exactly what short-term working capital is built to smooth. For the broader picture, see our [working capital guide](/working-capital-guide).",
+        text: "None of that means the business is unhealthy. It means the timing of fixed costs does not match the timing of settlements. That mismatch is exactly what short-term working capital is built to smooth. For the broader picture, see our [working capital guide](/resources/working-capital-guide).",
       },
       { type: "h2", text: "Why a bank loan is the wrong tool here" },
       {
@@ -398,7 +398,7 @@ export const guidesIndustry: ResourceArticle[] = [
       },
       {
         type: "p",
-        text: "Two things owners worry about turn out to be non-issues. Factoring deposits are read as normal carrier revenue, not held against you. And files are reviewed mainly on revenue and bank activity, so credit is not the only factor. If credit is your concern, our [bad credit funding guide](/business-funding-bad-credit-guide) goes deeper.",
+        text: "Two things owners worry about turn out to be non-issues. Factoring deposits are read as normal carrier revenue, not held against you. And files are reviewed mainly on revenue and bank activity, so credit is not the only factor. If credit is your concern, our [bad credit funding guide](/resources/business-funding-bad-credit-guide) goes deeper.",
       },
       { type: "h2", text: "What funding looks like for a carrier" },
       {
@@ -426,7 +426,7 @@ export const guidesIndustry: ResourceArticle[] = [
       },
       {
         type: "p",
-        text: "On cost, this funding is usually priced as a factor rate, one set price such as 1.25, not an interest rate. A factor rate is not an APR, and our [factor rate vs APR](/factor-rate-vs-apr) guide explains why the two are not interchangeable. You may qualify on your settlements and deposits, factoring included; see [trucking business funding](/trucking-business-funding) to start a no-obligation prequalification.",
+        text: "On cost, this funding is usually priced as a factor rate, one set price such as 1.25, not an interest rate. A factor rate is not an APR, and our [factor rate vs APR](/resources/factor-rate-vs-apr) guide explains why the two are not interchangeable. You may qualify on your settlements and deposits, factoring included; see [trucking business funding](/trucking-business-funding) to start a no-obligation prequalification.",
       },
     ],
     faqs: [
