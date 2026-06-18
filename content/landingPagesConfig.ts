@@ -94,7 +94,7 @@ export const OFFERINGS = {
       icon: "spark",
       hero: true,
       bestWhen: "Best for covering a gap or moving on an opportunity fast.",
-      body: "Funding based on your revenue, not credit alone, repaid as a small automatic share of deposits, so it flexes with a slow week. A factor rate sets the cost up front; it is not an APR.",
+      body: "Funding based on your revenue, not credit alone, repaid as a small automatic share of deposits, so it flexes with a slow week. A factor rate sets one total payback up front; it is not an APR.",
     },
     {
       name: "Business Line of Credit",
@@ -103,16 +103,34 @@ export const OFFERINGS = {
       body: "A revolving limit you draw on when you need it and pay down when you don't, so you only carry what you use.",
     },
     {
+      name: "HELOC",
+      icon: "shield",
+      bestWhen: "Best with 650+ credit and equity in your real estate.",
+      body: "A line against your property's equity, often funded within a day. You get an indicative number up front; final terms confirm against your equity and title. Speed is the draw.",
+    },
+    {
       name: "Term Loan",
       icon: "clock",
-      bestWhen: "Best for a one-time use with a predictable payment.",
-      body: "A fixed amount over a set term, straightforward to plan a project or purchase around.",
+      bestWhen: "Best for a one-time use with a predictable monthly payment.",
+      body: "A real business loan with a fixed payment over a set term. Here an APR is the right measure (unlike revenue-based funding), and there is no prepayment penalty.",
+    },
+    {
+      name: "SBA Loan",
+      icon: "lock",
+      bestWhen: "Best for strong profiles on an unhurried timeline.",
+      body: "Bank-funded term financing with the longest terms. It asks for tax returns and more patience, so shorter bridge funding can carry you while it processes.",
     },
     {
       name: "Equipment Financing",
       icon: "tools",
       bestWhen: "Best when you're buying equipment, new or used.",
-      body: "Finance the truck, oven, chair, or machine so it earns now while your cash stays free for payroll.",
+      body: "The equipment itself is the collateral, so it is often easier to qualify for. Up to 100% financing and terms up to 7 years.",
+    },
+    {
+      name: "Bridge Funding",
+      icon: "expand",
+      bestWhen: "Best when you need capital now while a slower loan is in process.",
+      body: "Short-term funding that puts cash to work today and can be cashed out when your term loan or SBA funds.",
     },
     {
       name: "Invoice Factoring",
@@ -122,7 +140,7 @@ export const OFFERINGS = {
     },
   ],
   footnote:
-    "FundVella is not a lender. We connect you with specialists who review your file and match available options. A factor rate is not an APR. You may qualify; approval depends on underwriting, payments must fit your cash flow, and there's no obligation to accept.",
+    "FundVella is not a lender. We connect you with specialists who review your file and match available options. Revenue-based funding uses a factor rate, not an APR (term loans and SBA loans are different and carry an APR). You may qualify; approval depends on underwriting, payments must fit your cash flow, and there's no obligation to accept.",
 } satisfies import("@/lib/types").OfferingsSection;
 
 /** Shared, compliance-safe FAQs. Verticals prepend 2+ vertical-specific ones. */

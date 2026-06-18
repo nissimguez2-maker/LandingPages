@@ -14,7 +14,7 @@ export const STRESS_INTRO = {
   eyebrow: "60-second funding check",
   headline: "See how much capital your business could put to work.",
   subhead:
-    "A few quick questions. No credit check. You get an instant read on your funding strength, plus the smartest next move.",
+    "A few quick questions. No credit check. You get a quick read on your funding strength, plus the smartest next move.",
   startLabel: "Start the check",
 };
 
