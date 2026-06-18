@@ -153,6 +153,8 @@ export const landingPages: VerticalConfig[] = [
     seoTitle: "Restaurant Business Funding | FundVella",
     seoDescription:
       "A slow Friday, COD produce, rent due Monday, all before the weekend's card batches settle. Restaurant funding read on your deposits, not credit alone.",
+    primaryProduct: "revenue-based",
+    secondaryProduct: "equipment",
     theme: { accent: "amber" },
     heroHeadline: "Capital that keeps the line moving",
     heroSubheadline:
@@ -263,6 +265,8 @@ export const landingPages: VerticalConfig[] = [
     seoTitle: "Trucking & Owner-Operator Funding | FundVella",
     seoDescription:
       "Factoring takes its cut, the broker pays net-45, then a blown turbo parks the truck. Carrier funding read on your settlements, not just credit.",
+    primaryProduct: "revenue-based",
+    secondaryProduct: "equipment",
     theme: { accent: "orange" },
     heroHeadline: "Keep rolling between settlements",
     heroSubheadline:
@@ -373,6 +377,8 @@ export const landingPages: VerticalConfig[] = [
     seoTitle: "Construction Contractor Funding | FundVella",
     seoDescription:
       "Materials and payroll are due now, but the draw is three weeks out and the GC still has to sign off. Contractor funding read on your deposits.",
+    primaryProduct: "revenue-based",
+    secondaryProduct: "invoice-factoring",
     theme: { accent: "yellow" },
     heroHeadline: "Cover materials and crew before the draw lands",
     heroSubheadline:
@@ -482,6 +488,8 @@ export const landingPages: VerticalConfig[] = [
     seoTitle: "E-commerce Inventory Funding | FundVella",
     seoDescription:
       "Q4 nears and the supplier wants 50% down on an 8-week lead, before the sales land. E-commerce inventory funding read on your processor volume.",
+    primaryProduct: "revenue-based",
+    secondaryProduct: "line-of-credit",
     theme: { accent: "violet" },
     heroHeadline: "Stock the winners before the peak hits",
     heroSubheadline:
@@ -592,6 +600,8 @@ export const landingPages: VerticalConfig[] = [
     seoTitle: "Auto Repair Shop Funding | FundVella",
     seoDescription:
       "Three cars on the lifts, parts are COD, and techs get paid Friday whether the work clears or not. Auto repair shop funding read on your deposits.",
+    primaryProduct: "revenue-based",
+    secondaryProduct: "equipment",
     theme: { accent: "red" },
     heroHeadline: "Keep the bays full and the parts moving",
     heroSubheadline:
@@ -701,6 +711,8 @@ export const landingPages: VerticalConfig[] = [
     seoTitle: "Medical Practice Funding | FundVella",
     seoDescription:
       "Payroll runs every two weeks; the insurer reimburses in 60, and the new unit cannot wait for AR. Medical practice funding read on your collections.",
+    primaryProduct: "revenue-based",
+    secondaryProduct: "line-of-credit",
     theme: { accent: "teal" },
     heroHeadline: "Don't let reimbursement lag stall the practice",
     heroSubheadline:
@@ -811,6 +823,8 @@ export const landingPages: VerticalConfig[] = [
     seoTitle: "Dental Practice Funding | FundVella",
     seoDescription:
       "Schedule packed, hygienist hired, but insurance pays in 30 to 60 days while the lab bill is due this week. Dental practice funding on your collections.",
+    primaryProduct: "revenue-based",
+    secondaryProduct: "equipment",
     theme: { accent: "cyan" },
     heroHeadline: "Add the operatory now. Let collections catch up.",
     heroSubheadline:
@@ -921,6 +935,8 @@ export const landingPages: VerticalConfig[] = [
     seoTitle: "Beauty Salon & Med Spa Funding | FundVella",
     seoDescription:
       "A new chair, a laser, a stylist to hire, all due now while the books are still light from a slow stretch. Salon and med spa funding on your deposits.",
+    primaryProduct: "revenue-based",
+    secondaryProduct: "equipment",
     theme: { accent: "rose" },
     heroHeadline: "Add the chair before the calendar fills.",
     heroSubheadline:
@@ -1031,6 +1047,8 @@ export const landingPages: VerticalConfig[] = [
     seoTitle: "Retail Store Funding | FundVella",
     seoDescription:
       "The vendor wants the holiday order paid now, but the sell-through that covers it starts in November. Retail store funding read on your sales.",
+    primaryProduct: "revenue-based",
+    secondaryProduct: "line-of-credit",
     theme: { accent: "blue" },
     heroHeadline: "Buy the season before it sells",
     heroSubheadline:
@@ -1141,6 +1159,8 @@ export const landingPages: VerticalConfig[] = [
     seoTitle: "HVAC & Plumbing Business Funding | FundVella",
     seoDescription:
       "The first heat wave triples your calls overnight, so you stock parts and staff crews before one invoice is paid. HVAC and plumbing funding on deposits.",
+    primaryProduct: "revenue-based",
+    secondaryProduct: "equipment",
     theme: { accent: "sky" },
     heroHeadline: "Stock the trucks before the first heat wave.",
     heroSubheadline:
@@ -1250,6 +1270,8 @@ export const landingPages: VerticalConfig[] = [
     seoTitle: "Cleaning Business Funding | FundVella",
     seoDescription:
       "Crews get paid every Friday, but your new commercial accounts pay net-60. Cleaning business funding read on your recurring contracts.",
+    primaryProduct: "revenue-based",
+    secondaryProduct: "invoice-factoring",
     theme: { accent: "emerald" },
     heroHeadline: "Win the contract. Cover the crew.",
     heroSubheadline:
@@ -1359,6 +1381,8 @@ export const landingPages: VerticalConfig[] = [
     seoTitle: "Bad Credit Business Funding | FundVella",
     seoDescription:
       "Your deposits never stopped, but one credit score keeps ending the conversation. We weigh revenue and bank activity, not just credit. You may qualify.",
+    primaryProduct: "revenue-based",
+    secondaryProduct: "heloc",
     theme: { accent: "emerald" },
     heroHeadline: "Bad credit? Your deposits get read first.",
     heroSubheadline:
@@ -1464,6 +1488,451 @@ export const landingPages: VerticalConfig[] = [
     ],
     campaignTag: "bad-credit",
   },
+  {
+    slug: "professional-services-funding",
+    title: "Professional Services Funding",
+    seoTitle: "Law, Accounting & Agency Funding | FundVella",
+    seoDescription:
+      "Payroll and rent run monthly, but clients pay net-30 and retainers land in waves. Professional-services funding read on your deposits, not credit alone.",
+    primaryProduct: "revenue-based",
+    secondaryProduct: "line-of-credit",
+    theme: { accent: "blue" },
+    heroHeadline: "Cover payroll while the invoices clear",
+    heroSubheadline:
+      "Law firm, accounting practice, agency, or staffing shop, we read your billing deposits and bank activity, not just your credit. Billed work pays on its own timeline.",
+    cashFlowSignature:
+      "Payroll and the lease are due now. The client is net-30, the next retainer lands mid-month, and you've just staffed up for a new engagement.",
+    heroHighlights: ["Retainers & net-30 billing understood", "Firms, agencies & staffing alike", "Reviewed on deposits, not credit alone"],
+    heroImage: { src: "/media/professional-services.jpg", alt: "A professional-services team meeting in an office" },
+    useCaseIcons: ["payroll", "user-check", "spark", "expand", "marketing"],
+    useCases: [
+      { title: "Payroll between billings", description: "Keep salaried staff and contractors paid while invoices and retainers clear." },
+      { title: "Hire ahead of an engagement", description: "Bring on talent before a new client or contract starts billing." },
+      { title: "Software & tooling", description: "Fund practice-management, design, or staffing platforms and licenses." },
+      { title: "Open or expand an office", description: "Cover a build-out, a second location, or a new practice area." },
+      { title: "Business development", description: "Invest in proposals, marketing, and pipeline to win larger accounts." },
+    ],
+    calcContext: "Use your average monthly billing deposits. Four questions for a live range and a readiness check.",
+    qualificationFocus: [
+      { title: "Billing deposits", description: "How consistent retainer and invoice deposits are across months." },
+      { title: "Client mix & terms", description: "The balance of retainer vs. net-30/60 billing and recurring engagements." },
+      { title: "Time & overhead", description: "Operating history and how payroll lines up against deposits." },
+    ],
+    qualificationNotes: ["We factor retainer cycles and net-term billing common to professional-services firms."],
+    goodFitCriteria: [
+      "Operating 6+ months with steady billing",
+      "Consistent retainer or invoice deposits",
+      "Balances recover between billing cycles",
+      "Can share 3 months of statements",
+    ],
+    reviewCriteria: [
+      "Under 3 months in business",
+      "Frequent NSFs beyond billing gaps",
+      "Several advances stacked already",
+      "Statements not available yet",
+    ],
+    fitTable: [
+      { label: "Time in business", goodFit: "6+ months operating", mayNeedReview: "Brand new / under 3 months" },
+      { label: "Monthly deposits", goodFit: "Steady retainer / invoice revenue", mayNeedReview: "One client or sporadic billing" },
+      { label: "Bank activity", goodFit: "Recovers between billings", mayNeedReview: "Frequent NSFs / negative days" },
+      { label: "Existing advances", goodFit: "None or one manageable", mayNeedReview: "Multiple stacked advances" },
+      { label: "Statements", goodFit: "3 months ready", mayNeedReview: "Can't share statements" },
+    ],
+    faqs: [
+      {
+        question: "My clients pay net-30 or on retainer, does that matter?",
+        answer:
+          "No. Retainer and net-term billing are expected in professional services. Underwriting reviews your deposit pattern over several months, so the gap between work and payment doesn't automatically count against the file.",
+      },
+      {
+        question: "Can I use funds to hire before a new engagement starts billing?",
+        answer:
+          "Yes, staffing up ahead of a contract or engagement is a common use. Amounts depend on underwriting and your deposit history.",
+      },
+      ...baseFaqs(),
+    ],
+    calculator: { advanceMultipleLow: 0.5, advanceMultipleHigh: 1.2, factorRateLow: 1.15, factorRateHigh: 1.4 },
+    cta: defaultCta,
+    painRelief: {
+      eyebrow: "Sound familiar?",
+      headline: "The work's billed. Payroll won't wait for net-30.",
+      intro: "A profitable firm can still run tight, because salaries and rent are monthly while client payments arrive in waves. Here's where that pinches.",
+      items: [
+        { icon: "payroll", pain: "Payroll and the lease are due like clockwork, but your biggest client is net-30 and the next retainer hasn't landed yet.", relief: "With capital in place, you meet payroll and fixed costs on time and let receivables clear on the client's timeline instead of yours." },
+        { icon: "user-check", pain: "A new engagement is yours if you can staff it, but the hires cost salary for weeks before that account bills a dollar.", relief: "With working capital ready, you bring on the team and start the work now instead of turning the engagement down over timing." },
+        { icon: "expand", pain: "A second office or a new practice area would grow the firm, but the build-out competes with the payroll you're already carrying.", relief: "With funding behind you, you expand without starving the engagements already paying the bills." },
+      ],
+      closer: "You may qualify on your billing deposits and bank activity, retainer and net-term cycles included. No obligation, and any payments are built to fit your cash flow.",
+    },
+    dayInCashFlow: {
+      eyebrow: "A day in your cash flow",
+      headline: "Monthly overhead, billing in waves",
+      steps: [
+        { time: "The 1st", event: "Payroll and the office lease are due. Every month, like clockwork." },
+        { time: "Midweek", event: "You staff up for a new engagement that starts now." },
+        { time: "Net-30", event: "The client has 30 days to pay the invoice you just sent." },
+        { time: "Meanwhile", event: "The next retainer lands mid-month, and the work is already underway." },
+      ],
+      closer: "The work is done and billed; the cash arrives in waves. With money in place, you cover payroll and hire now. You may qualify on your deposits. No obligation, and payments fit your cash flow.",
+    },
+    exampleUses: [
+      { label: "Cover payroll across net-30 billing", rangeLow: 25000, rangeHigh: 150000, when: "while invoices and retainers clear" },
+      { label: "Hire and ramp for a new engagement", rangeLow: 30000, rangeHigh: 120000, when: "before the account starts billing" },
+      { label: "Open a second office or practice area", rangeLow: 75000, rangeHigh: 300000, when: "when you are ready to grow" },
+    ],
+    reassurance: [
+      "Net-30 billing and retainers are normal here.",
+      "Firms, agencies, and staffing shops all welcome.",
+      "We read your billing deposits, not just your score.",
+      "Starting is free and does not hurt your credit score.",
+    ],
+    localTouch: "A solo practice or a growing firm, this page is built for your business.",
+    glossary: [
+      { term: "Retainer", plain: "Money a client pays up front to reserve your time, drawn down as you do the work." },
+      { term: "Net-30", plain: "The client has 30 days to pay your invoice after you send it." },
+      { term: "Factor rate", plain: "One set price for the funding. It is not an APR. You know the full payback up front." },
+    ],
+    commonQuestions: [
+      { question: "My clients pay net-30 or on retainer. Does that hurt?", answer: "No. Retainer and net-term billing are expected in professional services. The review looks at your deposits over months, not one cycle." },
+      { question: "Can I hire before a new engagement bills?", answer: "Yes. Staffing up ahead of a contract is a common use. Amounts depend on underwriting." },
+      { question: "My credit is not perfect. Can I apply?", answer: "Yes. The review weighs revenue and bank activity, not credit alone. Approval depends on underwriting." },
+    ],
+    campaignTag: "professional-services",
+  },
+  {
+    slug: "landscaping-business-funding",
+    title: "Landscaping Business Funding",
+    seoTitle: "Landscaping & Lawn Care Funding | FundVella",
+    seoDescription:
+      "Spring hits and the routes triple overnight, so crews, mulch, and a new mower come before one invoice clears. Landscaping funding read on your deposits.",
+    primaryProduct: "revenue-based",
+    secondaryProduct: "equipment",
+    theme: { accent: "emerald" },
+    heroHeadline: "Gear up before the season greens up",
+    heroSubheadline:
+      "Lawn care, design-build, or commercial grounds, we read your service deposits and bank activity, not just your credit. The season ramps before the money does.",
+    cashFlowSignature:
+      "Spring hits and the schedule triples overnight. You need crews, mulch by the yard, and another mower before the first invoice clears.",
+    heroHighlights: ["Seasonal ramp expected, not penalized", "Residential routes & commercial grounds", "Equipment-heavy cash flow understood"],
+    heroImage: { src: "/media/landscaping.jpg", alt: "A landscaping crew working on a property" },
+    useCaseIcons: ["vehicle", "tools", "payroll", "inventory", "expand"],
+    useCases: [
+      { title: "Mowers & equipment", description: "Add or replace mowers, trailers, and crew equipment for the season." },
+      { title: "Crew payroll", description: "Staff up for spring and keep crews paid through the ramp." },
+      { title: "Materials & supplies", description: "Buy mulch, sod, plants, and materials ahead of booked jobs." },
+      { title: "Trucks & trailers", description: "Add a truck or trailer to run another route or crew." },
+      { title: "Win larger contracts", description: "Take on commercial grounds or design-build work with capital ready." },
+    ],
+    calcContext: "Use your average monthly deposits across the season. Four questions for a live range and readiness.",
+    qualificationFocus: [
+      { title: "Seasonal deposits", description: "Peak-season ramps and the off-season dip are read in context, not penalized." },
+      { title: "Service vs project mix", description: "The balance of recurring maintenance and one-off install/design work." },
+      { title: "Equipment & crew costs", description: "How equipment and payroll spend lines up against deposits." },
+    ],
+    qualificationNotes: ["We factor the seasonal ramp and equipment-heavy cash flow common to landscaping and lawn care."],
+    goodFitCriteria: [
+      "Operating 6+ months across a season",
+      "Steady service-route or contract deposits",
+      "Balances recover between jobs",
+      "Can share 3 months of statements",
+    ],
+    reviewCriteria: [
+      "Under 3 months in business",
+      "Frequent NSFs beyond the off-season",
+      "Several advances stacked already",
+      "Statements not available yet",
+    ],
+    fitTable: [
+      { label: "Time in business", goodFit: "6+ months operating", mayNeedReview: "Brand new / under 3 months" },
+      { label: "Monthly deposits", goodFit: "Steady route + contract revenue", mayNeedReview: "One-off jobs only" },
+      { label: "Bank activity", goodFit: "Recovers between jobs", mayNeedReview: "Frequent NSFs / negative days" },
+      { label: "Existing advances", goodFit: "None or one manageable", mayNeedReview: "Multiple stacked advances" },
+      { label: "Statements", goodFit: "3 months ready", mayNeedReview: "Can't share statements" },
+    ],
+    faqs: [
+      {
+        question: "My business is seasonal, does the slow winter hurt me?",
+        answer:
+          "No. Seasonal swings are expected in landscaping. Underwriting reviews your deposits across the season, so the off-season dip is read in context rather than counting against the file.",
+      },
+      {
+        question: "Can I fund equipment like mowers or a trailer?",
+        answer:
+          "Yes, equipment is one of the most common uses, and it can also be financed against itself as collateral. A specialist matches the option to your deposits and the purchase.",
+      },
+      ...baseFaqs(),
+    ],
+    calculator: { advanceMultipleHigh: 1.2 },
+    cta: defaultCta,
+    painRelief: {
+      eyebrow: "Sound familiar?",
+      headline: "The season ramps in a week. The invoices clear in a month.",
+      intro: "Landscaping costs all land at the front of the season, crews, materials, and equipment, before a single job pays out. Here's where that bites.",
+      items: [
+        { icon: "tools", pain: "Spring triples the schedule overnight, but you need mulch by the yard and another mower before the first invoice clears.", relief: "With capital in place, you gear up for the ramp and capture the season instead of turning routes away." },
+        { icon: "payroll", pain: "More work means more crew on payroll weeks before the maintenance and install checks land.", relief: "With working capital ready, you staff up for the rush and keep crews paid while receivables catch up." },
+        { icon: "vehicle", pain: "A commercial contract is yours if you can run a second crew, but the truck and trailer compete with the routes already booked.", relief: "With funding behind you, you add capacity without starving the jobs already on the schedule." },
+      ],
+      closer: "You may qualify on your service and contract deposits, seasonal swings included. No obligation, and any payments are built to fit your cash flow.",
+    },
+    dayInCashFlow: {
+      eyebrow: "A day in your cash flow",
+      headline: "The season ramps before the money does",
+      steps: [
+        { time: "Early spring", event: "The phone starts ringing. Routes and installs book up fast." },
+        { time: "Same week", event: "You buy mulch, sod, and a mower, and put more crew on payroll." },
+        { time: "Net-15 to net-30", event: "Residential and commercial clients pay on their own terms." },
+        { time: "Meanwhile", event: "Next week's materials and fuel are due before the checks land." },
+      ],
+      closer: "The costs land at the front of the season. The collections trail behind. With money in place, you gear up and staff for the ramp. You may qualify on your deposits. No obligation, and payments fit your cash flow.",
+    },
+    exampleUses: [
+      { label: "Mowers, trailers, and crew equipment", rangeLow: 25000, rangeHigh: 100000, when: "before the season ramps" },
+      { label: "Materials and a payroll cushion", rangeLow: 25000, rangeHigh: 75000, when: "across the busy months" },
+      { label: "Add a truck and a second crew", rangeLow: 50000, rangeHigh: 200000, when: "to take a commercial contract" },
+    ],
+    reassurance: [
+      "A slow winter is normal and expected here.",
+      "Residential routes and commercial grounds both welcome.",
+      "We read your service deposits, not just your score.",
+      "Starting is free and does not hurt your credit score.",
+    ],
+    localTouch: "One truck and a trailer or a full fleet of crews, this page is built for you.",
+    glossary: [
+      { term: "Route", plain: "The set of recurring maintenance accounts a crew services on a regular schedule." },
+      { term: "Design-build", plain: "Larger one-off install work, like patios, plantings, or hardscape." },
+      { term: "Factor rate", plain: "One set price for the funding. It is not an APR. You know the full payback up front." },
+    ],
+    commonQuestions: [
+      { question: "My winters are slow. Does that hurt?", answer: "No. Seasonal swings are expected in landscaping. The review looks at your deposits across the season, not the slow months alone." },
+      { question: "Can I fund a new mower or trailer?", answer: "Yes. Equipment is a common use, and it can be financed against itself as collateral. A specialist matches the option to your deposits." },
+      { question: "My credit took a hit. Can I apply?", answer: "Yes. The review weighs revenue and bank activity, not credit alone. Approval depends on underwriting." },
+    ],
+    campaignTag: "landscaping",
+  },
+  {
+    slug: "gym-fitness-funding",
+    title: "Gym & Fitness Studio Funding",
+    seoTitle: "Gym & Fitness Studio Funding | FundVella",
+    seoDescription:
+      "Memberships bill monthly, but the new rack of equipment and the build-out are due now. Gym and fitness studio funding read on your recurring deposits.",
+    primaryProduct: "revenue-based",
+    secondaryProduct: "equipment",
+    theme: { accent: "violet" },
+    heroHeadline: "Outfit the floor before the memberships catch up",
+    heroSubheadline:
+      "Gym, boutique studio, or training space, we read your recurring membership deposits and bank activity, not just your credit. Steady dues are exactly what we look at.",
+    cashFlowSignature:
+      "The new equipment, the build-out, and another trainer are due now. Memberships bill monthly, and the January surge hasn't fully landed yet.",
+    heroHighlights: ["Recurring membership revenue counts", "Gyms, studios & training spaces", "Steady dues are the strength here"],
+    heroImage: { src: "/media/gym-fitness.jpg", alt: "A fitness studio floor with equipment" },
+    useCaseIcons: ["tools", "expand", "payroll", "spark", "marketing"],
+    useCases: [
+      { title: "Equipment & racks", description: "Add or replace machines, racks, and studio equipment." },
+      { title: "Build-out or expansion", description: "Renovate the floor, add a studio room, or open a second location." },
+      { title: "Hire & retain trainers", description: "Bring on coaches and staff to grow class capacity." },
+      { title: "New programs & tech", description: "Launch new class formats, an app, or member-management tools." },
+      { title: "Membership marketing", description: "Drive sign-ups with local and digital campaigns ahead of peak season." },
+    ],
+    calcContext: "Use your average monthly membership deposits. Four questions for a live range and readiness.",
+    qualificationFocus: [
+      { title: "Recurring dues", description: "Consistency of monthly membership and dues deposits over time." },
+      { title: "Retention & seasonality", description: "Member churn and the January surge are read in context." },
+      { title: "Floor & payroll costs", description: "How equipment and staff costs line up against recurring deposits." },
+    ],
+    qualificationNotes: ["We factor recurring membership revenue and the seasonal swings common to gyms and studios."],
+    goodFitCriteria: [
+      "Operating 6+ months with steady dues",
+      "Consistent recurring membership deposits",
+      "Balances hold between billing cycles",
+      "Can share 3 months of statements",
+    ],
+    reviewCriteria: [
+      "Under 3 months open",
+      "Frequent NSFs or negative days",
+      "Several advances stacked already",
+      "Statements not available yet",
+    ],
+    fitTable: [
+      { label: "Time open", goodFit: "6+ months of memberships", mayNeedReview: "Just opened / under 3 months" },
+      { label: "Monthly deposits", goodFit: "Steady recurring dues", mayNeedReview: "Thin or one-time revenue" },
+      { label: "Bank activity", goodFit: "Holds between billing cycles", mayNeedReview: "Frequent NSFs / negative days" },
+      { label: "Existing advances", goodFit: "None or one manageable", mayNeedReview: "Multiple stacked advances" },
+      { label: "Statements", goodFit: "3 months ready", mayNeedReview: "Can't share statements" },
+    ],
+    faqs: [
+      {
+        question: "Most of my revenue is recurring memberships, does that help?",
+        answer:
+          "Yes. Steady, recurring membership deposits are exactly the kind of predictable cash flow a revenue-based review looks for. Underwriting reads your deposit pattern alongside your bank activity.",
+      },
+      {
+        question: "Can I fund equipment or a build-out?",
+        answer:
+          "Yes, equipment and floor build-outs are common uses, and equipment can also be financed against itself as collateral. Amounts depend on underwriting and your deposit history.",
+      },
+      ...baseFaqs(),
+    ],
+    calculator: { advanceMultipleLow: 0.5, advanceMultipleHigh: 1.2 },
+    cta: defaultCta,
+    painRelief: {
+      eyebrow: "Sound familiar?",
+      headline: "The floor needs gear now. Dues come in a month at a time.",
+      intro: "A studio's revenue is steady but spread out, while the moves that grow it, equipment, space, trainers, all want cash up front. Here's where that shows.",
+      items: [
+        { icon: "tools", pain: "The racks and machines that fill more classes are due now, but membership dues only land a month at a time.", relief: "With capital in place, you outfit the floor up front and grow into the recurring revenue instead of waiting to save up." },
+        { icon: "expand", pain: "A build-out or a second studio would lift capacity, but the construction drains the cash the current floor runs on.", relief: "With working capital ready, you expand without starving the location already paying the bills." },
+        { icon: "payroll", pain: "Hiring and keeping good trainers means payroll before the new classes they run are fully booked.", relief: "With a cushion in place, you bring on coaches ahead of demand instead of capping your schedule on staffing." },
+      ],
+      closer: "You may qualify on your recurring membership deposits and bank activity, seasonal swings included. No obligation, and any payments are built to fit your cash flow.",
+    },
+    dayInCashFlow: {
+      eyebrow: "A day in your cash flow",
+      headline: "Recurring dues, up-front costs",
+      steps: [
+        { time: "The 1st", event: "Monthly memberships bill. Steady, but spread across the month." },
+        { time: "This week", event: "New equipment and a build-out quote are due up front." },
+        { time: "Peak season", event: "The January surge fills classes, and you want more trainers ready." },
+        { time: "Meanwhile", event: "Rent, payroll, and the equipment payment land before dues catch up." },
+      ],
+      closer: "Memberships come in steady; the moves that grow the gym want cash now. With money in place, you outfit and staff the floor. You may qualify on your recurring deposits. No obligation, and payments fit your cash flow.",
+    },
+    exampleUses: [
+      { label: "Equipment, racks, and machines", rangeLow: 25000, rangeHigh: 100000, when: "to fill more classes" },
+      { label: "Build-out or a second studio", rangeLow: 50000, rangeHigh: 250000, when: "when you are ready to grow" },
+      { label: "Trainers and a marketing push", rangeLow: 25000, rangeHigh: 75000, when: "ahead of the peak-season surge" },
+    ],
+    reassurance: [
+      "Recurring dues are exactly what we read.",
+      "Gyms, boutique studios, and training spaces all welcome.",
+      "Seasonal swings like the January surge are expected.",
+      "Starting is free and does not hurt your credit score.",
+    ],
+    localTouch: "One studio room or a full-floor gym, this page is built for you.",
+    glossary: [
+      { term: "Recurring dues", plain: "The monthly membership payments that make up your steady income." },
+      { term: "Churn", plain: "The members who cancel in a given month, normal in any gym." },
+      { term: "Factor rate", plain: "One set price for the funding. It is not an APR. You know the full payback up front." },
+    ],
+    commonQuestions: [
+      { question: "Most of my revenue is memberships. Does that help?", answer: "Yes. Steady recurring dues are exactly the predictable cash flow the review looks for, alongside your bank activity." },
+      { question: "Can I fund equipment or a build-out?", answer: "Yes. Both are common uses, and equipment can be financed against itself as collateral. Amounts depend on underwriting." },
+      { question: "My credit is not great. Can I apply?", answer: "Yes. The review weighs revenue and bank activity, not credit alone. Approval depends on underwriting." },
+    ],
+    campaignTag: "gym-fitness",
+  },
+  {
+    slug: "manufacturing-wholesale-funding",
+    title: "Manufacturing & Wholesale Funding",
+    seoTitle: "Manufacturing & Wholesale Distribution Funding | FundVella",
+    seoDescription:
+      "You buy raw materials and run the line now, but the big order ships net-60 and the machine needs a part. Manufacturing and wholesale funding on your deposits.",
+    primaryProduct: "revenue-based",
+    secondaryProduct: "equipment",
+    theme: { accent: "slate" },
+    heroHeadline: "Run the order before the payment lands",
+    heroSubheadline:
+      "Maker, processor, or distributor, we read your sales and purchase-order deposits and bank activity, not just your credit. Production runs ahead of the payment terms.",
+    cashFlowSignature:
+      "Raw materials are paid for, the line is running, and the big purchase order ships net-60, all while a machine is down for a part.",
+    heroHighlights: ["PO and net-60 cycles understood", "Makers, processors & distributors", "Inventory-heavy cash flow in mind"],
+    heroImage: { src: "/media/manufacturing.jpg", alt: "A worker on a manufacturing production floor" },
+    useCaseIcons: ["tools", "inventory", "payroll", "scale", "expand"],
+    useCases: [
+      { title: "Raw materials & inventory", description: "Buy materials and stock ahead of a large order or season." },
+      { title: "Machinery & line equipment", description: "Repair or add production equipment to keep the line running." },
+      { title: "Bridge net-60 orders", description: "Cover the gap while a wholesale or distribution order pays out." },
+      { title: "Payroll across a run", description: "Keep the floor staffed through a long production cycle." },
+      { title: "Take a larger PO", description: "Say yes to a bigger purchase order with materials and labor ready." },
+    ],
+    calcContext: "Use your average monthly sales/PO deposits. Four questions for a live range and readiness.",
+    qualificationFocus: [
+      { title: "Sales & PO deposits", description: "Consistency of wholesale, distribution, and purchase-order deposits over time." },
+      { title: "Order & payment terms", description: "Net-30/60 terms and large-order cycles are expected, not penalized." },
+      { title: "Materials vs collections", description: "How raw-material and labor spend lines up against deposits." },
+    ],
+    qualificationNotes: ["We factor purchase-order cycles, net-term receivables, and the inventory-heavy cash flow common to manufacturing and wholesale."],
+    goodFitCriteria: [
+      "Operating 6+ months with steady orders",
+      "Consistent sales or PO deposits",
+      "Balances hold through net-term gaps",
+      "Can share 3 months of statements",
+    ],
+    reviewCriteria: [
+      "Under 3 months in business",
+      "Frequent NSFs beyond order gaps",
+      "Several advances stacked already",
+      "Statements not available yet",
+    ],
+    fitTable: [
+      { label: "Time in business", goodFit: "6+ months operating", mayNeedReview: "Brand new / under 3 months" },
+      { label: "Monthly deposits", goodFit: "Steady sales / PO revenue", mayNeedReview: "One big order, no history" },
+      { label: "Bank activity", goodFit: "Holds through net-30/60", mayNeedReview: "Frequent NSFs / negative days" },
+      { label: "Existing advances", goodFit: "None or one manageable", mayNeedReview: "Multiple stacked advances" },
+      { label: "Statements", goodFit: "3 months ready", mayNeedReview: "Can't share statements" },
+    ],
+    faqs: [
+      {
+        question: "My orders ship net-60, does that gap hurt the review?",
+        answer:
+          "No. Net-term receivables are expected in manufacturing and wholesale. Underwriting reviews your deposit pattern across months, so the gap between shipping and payment is read in context.",
+      },
+      {
+        question: "Can I fund raw materials for a large purchase order?",
+        answer:
+          "Yes, buying materials and covering labor to fulfill a big PO is one of the most common uses. Amounts depend on underwriting and your deposit history.",
+      },
+      ...baseFaqs(),
+    ],
+    calculator: { advanceMultipleLow: 0.4, advanceMultipleHigh: 1.1, factorRateLow: 1.2, factorRateHigh: 1.45, termMonthsHigh: 12 },
+    cta: defaultCta,
+    industryFocus: "retail",
+    painRelief: {
+      eyebrow: "Sound familiar?",
+      headline: "You front the materials. The order pays net-60.",
+      intro: "Manufacturing and distribution tie cash up in materials and labor long before the order ships, and longer still before it pays. Here's where that pinches.",
+      items: [
+        { icon: "inventory", pain: "A large purchase order means buying raw materials and running the line now, but the customer ships net-60 and pays after that.", relief: "With capital in place, you buy materials and fulfill the order on the customer's timeline instead of turning the volume down." },
+        { icon: "tools", pain: "A machine goes down mid-run, and every day the line is idle is product you can't ship and orders you can't bill.", relief: "With working capital ready, you repair or replace the equipment immediately and keep the line and the orders moving." },
+        { icon: "expand", pain: "A bigger account or a new distribution channel is on the table, but the materials and labor to serve it would drain the orders you're already running.", relief: "With funding behind you, you take the larger order without starving the production already paying the bills." },
+      ],
+      closer: "You may qualify on your sales and purchase-order deposits and bank activity, net-term cycles included. No obligation, and any payments are built to fit your cash flow.",
+    },
+    dayInCashFlow: {
+      eyebrow: "A day in your cash flow",
+      headline: "Materials now, payment net-60",
+      steps: [
+        { time: "Week 1", event: "A large PO lands. You buy raw materials and schedule the run." },
+        { time: "Weeks 2 to 4", event: "The line runs and payroll is due, all before anything ships." },
+        { time: "Ship date", event: "The order goes out on net-60 terms." },
+        { time: "Meanwhile", event: "A machine needs a part, and the next order's materials are due." },
+      ],
+      closer: "You front materials and labor; the payment lands two months later. With money in place, you run the order and fix the line now. You may qualify on your deposits. No obligation, and payments fit your cash flow.",
+    },
+    exampleUses: [
+      { label: "Raw materials for a large PO", rangeLow: 50000, rangeHigh: 300000, when: "to fulfill a big order" },
+      { label: "Repair or add line equipment", rangeLow: 40000, rangeHigh: 200000, when: "to keep production running" },
+      { label: "Payroll and a cash cushion across a run", rangeLow: 30000, rangeHigh: 150000, when: "during a long production cycle" },
+    ],
+    reassurance: [
+      "Net-60 order terms are normal here.",
+      "Makers, processors, and distributors all welcome.",
+      "We read your sales and PO deposits, not just your score.",
+      "Starting is free and does not hurt your credit score.",
+    ],
+    localTouch: "A small shop floor or a full distribution operation, this page is built for you.",
+    glossary: [
+      { term: "Purchase order (PO)", plain: "A customer's commitment to buy a set quantity, which you produce and ship before they pay." },
+      { term: "Net-60", plain: "The customer has 60 days to pay you after the order ships." },
+      { term: "Factor rate", plain: "One set price for the funding. It is not an APR. You know the full payback up front." },
+    ],
+    commonQuestions: [
+      { question: "My orders ship net-60. Does that hurt?", answer: "No. Net terms are expected in manufacturing and wholesale. The review looks at your deposits over months, so the gap is read in context." },
+      { question: "Can I fund materials for a big order?", answer: "Yes. Buying materials and covering labor to fulfill a large PO is a common use. Amounts depend on underwriting." },
+      { question: "My credit is not perfect. Can I apply?", answer: "Yes. The review weighs revenue and bank activity, not credit alone. Approval depends on underwriting." },
+    ],
+    campaignTag: "manufacturing-wholesale",
+  },
 ];
 
 /**
@@ -1476,6 +1945,8 @@ export const generalFunding: VerticalConfig = {
   seoTitle: "Small Business Funding & Working Capital | FundVella",
   seoDescription:
     "The bill is due now; the receivables land next month, and a repair or a hire will not wait. Small business funding read on your revenue, not credit alone.",
+  primaryProduct: "revenue-based",
+  secondaryProduct: "line-of-credit",
   theme: { accent: "emerald" },
   heroHeadline: "Working capital, reviewed on your revenue",
   heroSubheadline:
@@ -1588,6 +2059,10 @@ export const INDUSTRY_NAV_LABELS: Record<string, string> = {
   "retail-store-funding": "Retail",
   "hvac-plumbing-business-funding": "HVAC & Plumbing",
   "cleaning-business-funding": "Cleaning",
+  "professional-services-funding": "Professional Services",
+  "landscaping-business-funding": "Landscaping",
+  "gym-fitness-funding": "Gyms & Fitness",
+  "manufacturing-wholesale-funding": "Manufacturing & Wholesale",
   "bad-credit-business-funding": "Bad Credit",
 };
 
@@ -1604,6 +2079,10 @@ const INDUSTRY_KEYWORDS: { slug: string; words: string[] }[] = [
   { slug: "retail-store-funding", words: ["retail", "store", "shop", "boutique", "merchant", "storefront"] },
   { slug: "hvac-plumbing-business-funding", words: ["hvac", "plumbing", "plumber", "heating", "cooling", "ac", "air conditioning", "electrician", "electrical", "mechanical"] },
   { slug: "cleaning-business-funding", words: ["cleaning", "janitorial", "maid", "housekeeping", "custodial", "carpet", "sanitation"] },
+  { slug: "professional-services-funding", words: ["law", "lawyer", "attorney", "legal", "accounting", "accountant", "cpa", "bookkeeping", "agency", "marketing agency", "consulting", "consultant", "staffing", "recruiting", "architect", "engineering", "professional services"] },
+  { slug: "landscaping-business-funding", words: ["landscaping", "landscaper", "lawn", "lawn care", "lawncare", "grounds", "tree service", "irrigation", "hardscape", "nursery"] },
+  { slug: "gym-fitness-funding", words: ["gym", "fitness", "studio", "crossfit", "pilates", "yoga", "personal training", "trainer", "boxing", "spin", "wellness"] },
+  { slug: "manufacturing-wholesale-funding", words: ["manufacturing", "manufacturer", "wholesale", "wholesaler", "distribution", "distributor", "factory", "production", "fabrication", "assembly", "processor"] },
   { slug: "bad-credit-business-funding", words: ["bad credit", "poor credit", "low credit", "credit issues", "no credit"] },
 ];
 

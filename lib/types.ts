@@ -518,6 +518,10 @@ export interface VerticalConfig {
   title: string;
   seoTitle: string;
   seoDescription: string;
+  /** Best-fit funding product for this trade (drives the "Often the best fit" callout). */
+  primaryProduct?: ProductId;
+  /** A common alternative product surfaced alongside the primary fit. */
+  secondaryProduct?: ProductId;
   heroHeadline: string;
   heroSubheadline: string;
   /** Short, scannable proof points shown in the hero trust bar. */

@@ -45,7 +45,7 @@ export default function LandingPageTemplate({ vertical }: { vertical: VerticalCo
         <SocialProofSection vertical={vertical} />
 
         {/* Z5 How funding works + what it's for + fit */}
-        <OfferingsSection />
+        <OfferingsSection vertical={vertical} />
         <Timeline />
         <ExampleUsesSection vertical={vertical} />
         <FitComparisonTable vertical={vertical} />

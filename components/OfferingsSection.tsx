@@ -1,15 +1,20 @@
+import type { VerticalConfig } from "@/lib/types";
 import { OFFERINGS } from "@/content/landingPagesConfig";
 import Icon from "./icons/Icon";
 import Reveal from "./motion/Reveal";
 import Collapsible from "./Collapsible";
+import BestFitCallout from "./BestFitCallout";
 
 /**
  * "Options a specialist matches you to", MCA-led, others available. Compliance:
  * FundVella connects merchants with specialists; it does not lend or approve.
  * Cards carry no border/ring (shadow only); the hero option is marked by a badge
  * and a slightly stronger shadow, not a colored ring.
+ *
+ * When a `vertical` is supplied with a primaryProduct, a subtle "often the best
+ * fit for this trade" callout renders below the grid (falls back to nothing).
  */
-export default function OfferingsSection() {
+export default function OfferingsSection({ vertical }: { vertical?: VerticalConfig } = {}) {
   const o = OFFERINGS;
   return (
     <Collapsible eyebrow={o.eyebrow} title={o.headline} wide>
@@ -39,6 +44,7 @@ export default function OfferingsSection() {
           </Reveal>
         ))}
       </div>
+      {vertical && <BestFitCallout vertical={vertical} />}
       <p className="mt-6 max-w-3xl text-xs leading-relaxed text-slate-500">{o.footnote}</p>
     </Collapsible>
   );
