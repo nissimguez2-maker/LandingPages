@@ -73,7 +73,7 @@ export default function IndustryMenu({
           aria-label="Industries"
           className="absolute left-0 z-50 mt-2 w-[min(92vw,520px)] rounded-xl border border-slate-200 bg-white p-2 shadow-lift"
         >
-          <p className="px-3 pb-1.5 pt-1 text-xs font-semibold uppercase tracking-wide text-slate-400">
+          <p className="px-3 pb-1.5 pt-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
             Funding by industry
           </p>
           <ul className="grid grid-cols-1 gap-0.5 sm:grid-cols-2 sm:gap-x-2">

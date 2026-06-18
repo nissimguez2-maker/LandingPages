@@ -61,7 +61,7 @@ export default function BookCallInline({
         {/* Cal.com renders its booking iframe into this node, painting over the loader. */}
         <div ref={ref} className="relative h-full min-h-[560px] w-full" />
       </div>
-      <p className="mt-2 text-center text-xs text-slate-400">
+      <p className="mt-2 text-center text-xs text-slate-500">
         Trouble loading the calendar?{" "}
         <a href={fallbackUrl} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-700">
           Open it here

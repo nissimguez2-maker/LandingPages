@@ -2,9 +2,9 @@ import type { VerticalConfig } from "@/lib/types";
 import Collapsible from "./Collapsible";
 
 /** Good fit / may-need-review comparison. Honest framing builds trust (LIFT: Anxiety down). */
-export default function FitComparisonTable({ vertical }: { vertical: VerticalConfig }) {
+export default function FitComparisonTable({ vertical, defaultOpen = false }: { vertical: VerticalConfig; defaultOpen?: boolean }) {
   return (
-    <Collapsible eyebrow="Is this a fit?" title="Good fit vs. may need a closer look" wide>
+    <Collapsible eyebrow="Is this a fit?" title="Good fit vs. may need a closer look" wide defaultOpen={defaultOpen}>
       <p className="max-w-2xl text-slate-600">
         A &ldquo;may need review&rdquo; doesn&apos;t mean no, it just means a specialist will look closer.
       </p>
@@ -27,11 +27,11 @@ export default function FitComparisonTable({ vertical }: { vertical: VerticalCon
           {vertical.fitTable.map((row) => (
             <div key={row.label} className="grid grid-cols-1 sm:grid-cols-2">
               <div className="px-6 py-4 sm:border-r sm:border-slate-100">
-                <dt className="text-xs font-medium uppercase tracking-wide text-slate-400">{row.label}</dt>
+                <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">{row.label}</dt>
                 <dd className="mt-1 text-sm text-slate-700">{row.goodFit}</dd>
               </div>
               <div className="px-6 py-4">
-                <dt className="text-xs font-medium uppercase tracking-wide text-slate-400 sm:hidden">{row.label}</dt>
+                <dt className="text-xs font-medium uppercase tracking-wide text-slate-500 sm:hidden">{row.label}</dt>
                 <dd className="mt-1 text-sm text-slate-700 sm:mt-0">{row.mayNeedReview}</dd>
               </div>
             </div>

@@ -61,8 +61,9 @@ export default function HomePage() {
           <TrustStats />
           <SocialProofSection vertical={v} />
 
-          {/* Z5 How funding works + what it's for */}
-          <OfferingsSection />
+          {/* Z5 How funding works + what it's for. On the HOME page the funding
+              options open by default so the product story isn't hidden behind a click. */}
+          <OfferingsSection defaultOpen />
           <Timeline />
           <ExampleUsesSection vertical={v} />
 

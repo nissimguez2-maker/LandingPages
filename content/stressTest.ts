@@ -105,7 +105,7 @@ export const URGENCY_STEP = {
   options: URGENCY_OPTS,
   mirror: {
     immediately: "Then every day counts. The fastest path is a quick call.",
-    this_week: "Soon. Good. The owners who move first get the best terms.",
+    this_week: "Soon. Good. Owners who line it up early usually have more options to explore.",
     this_month: "A clear window. Lining it up now beats scrambling later.",
     exploring: "Smart. The best time to set up funding is before you need it.",
   } as Record<string, string>,
@@ -119,8 +119,8 @@ export const STRESS_TEASER = {
 export const TIER_REVEAL: Record<ExposureTier, { label: string; headline: string; body: string }> = {
   resilient: {
     label: "Strong",
-    headline: "You qualify for the most right now. That is exactly when to move.",
-    body: "Your numbers are the kind lenders compete for, so the best terms and the most room are on the table for you today. Not because you are desperate, but because you are not. The catch is simple. Money sitting still does not grow. Put it to work now and you set the terms instead of taking them.",
+    headline: "Owners with numbers like yours usually have the most options to explore. That is exactly when to move.",
+    body: "Numbers like yours are the kind funders like to see, so this is often when owners have the most options on the table to explore, not because you are desperate, but because you are not. Approval still depends on underwriting. The idea is simple. Money sitting still does not grow, so the time to explore your options is before you need them, while you have room to choose.",
   },
   exposed: {
     label: "Room to grow",
@@ -162,7 +162,7 @@ export const PAYBACK_CLOSE = {
   title: "How owners who get ahead think about it",
   points: [
     "Standing still is not free. Every week you wait is stock you did not buy, a job you did not take, or a customer a faster shop got first.",
-    "The best time to line up capital is before you are desperate for it. That is when you qualify for the most and pay the least for it.",
+    "The best time to line up capital is before you are desperate for it. That is when owners tend to have the most options to explore, with approval still depending on underwriting.",
     "You see the full payback up front. It is one set price, called a factor rate, not an APR. No surprises.",
   ],
 };

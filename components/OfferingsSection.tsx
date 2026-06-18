@@ -14,10 +14,10 @@ import BestFitCallout from "./BestFitCallout";
  * When a `vertical` is supplied with a primaryProduct, a subtle "often the best
  * fit for this trade" callout renders below the grid (falls back to nothing).
  */
-export default function OfferingsSection({ vertical }: { vertical?: VerticalConfig } = {}) {
+export default function OfferingsSection({ vertical, defaultOpen = false }: { vertical?: VerticalConfig; defaultOpen?: boolean } = {}) {
   const o = OFFERINGS;
   return (
-    <Collapsible eyebrow={o.eyebrow} title={o.headline} wide>
+    <Collapsible eyebrow={o.eyebrow} title={o.headline} wide defaultOpen={defaultOpen}>
       <p className="max-w-2xl text-slate-600">{o.intro}</p>
       <div className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {o.products.map((p, i) => (

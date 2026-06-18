@@ -147,7 +147,7 @@ export function Stepper({
           />
         </div>
         {typeof baseline === "number" && progress <= baseline && (
-          <p className="mt-1.5 text-[11px] leading-snug text-slate-400">
+          <p className="mt-1.5 text-[11px] leading-snug text-slate-500">
             Carried over from your prequal — finish the steps to complete it.
           </p>
         )}
@@ -187,7 +187,7 @@ export function Stepper({
         })}
       </ol>
       {typeof baseline === "number" && progress <= baseline && (
-        <p className="mt-2 hidden px-3 text-[11px] leading-snug text-slate-400 sm:block">
+        <p className="mt-2 hidden px-3 text-[11px] leading-snug text-slate-500 sm:block">
           Your prequal is already counted toward this. Finish the steps to complete your application.
         </p>
       )}
@@ -617,7 +617,7 @@ export function OptionalDocUpload({
         <div className="min-w-0">
           <p className="flex items-center gap-2 text-sm font-semibold text-brand-900">
             <IconDoc className="h-4 w-4 flex-none text-brand-500" />
-            {title} <span className="font-normal text-slate-400">(optional)</span>
+            {title} <span className="font-normal text-slate-500">(optional)</span>
           </p>
           <p className="mt-1 text-xs text-slate-500">{hint}</p>
         </div>

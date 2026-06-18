@@ -68,7 +68,7 @@ export const guidesIndustry: ResourceArticle[] = [
       { type: "h3", text: "Stage 2: Application and review" },
       {
         type: "p",
-        text: "If the file looks viable and you decide to move forward, a funder reviews it more closely. At this point a funder may run a soft pull to get a fuller picture alongside your bank activity. Because revenue-based funding leans heavily on your deposits and bank statements, your credit score is usually one input among several, not the deciding factor. You can read more about that in [what lenders read on your bank statements](/resources/what-lenders-read-bank-statements).",
+        text: "If the file looks viable and you decide to move forward, a funder reviews it more closely. At this point a funder may run a soft pull to get a fuller picture alongside your bank activity. Because revenue-based funding leans heavily on your deposits and bank statements, your credit score is usually one input among several, not the deciding factor. You can read more about that in [what funders read on your bank statements](/resources/what-lenders-read-bank-statements).",
       },
       { type: "h3", text: "Stage 3: Offer and funding" },
       {
@@ -271,7 +271,7 @@ export const guidesIndustry: ResourceArticle[] = [
         type: "p",
         text: "Now layer Q4 on top, when you want to buy more, spend more on proven campaigns, and carry deeper stock on your best SKUs. The buy is bigger, the lead time is the same, and the cash crunch arrives right when the opportunity is largest. Stock out at the wrong moment and you hand sold-out sales to a competitor.",
       },
-      { type: "h2", text: "What lenders look at for an online store" },
+      { type: "h2", text: "What funders look at for an online store" },
       {
         type: "p",
         text: "A bank tends to anchor on tax returns and personal credit. A revenue-based review is built differently and reads how an online store actually earns. For e-commerce, that usually means a few things together.",

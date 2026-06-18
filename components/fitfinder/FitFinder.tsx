@@ -180,7 +180,7 @@ export default function FitFinder() {
             </button>
           </div>
 
-          <p className="mt-6 text-xs leading-relaxed text-slate-400">{FIT_RESULT_FOOTNOTE}</p>
+          <p className="mt-6 text-xs leading-relaxed text-slate-500">{FIT_RESULT_FOOTNOTE}</p>
         </div>
       </Reveal>
     );
@@ -192,7 +192,7 @@ export default function FitFinder() {
   return (
     <div className="rounded-2xl bg-white p-6 shadow-lift sm:p-8">
       <div className="flex items-center justify-between">
-        <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
           Step {stepIdx + 1} of {total}
         </p>
         {stepIdx > 0 && (

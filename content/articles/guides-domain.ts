@@ -20,8 +20,8 @@ export const guidesDomain: ResourceArticle[] = [
   {
     slug: "what-lenders-read-bank-statements",
     kind: "article",
-    title: "What Lenders Actually Read in Your Bank Statements",
-    seoTitle: "What Lenders Read in Your Bank Statements",
+    title: "What Funders Actually Read in Your Bank Statements",
+    seoTitle: "What Funders Read in Your Bank Statements",
     seoDescription:
       "What underwriting actually looks for in your business bank statements: deposits, average daily balance, NSF days, and existing advance debits.",
     excerpt:
@@ -202,7 +202,7 @@ export const guidesDomain: ResourceArticle[] = [
       },
       {
         type: "p",
-        text: "For the full breakdown of how those statements are read, see [what lenders actually read in your bank statements](/resources/what-lenders-read-bank-statements).",
+        text: "For the full breakdown of how those statements are read, see [what funders actually read in your bank statements](/resources/what-lenders-read-bank-statements).",
       },
       { type: "h2", text: "How deposits translate into an amount" },
       {
@@ -300,7 +300,7 @@ export const guidesDomain: ResourceArticle[] = [
       { type: "h3", text: "Bank statements" },
       {
         type: "p",
-        text: "Statements are where revenue-based underwriting lives. They show average monthly deposits, how often money lands, the average daily balance, and any negative or NSF days. Send all pages, even the blank summary page, because a missing page reads as an incomplete file. For the full picture of what gets read, see [what lenders actually read in your bank statements](/resources/what-lenders-read-bank-statements).",
+        text: "Statements are where revenue-based underwriting lives. They show average monthly deposits, how often money lands, the average daily balance, and any negative or NSF days. Send all pages, even the blank summary page, because a missing page reads as an incomplete file. For the full picture of what gets read, see [what funders actually read in your bank statements](/resources/what-lenders-read-bank-statements).",
       },
       { type: "h3", text: "ID and proof of ownership" },
       {
@@ -438,7 +438,7 @@ export const guidesDomain: ResourceArticle[] = [
       },
       {
         type: "p",
-        text: "For the full breakdown of what an underwriter reads line by line, see [what lenders actually read in your bank statements](/resources/what-lenders-read-bank-statements).",
+        text: "For the full breakdown of what an underwriter reads line by line, see [what funders actually read in your bank statements](/resources/what-lenders-read-bank-statements).",
       },
       { type: "h2", text: "How payments are structured around lumpy cash flow" },
       {

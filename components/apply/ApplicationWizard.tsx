@@ -588,7 +588,7 @@ export default function ApplicationWizard({
                     track("deepapp_upload_succeeded", { vertical: slug, method: "plaid" });
                   }}
                 />
-                <div className="flex items-center gap-3 text-xs text-slate-400">
+                <div className="flex items-center gap-3 text-xs text-slate-500">
                   <span className="h-px flex-1 bg-slate-200" /> or upload <span className="h-px flex-1 bg-slate-200" />
                 </div>
                 <FileUpload items={files} onPick={handlePick} onRemove={removeFile} deferred={!!lead.bankStatementsDeferred} onToggleDefer={toggleDocsDefer} />
@@ -597,7 +597,7 @@ export default function ApplicationWizard({
 
             {/* Optional core-file extras (§3) — never required, fully deferrable. */}
             <div className="space-y-3 pt-1">
-              <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
                 Optional — speeds up funding if you have them handy
               </p>
               <OptionalDocUpload

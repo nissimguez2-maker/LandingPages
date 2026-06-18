@@ -62,7 +62,7 @@ export default function TrustStats() {
                   href={s.href}
                   target="_blank"
                   rel="noopener noreferrer nofollow"
-                  className="mt-1.5 block text-xs text-slate-400 underline-offset-2 hover:text-slate-600 hover:underline"
+                  className="mt-1.5 block text-xs text-slate-500 underline-offset-2 hover:text-slate-700 hover:underline"
                 >
                   Source: {s.source}
                 </a>

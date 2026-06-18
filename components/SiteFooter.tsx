@@ -25,7 +25,7 @@ export default function SiteFooter() {
           </div>
 
           <div className="lg:col-span-5">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Funding by industry</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Funding by industry</p>
             <ul className="mt-3 grid grid-cols-1 gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
               {verticals.map((v) => (
                 <li key={v.slug}>
@@ -38,7 +38,7 @@ export default function SiteFooter() {
           </div>
 
           <div className="lg:col-span-2">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Resources</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Resources</p>
             <ul className="mt-3 space-y-2 text-sm">
               {RESOURCE_LINKS.map((r) => (
                 <li key={r.href}>
@@ -51,7 +51,7 @@ export default function SiteFooter() {
           </div>
 
           <div className="lg:col-span-2">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Company</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Company</p>
             <ul className="mt-3 space-y-2 text-sm">
               <li>
                 <Link href="/products" className="text-slate-600 hover:text-brand-700">
@@ -92,7 +92,7 @@ export default function SiteFooter() {
           <DisclaimerBlock variant="line" />
         </div>
 
-        <p className="mt-6 text-xs text-slate-400">
+        <p className="mt-6 text-xs text-slate-500">
           © {new Date().getFullYear()} {SITE_NAME}. All rights reserved. This site does not provide
           legal, tax, or financial advice.
         </p>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
 const PILLARS = [
@@ -21,13 +21,69 @@ const caret = (
  *  at this breakpoint by the header. Industries use short, clean labels. */
 export default function MobileMenu({ industries }: { industries: { slug: string; title: string; label?: string }[] }) {
   const [open, setOpen] = useState(false);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
 
+  // Escape to close + a focus trap while the panel is open: Tab cycles within the
+  // panel so keyboard users can't tab out into the (scroll-locked) page behind it.
   useEffect(() => {
+    if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") {
+        setOpen(false);
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const panel = panelRef.current;
+      const toggle = toggleRef.current;
+      if (!panel || !toggle) return;
+      const focusable = Array.from(
+        panel.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), summary, input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter((el) => el.offsetParent !== null || el === document.activeElement);
+      // The toggle button sits outside the panel but is part of the menu; keep it
+      // in the loop so focus wraps between the trigger and the panel contents.
+      const ring = [toggle, ...focusable];
+      if (ring.length === 0) return;
+      const first = ring[0];
+      const last = ring[ring.length - 1];
+      const active = document.activeElement as HTMLElement | null;
+      if (e.shiftKey && active === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      } else if (active && !ring.includes(active)) {
+        e.preventDefault();
+        first.focus();
+      }
     };
-    if (open) document.addEventListener("keydown", onKey);
+    document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  // Lock body scroll while the panel is open; restore on close/unmount.
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
+
+  // Move focus into the panel when it opens, and back to the toggle when it closes.
+  const wasOpen = useRef(false);
+  useEffect(() => {
+    if (open) {
+      const firstLink = panelRef.current?.querySelector<HTMLElement>("a, button, summary");
+      firstLink?.focus();
+    } else if (wasOpen.current) {
+      toggleRef.current?.focus();
+    }
+    wasOpen.current = open;
   }, [open]);
 
   const close = () => setOpen(false);
@@ -36,6 +92,7 @@ export default function MobileMenu({ industries }: { industries: { slug: string;
   return (
     <div className="md:hidden">
       <button
+        ref={toggleRef}
         type="button"
         aria-expanded={open}
         aria-controls="mobile-nav"
@@ -49,7 +106,7 @@ export default function MobileMenu({ industries }: { industries: { slug: string;
       </button>
 
       {open && (
-        <div id="mobile-nav" className="absolute inset-x-0 top-16 z-40 border-t border-slate-200 bg-white shadow-lift">
+        <div ref={panelRef} id="mobile-nav" className="absolute inset-x-0 top-16 z-40 border-t border-slate-200 bg-white shadow-lift">
           <nav className="container-content flex max-h-[80vh] flex-col gap-1 overflow-y-auto py-3" aria-label="Primary">
             <details className="group">
               <summary className="flex cursor-pointer items-center justify-between rounded-lg px-3 py-3 text-base font-semibold text-brand-900 hover:bg-brand-50">

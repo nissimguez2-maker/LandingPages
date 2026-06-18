@@ -57,7 +57,7 @@ export default function TermsPage() {
       </LegalSection>
 
       <LegalSection heading="Governing law">
-        <p>These terms are governed by the laws of <strong>[your state/jurisdiction]</strong>.</p>
+        <p>These terms are governed by the laws of the <strong>State of Florida</strong>, without regard to its conflict-of-laws rules.</p>
       </LegalSection>
 
       <LegalSection heading="Changes & contact">
