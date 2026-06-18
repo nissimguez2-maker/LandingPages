@@ -24,6 +24,7 @@ import {
   IconLock,
   IconMail,
   MaskedInput,
+  OptionalDocUpload,
   SecureSection,
   SignatureBlock,
   SsnField,
@@ -37,6 +38,7 @@ import {
   APPLICATION_STEPS,
   type ApplicationSubmission,
   computeApplicationProgress,
+  PROGRESS_BASELINE,
   formatCurrency,
   formatEin,
   formatZip,
@@ -99,11 +101,40 @@ export default function ApplicationWizard({
   const [stepIdx, setStepIdx] = useState(0);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [files, setFiles] = useState<UploadItem[]>([]);
+  const [voidedCheckUploads, setVoidedCheckUploads] = useState<UploadItem[]>([]);
+  const [ownerIdUploads, setOwnerIdUploads] = useState<UploadItem[]>([]);
   const [phase, setPhase] = useState<Phase>("form");
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const step = APPLICATION_STEPS[stepIdx];
   const progress = useMemo(() => computeApplicationProgress(lead), [lead]);
+  const formRef = useRef<HTMLElement>(null);
+
+  /**
+   * After a failed Continue/Submit, move the user's attention to the first
+   * field that needs fixing. Non-destructive: it only scrolls/focuses what's
+   * already flagged (every field sets aria-invalid="true" on error). RadioCards
+   * mark a non-focusable <fieldset>, so we fall back to its first focusable child.
+   */
+  function focusFirstError() {
+    if (typeof window === "undefined") return;
+    requestAnimationFrame(() => {
+      const root = formRef.current;
+      if (!root) return;
+      const flagged = root.querySelector<HTMLElement>('[aria-invalid="true"]');
+      if (!flagged) return;
+      flagged.scrollIntoView({ behavior: "smooth", block: "center" });
+      const focusTarget =
+        typeof flagged.focus === "function" && flagged.tabIndex >= 0
+          ? flagged
+          : flagged.querySelector<HTMLElement>("input, select, textarea, button, [tabindex]");
+      try {
+        focusTarget?.focus({ preventScroll: true });
+      } catch {
+        /* focus is best-effort */
+      }
+    });
+  }
 
   // Refs for the unload handler (always-current without re-binding listeners).
   const leadRef = useRef(lead);
@@ -319,12 +350,73 @@ export default function ApplicationWizard({
     if (deferred) track("deepapp_docs_deferred", { vertical: slug });
   }
 
+  /* ── Optional core-file docs (voided check, owner ID) ─────────────────────
+   * Same upload-or-defer pattern as bank statements, parameterized so each slot
+   * writes to its own LeadData list + deferred flag. Always optional, never gates. */
+  function makeDocSlot(
+    setUploads: React.Dispatch<React.SetStateAction<UploadItem[]>>,
+    filesKey: "voidedCheckFiles" | "ownerIdFiles",
+    deferredKey: "voidedCheckDeferred" | "ownerIdDeferred",
+    docKind: string,
+  ) {
+    const onPick = async (picked: File[]) => {
+      const tooBig = (f: File) => f.size > 15 * 1024 * 1024;
+      const wrongType = (f: File) => !(f.type === "application/pdf" || f.type.startsWith("image/"));
+      for (const file of picked) {
+        if (tooBig(file) || wrongType(file)) {
+          setUploads((fs) => [
+            ...fs,
+            { id: uid(), name: file.name, size: file.size, status: "error", error: "Use a PDF/JPG/PNG under 15 MB." },
+          ]);
+          continue;
+        }
+        const id = uid();
+        setUploads((fs) => [...fs, { id, name: file.name, size: file.size, status: "uploading" }]);
+        track("deepapp_upload_started", { vertical: slug, doc: docKind });
+        const meta = await uploadOne(file);
+        setUploads((fs) => fs.map((x) => (x.id === id ? { ...x, status: "done" } : x)));
+        setLead((l) => ({
+          ...l,
+          [deferredKey]: false,
+          [filesKey]: [
+            ...(l[filesKey] ?? []),
+            { name: file.name, size: file.size, type: file.type, storageKey: meta.storageKey },
+          ],
+        }));
+        track("deepapp_upload_succeeded", { vertical: slug, doc: docKind });
+      }
+    };
+    const onRemove = (id: string) => {
+      let target: UploadItem | undefined;
+      setUploads((fs) => {
+        target = fs.find((f) => f.id === id);
+        return fs.filter((f) => f.id !== id);
+      });
+      if (target && target.status !== "error") {
+        const name = target.name;
+        setLead((l) => ({
+          ...l,
+          [filesKey]: (l[filesKey] ?? []).filter((f) => f.name !== name),
+        }));
+      }
+    };
+    const onToggleDefer = (deferred: boolean) => {
+      setField(deferredKey, deferred);
+      if (deferred) track("deepapp_docs_deferred", { vertical: slug, doc: docKind });
+    };
+    return { onPick, onRemove, onToggleDefer };
+  }
+
+  const voidedCheckSlot = makeDocSlot(setVoidedCheckUploads, "voidedCheckFiles", "voidedCheckDeferred", "voided_check");
+  const ownerIdSlot = makeDocSlot(setOwnerIdUploads, "ownerIdFiles", "ownerIdDeferred", "owner_id");
+
   /* ── Navigation ───────────────────────────────────────────────────────── */
   function goNext() {
     const errs = validateStep(step.id, lead);
     if (Object.keys(errs).length) {
       setErrors(errs);
       track("deepapp_field_error", { vertical: slug, step: step.id, fields: Object.keys(errs) });
+      focusFirstError();
       return;
     }
     setErrors({});
@@ -345,6 +437,7 @@ export default function ApplicationWizard({
     const errs = validateStep("review", lead);
     if (Object.keys(errs).length) {
       setErrors(errs);
+      focusFirstError();
       return;
     }
     setPhase("submitting");
@@ -427,10 +520,7 @@ export default function ApplicationWizard({
               <div className="sm:col-span-1"><Select label="State" value={lead.businessState ?? ""} onChange={(v) => setField("businessState", v)} options={US_STATES} placeholder="State" autoComplete="address-level1" error={errors.businessState} /></div>
               <div className="sm:col-span-2"><TextField label="ZIP" value={lead.businessZip ?? ""} onChange={(v) => setField("businessZip", formatZip(v))} inputMode="numeric" autoComplete="postal-code" error={errors.businessZip} /></div>
             </div>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <TextField label="Years under current ownership" value={lead.ownershipLengthYears ?? ""} onChange={(v) => setField("ownershipLengthYears", v)} inputMode="numeric" />
-              <TextField label="Date of incorporation" type="date" value={lead.dateOfIncorporation ?? ""} onChange={(v) => setField("dateOfIncorporation", v)} />
-            </div>
+            <TextField label="Business start date" type="date" value={lead.dateOfIncorporation ?? ""} onChange={(v) => setField("dateOfIncorporation", v)} help="When the business started operating. A specialist can confirm the exact date later." />
           </SecureSection>
         );
 
@@ -504,6 +594,31 @@ export default function ApplicationWizard({
                 <FileUpload items={files} onPick={handlePick} onRemove={removeFile} deferred={!!lead.bankStatementsDeferred} onToggleDefer={toggleDocsDefer} />
               </>
             )}
+
+            {/* Optional core-file extras (§3) — never required, fully deferrable. */}
+            <div className="space-y-3 pt-1">
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                Optional — speeds up funding if you have them handy
+              </p>
+              <OptionalDocUpload
+                title="Voided business check"
+                hint="A voided check from your business account confirms where funds get deposited. No worries if you don't have one now."
+                items={voidedCheckUploads}
+                onPick={voidedCheckSlot.onPick}
+                onRemove={voidedCheckSlot.onRemove}
+                deferred={!!lead.voidedCheckDeferred}
+                onToggleDefer={voidedCheckSlot.onToggleDefer}
+              />
+              <OptionalDocUpload
+                title="Owner ID / driver's license"
+                hint="A photo of your driver's license or state ID helps verify your identity faster. You can also send it to a specialist later."
+                items={ownerIdUploads}
+                onPick={ownerIdSlot.onPick}
+                onRemove={ownerIdSlot.onRemove}
+                deferred={!!lead.ownerIdDeferred}
+                onToggleDefer={ownerIdSlot.onToggleDefer}
+              />
+            </div>
           </SecureSection>
         );
 
@@ -538,13 +653,13 @@ export default function ApplicationWizard({
 
       <div className="grid gap-8 lg:grid-cols-[220px_minmax(0,640px)] lg:gap-12">
         <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">
-          <Stepper steps={APPLICATION_STEPS} current={stepIdx} progress={progress} />
+          <Stepper steps={APPLICATION_STEPS} current={stepIdx} progress={progress} baseline={PROGRESS_BASELINE} />
           <div className="hidden lg:block">
             <TrustPanel email={contactEmail} />
           </div>
         </aside>
 
-        <main>
+        <main ref={formRef}>
           {renderStep()}
 
           {/* Sticky CTA — reassurance rides with the button */}
@@ -596,6 +711,16 @@ function ReviewSummary({
     { label: "Owner", value: lead.ownerFullName || "—", step: 2 },
     { label: "SSN", value: lead.ssnDeferred ? "By phone with specialist" : ssn ? `•••-••-${ssn.replace(/\D/g, "").slice(-4)}` : "—", step: 2 },
     { label: "Bank statements", value: lead.bankStatementsDeferred ? "Sending to specialist" : `${files.filter((f) => f.status !== "error").length} uploaded`, step: 3 },
+    {
+      label: "Voided check",
+      value: (lead.voidedCheckFiles?.length ?? 0) > 0 ? "Uploaded" : lead.voidedCheckDeferred ? "Sending later" : "Optional — not added",
+      step: 3,
+    },
+    {
+      label: "Owner ID",
+      value: (lead.ownerIdFiles?.length ?? 0) > 0 ? "Uploaded" : lead.ownerIdDeferred ? "Sending later" : "Optional — not added",
+      step: 3,
+    },
   ];
   return (
     <div className="overflow-hidden rounded-xl border border-slate-200">

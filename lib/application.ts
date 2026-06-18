@@ -210,7 +210,12 @@ export function isStepComplete(step: ApplicationStepId, lead: LeadData): boolean
 
 /* ── Completeness meter (starts at the prequal baseline, never 0) ────────── */
 
-const PROGRESS_BASELINE = 60; // prequal + contact were already done before /apply
+/**
+ * The deep app opens partway along the bar because the prequal + contact step
+ * were genuinely completed before /apply. This is carried-over progress, not a
+ * manufactured number — the UI labels it as such (see Stepper `baseline`).
+ */
+export const PROGRESS_BASELINE = 60;
 const STEP_WEIGHT: Record<ApplicationStepId, number> = {
   business: 8,
   funding: 8,

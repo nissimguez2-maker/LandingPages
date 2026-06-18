@@ -299,6 +299,13 @@ export interface LeadData {
   bankStatementsDeferred?: boolean;
   bankConnected?: boolean; // linked read-only via Plaid instead of uploading
   plaidItemId?: string;
+  // Optional core-file documents (§3): a voided business check and an owner ID.
+  // Both are deferrable — they NEVER gate submission; a specialist can collect
+  // them later. Same deferred/no-gate pattern as bank statements.
+  voidedCheckFiles?: UploadedFileMeta[];
+  voidedCheckDeferred?: boolean;
+  ownerIdFiles?: UploadedFileMeta[];
+  ownerIdDeferred?: boolean;
   creditAuthConsent?: boolean;
   esignConsent?: boolean;
   signatureName?: string;

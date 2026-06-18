@@ -116,10 +116,13 @@ export function Stepper({
   steps,
   current,
   progress,
+  baseline,
 }: {
   steps: readonly { id: string; label: string }[];
   current: number;
   progress: number;
+  /** Portion of the bar carried over from the completed prequal (honest framing). */
+  baseline?: number;
 }) {
   const active = steps[current];
   return (
@@ -143,6 +146,11 @@ export function Stepper({
             aria-label="Application progress"
           />
         </div>
+        {typeof baseline === "number" && progress <= baseline && (
+          <p className="mt-1.5 text-[11px] leading-snug text-slate-400">
+            Carried over from your prequal — finish the steps to complete it.
+          </p>
+        )}
       </div>
 
       {/* Desktop: vertical rail */}
@@ -178,6 +186,11 @@ export function Stepper({
           );
         })}
       </ol>
+      {typeof baseline === "number" && progress <= baseline && (
+        <p className="mt-2 hidden px-3 text-[11px] leading-snug text-slate-400 sm:block">
+          Your prequal is already counted toward this. Finish the steps to complete your application.
+        </p>
+      )}
     </div>
   );
 }
@@ -565,6 +578,137 @@ export function FileUpload({
           I&apos;ll send these to my specialist instead
         </label>
       </div>
+    </div>
+  );
+}
+
+/* ── OptionalDocUpload — additional core-file docs (voided check, owner ID) ──
+ * A compact, optional, ALWAYS-deferrable upload slot. Mirrors the bank-statement
+ * pattern (upload-or-send-to-specialist) but is never required and never gates
+ * submission. Use for the §3 core-file extras a specialist may otherwise chase. */
+
+export function OptionalDocUpload({
+  title,
+  hint,
+  items,
+  onPick,
+  onRemove,
+  deferred,
+  onToggleDefer,
+  accept = "application/pdf,image/*",
+  allowCamera = true,
+}: {
+  title: string;
+  hint: string;
+  items: UploadItem[];
+  onPick: (files: File[]) => void;
+  onRemove: (id: string) => void;
+  deferred: boolean;
+  onToggleDefer: (deferred: boolean) => void;
+  accept?: string;
+  allowCamera?: boolean;
+}) {
+  const accepted = items.filter((i) => i.status !== "error");
+  const provided = accepted.length > 0;
+
+  return (
+    <div className="rounded-xl border border-slate-200 p-4">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="flex items-center gap-2 text-sm font-semibold text-brand-900">
+            <IconDoc className="h-4 w-4 flex-none text-brand-500" />
+            {title} <span className="font-normal text-slate-400">(optional)</span>
+          </p>
+          <p className="mt-1 text-xs text-slate-500">{hint}</p>
+        </div>
+        {provided && (
+          <span className="lock-note flex-none">
+            <IconCheck className="h-4 w-4" /> Received
+          </span>
+        )}
+      </div>
+
+      {!deferred && (
+        <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+          {allowCamera && (
+            <label className="btn-secondary flex-1 cursor-pointer sm:hidden">
+              Take photo
+              <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="sr-only"
+                onChange={(e) => onPick(Array.from(e.target.files ?? []))}
+                aria-label={`Take a photo for ${title}`}
+              />
+            </label>
+          )}
+          <label className="btn-secondary flex-1 cursor-pointer">
+            {provided ? "Add another file" : "Choose file"}
+            <input
+              type="file"
+              accept={accept}
+              multiple
+              className="sr-only"
+              onChange={(e) => onPick(Array.from(e.target.files ?? []))}
+              aria-label={`Choose a file for ${title}`}
+            />
+          </label>
+        </div>
+      )}
+
+      {items.length > 0 && (
+        <ul className="mt-3 space-y-2" aria-label={`${title} files`}>
+          {items.map((f) => (
+            <li
+              key={f.id}
+              className={`flex items-center gap-3 rounded-lg border bg-white px-3 py-2 ${
+                f.status === "error" ? "border-red-300 bg-red-50" : "border-slate-200"
+              }`}
+            >
+              <span
+                className={`grid h-8 w-8 flex-none place-items-center rounded-md ${
+                  f.status === "error"
+                    ? "bg-red-100 text-red-600"
+                    : f.status === "done"
+                      ? "bg-accent-50 text-accent-700"
+                      : "bg-brand-50 text-brand-600"
+                }`}
+              >
+                {f.status === "done" ? <IconLock className="h-4 w-4" /> : <IconDoc className="h-4 w-4" />}
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium text-brand-900">{f.name}</p>
+                {f.status === "error" ? (
+                  <p className="text-xs text-red-700">{f.error}</p>
+                ) : f.status === "done" ? (
+                  <p className="lock-note">Encrypted · {formatBytes(f.size)}</p>
+                ) : (
+                  <p className="text-xs text-slate-500">Uploading…</p>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => onRemove(f.id)}
+                aria-label={`Remove ${f.name}`}
+                className="grid h-8 w-8 flex-none place-items-center rounded-md text-slate-400 hover:bg-slate-100 hover:text-red-600"
+              >
+                <IconX className="h-4 w-4" />
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <label className="mt-3 flex cursor-pointer items-center gap-2 text-xs text-slate-600">
+        <input
+          type="checkbox"
+          checked={deferred}
+          onChange={(e) => onToggleDefer(e.target.checked)}
+          className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
+        />
+        I&apos;ll send this to my specialist later
+      </label>
     </div>
   );
 }
