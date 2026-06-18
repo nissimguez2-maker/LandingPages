@@ -25,6 +25,12 @@ export default function SiteHeader({ vertical }: { vertical?: VerticalConfig }) 
           <span className="hidden h-6 w-px bg-slate-200 md:block" aria-hidden="true" />
           <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
             {industries.length > 1 && <IndustryMenu industries={industries} vertical={vertical?.slug} />}
+            <Link
+              href="/products"
+              className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-2 text-sm font-semibold text-brand-800 transition hover:bg-brand-50 hover:text-brand-900"
+            >
+              Funding options
+            </Link>
             <ResourcesMenu vertical={vertical?.slug} />
             <Link
               href="/about"

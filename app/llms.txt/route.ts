@@ -23,6 +23,7 @@ export function GET() {
     "## Key pages",
     "",
     `- [Small Business Funding (home)](${base}/): Working capital for almost any operating business, reviewed on revenue and bank activity, not credit alone.`,
+    `- [Funding options](${base}/products): The funding options FundVella surfaces — revenue-based working capital (a purchase of future receivables priced by factor rate, not APR), line of credit, HELOC, term loan and SBA (real loans that carry an APR), equipment, bridge, and invoice factoring — plus a credit-repair path back if you're not fundable yet.`,
     verticals,
     `- [Resources](${base}/resources): Plain-English guides to working capital, costs, qualifying, and choosing a funding option.`,
     pillars,

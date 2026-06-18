@@ -28,6 +28,7 @@ import type {
   TrustSignal,
   CalculatorConfig,
 } from "@/lib/types";
+import { toOfferingProducts } from "./productsConfig";
 
 /** Fallback "What we look at", used when a vertical sets no qualificationFocus. */
 export const WHAT_WE_LOOK_AT: { title: string; description: string }[] = [
@@ -88,57 +89,9 @@ export const OFFERINGS = {
   headline: "One conversation. The option that fits how you get paid.",
   intro:
     "The right funding depends on what the money is for and how the cash comes in. A specialist reads your file and matches you to the fit, usually starting here.",
-  products: [
-    {
-      name: "Working Capital Advance",
-      icon: "spark",
-      hero: true,
-      bestWhen: "Best for covering a gap or moving on an opportunity fast.",
-      body: "Funding based on your revenue, not credit alone, repaid as a small automatic share of deposits, so it flexes with a slow week. A factor rate sets one total payback up front; it is not an APR.",
-    },
-    {
-      name: "Business Line of Credit",
-      icon: "scale",
-      bestWhen: "Best when the need keeps coming back.",
-      body: "A revolving limit you draw on when you need it and pay down when you don't, so you only carry what you use.",
-    },
-    {
-      name: "HELOC",
-      icon: "shield",
-      bestWhen: "Best with 650+ credit and equity in your real estate.",
-      body: "A line against your property's equity, often funded within a day. You get an indicative number up front; final terms confirm against your equity and title. Speed is the draw.",
-    },
-    {
-      name: "Term Loan",
-      icon: "clock",
-      bestWhen: "Best for a one-time use with a predictable monthly payment.",
-      body: "A real business loan with a fixed payment over a set term. Here an APR is the right measure (unlike revenue-based funding), and there is no prepayment penalty.",
-    },
-    {
-      name: "SBA Loan",
-      icon: "lock",
-      bestWhen: "Best for strong profiles on an unhurried timeline.",
-      body: "Bank-funded term financing with the longest terms. It asks for tax returns and more patience, so shorter bridge funding can carry you while it processes.",
-    },
-    {
-      name: "Equipment Financing",
-      icon: "tools",
-      bestWhen: "Best when you're buying equipment, new or used.",
-      body: "The equipment itself is the collateral, so it is often easier to qualify for. Up to 100% financing and terms up to 7 years.",
-    },
-    {
-      name: "Bridge Funding",
-      icon: "expand",
-      bestWhen: "Best when you need capital now while a slower loan is in process.",
-      body: "Short-term funding that puts cash to work today and can be cashed out when your term loan or SBA funds.",
-    },
-    {
-      name: "Invoice Factoring",
-      icon: "inventory",
-      bestWhen: "Best when cash is stuck in unpaid invoices.",
-      body: "Turn outstanding invoices into cash now instead of waiting on net-30 or net-60.",
-    },
-  ],
+  // Derived from the §1 product matrix (content/productsConfig.ts) so the list
+  // lives in ONE place. Funding products only; Product.isPrimary → hero.
+  products: toOfferingProducts(),
   footnote:
     "FundVella is not a lender. We connect you with specialists who review your file and match available options. Revenue-based funding uses a factor rate, not an APR (term loans and SBA loans are different and carry an APR). You may qualify; approval depends on underwriting, payments must fit your cash flow, and there's no obligation to accept.",
 } satisfies import("@/lib/types").OfferingsSection;

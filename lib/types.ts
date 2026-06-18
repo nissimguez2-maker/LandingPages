@@ -410,6 +410,53 @@ export interface PainReliefSection {
   closer: string;
 }
 
+/* ── Product catalog (the §1 product matrix as typed data) ──────────────────
+ * Single source of truth for the funding options FundVella surfaces. The
+ * homepage OFFERINGS array and /products page both derive from PRODUCTS so the
+ * matrix lives in one place. Compliance framing (factor rate vs. APR, CROA
+ * rails) is carried per-product. See docs/product-matrix.md §1 + §5. */
+
+export type ProductId =
+  | "revenue-based"
+  | "line-of-credit"
+  | "heloc"
+  | "term-loan"
+  | "sba"
+  | "equipment"
+  | "bridge"
+  | "invoice-factoring"
+  | "credit-repair"
+  | "card-processing";
+
+export interface Product {
+  id: ProductId;
+  name: string;
+  /** URL/anchor-safe slug (also used as a stable key). */
+  slug: string;
+  /** funding = a capital option; path = a route back to fundable (credit repair);
+   *  service = a supportive merchant service (card processing). */
+  category: "funding" | "path" | "service";
+  /** Exactly one funding product is primary (revenue-based). Maps to OfferingProduct.hero. */
+  isPrimary?: boolean;
+  /** How cost is expressed. factor-rate → total payback (never "APR"); apr is
+   *  correct for real loans (term/SBA); fee for service; n-a where not applicable. */
+  costModel: "factor-rate" | "apr" | "fee" | "n-a";
+  /** Icon key from components/icons/Icon.tsx (valid set only). */
+  icon: string;
+  /** One-line "best when…" trigger. */
+  bestWhen: string;
+  /** Who the product fits (profile language from §1/§2). */
+  whoItFits: string;
+  /** Main descriptive paragraph (compliance-correct). */
+  body: string;
+  /** Short, scannable framing facts from §1 (ranges/terms/how it works — never a promised number). */
+  framingFacts: string[];
+  /** Optional explicit compliance note (e.g. factor-rate vs APR, CROA rails). */
+  complianceNote?: string;
+  /** Related vertical slugs, for future cross-linking. */
+  relatedVerticals?: string[];
+}
+
 /** A funding option a specialist can match the merchant to (MCA-led). */
 export interface OfferingProduct {
   name: string;

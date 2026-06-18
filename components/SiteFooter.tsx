@@ -54,6 +54,11 @@ export default function SiteFooter() {
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Company</p>
             <ul className="mt-3 space-y-2 text-sm">
               <li>
+                <Link href="/products" className="text-slate-600 hover:text-brand-700">
+                  Funding options
+                </Link>
+              </li>
+              <li>
                 <Link href="/about" className="text-slate-600 hover:text-brand-700">
                   About
                 </Link>

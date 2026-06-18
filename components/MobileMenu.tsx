@@ -71,6 +71,10 @@ export default function MobileMenu({ industries }: { industries: { slug: string;
               </ul>
             </details>
 
+            <Link href="/products" onClick={close} className="rounded-lg px-3 py-3 text-base font-semibold text-brand-900 hover:bg-brand-50">
+              Funding options
+            </Link>
+
             <details className="group">
               <summary className="flex cursor-pointer items-center justify-between rounded-lg px-3 py-3 text-base font-semibold text-brand-900 hover:bg-brand-50">
                 Resources {caret}
