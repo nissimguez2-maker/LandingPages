@@ -1,5 +1,15 @@
 # AGENTS.md — FundVella
 
+## ⭐ Source of truth
+**`docs/product-matrix.md` is the canonical product matrix & philosophy for this site.**
+Every change to products, terms, qualification, routing, or funding copy must conform to it.
+It is the public-safe extract of the business's master funding doc.
+
+**Boundary (load-bearing):** The site is **FundVella**. Never surface the underlying funder
+brand, any rep/person name, or any parent entity in shipped content. Never publish internal
+sales scripts, objection handling, or lead-sourcing/discretion reasoning — those are not part
+of this repo. The site is honest, compliant lead-gen; not a sales-floor transcript.
+
 ## What FundVella is
 FundVella is a lead-generation and prequalification site that connects U.S. small
 business owners with working-capital specialists. It is built with Next.js (App
