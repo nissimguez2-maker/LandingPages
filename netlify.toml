@@ -9,6 +9,10 @@
 
 [build]
   command = "npm run build"
+  # Must differ from the site's base directory, otherwise @netlify/plugin-nextjs
+  # fails with "publish directory cannot be the same as the base directory".
+  # .next is the Next.js Runtime's expected publish directory.
+  publish = ".next"
 
 [build.environment]
   NODE_VERSION = "20"
