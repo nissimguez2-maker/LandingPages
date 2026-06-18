@@ -37,7 +37,7 @@ export async function sendResumeEmail(input: ResumeEmailInput): Promise<boolean>
         from: FROM,
         to: input.to,
         reply_to: "funding@fundvella.com",
-        subject: "You're almost approved — one step left",
+        subject: "Your saved application — pick up where you left off",
         html,
       }),
     });

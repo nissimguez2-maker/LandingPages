@@ -219,10 +219,23 @@ export default function ApplicationWizard({
     async function hydrate() {
       const prefill = readApplicationPrefill();
       const draft = readApplicationDraft();
+      const token = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("app") : null;
+
+      // Continuation-only: /apply is the room you enter AFTER the funding check, not a cold
+      // front door. A direct hit with no prequal prefill, no saved draft, and no resume token
+      // is sent through the one front door (the quiz), where the lead is captured before the
+      // heavy application — so we never show a blank "you're 60% done" form. (Plan Phase 3.)
+      // The route stays alive for ?app= resume links and ad/bookmark edge cases.
+      const hasPrefill = Object.keys(prefill).length > 0;
+      const hasDraft = !!draft && Object.keys(draft).length > 0;
+      if (!hasPrefill && !hasDraft && !token) {
+        if (typeof window !== "undefined") window.location.replace(`/${slug}#estimate`);
+        return;
+      }
+
       let merged: LeadData = { industry: slug, applicationStatus: "in_progress", ...prefill, ...(draft ?? {}) };
       let resumed = Boolean(draft);
 
-      const token = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("app") : null;
       if (token) {
         try {
           const res = await fetch(`/api/application?app=${encodeURIComponent(token)}`);
@@ -273,7 +286,8 @@ export default function ApplicationWizard({
       }
 
       setLead(merged);
-      track(resumed ? "deepapp_resumed" : "deepapp_started", { vertical: slug });
+      const source = token ? "resume" : hasPrefill ? "stresstest" : hasDraft ? "draft" : "direct";
+      track(resumed ? "deepapp_resumed" : "deepapp_started", { vertical: slug, source });
     }
     void hydrate();
     return () => {
@@ -316,6 +330,7 @@ export default function ApplicationWizard({
                 abandoned: true,
                 dropStep: APPLICATION_STEPS[stepRef.current].id,
                 furthestStep: APPLICATION_STEPS[furthestRef.current].id,
+                formCompletionPercentage: computeApplicationProgress(l),
                 signals,
               }),
             ],
@@ -896,7 +911,7 @@ export default function ApplicationWizard({
       <div className="grid gap-8 lg:grid-cols-[220px_minmax(0,640px)] lg:gap-12">
         <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">
           <Stepper steps={APPLICATION_STEPS} current={stepIdx} progress={progress} baseline={PROGRESS_BASELINE} />
-          <div className="hidden lg:block">
+          <div className="block">
             <TrustPanel email={contactEmail} />
           </div>
         </aside>

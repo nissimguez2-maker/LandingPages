@@ -187,11 +187,8 @@ export default function ProductsPage() {
               specialist confirms it. No hard credit check, no obligation.
             </p>
             <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Link href="/find-your-fit" className="btn-primary inline-flex">
-                Find my fit
-              </Link>
-              <Link href="/#estimate" className="text-sm font-semibold text-brand-100 underline-offset-2 hover:text-white hover:underline">
-                Or check my funding
+              <Link href="/#estimate" className="btn-primary inline-flex">
+                Check my funding
               </Link>
             </div>
           </section>

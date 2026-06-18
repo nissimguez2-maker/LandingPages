@@ -89,10 +89,10 @@ export default function CreditRunwayPage() {
             <p>
               Already fundable, or not sure?{" "}
               <Link
-                href="/find-your-fit"
+                href="/#estimate"
                 className="font-medium text-accent-700 underline underline-offset-2 hover:text-accent-800"
               >
-                Find your fit
+                Check your funding
               </Link>{" "}
               or browse{" "}
               <Link

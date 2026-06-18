@@ -31,12 +31,6 @@ export default function SiteHeader({ vertical }: { vertical?: VerticalConfig }) 
             >
               Funding options
             </Link>
-            <Link
-              href="/find-your-fit"
-              className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-2 text-sm font-semibold text-accent-700 transition hover:bg-accent-50 hover:text-accent-800"
-            >
-              Find your fit
-            </Link>
             <ResourcesMenu vertical={vertical?.slug} />
             <Link
               href="/about"

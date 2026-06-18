@@ -35,6 +35,8 @@ export default function SwipePoll({
   const [dx, setDx] = useState(0);
   const [dragging, setDragging] = useState(false);
   const startX = useRef<number | null>(null);
+  const startY = useRef<number | null>(null);
+  const lockedRef = useRef(false);
   const card = cards[idx];
 
   const reduce =
@@ -70,20 +72,33 @@ export default function SwipePoll({
 
   // Swipe handlers are attached to the question surface only (NOT the buttons),
   // so setPointerCapture here never interferes with a tap on a button below.
+  // Direction-locked: capture the pointer only once the gesture is clearly
+  // horizontal, so vertical page scroll on tall phones is never swallowed.
   const onDown = (e: React.PointerEvent) => {
     if (followId || reduce) return;
     startX.current = e.clientX;
-    setDragging(true);
-    (e.currentTarget as Element).setPointerCapture?.(e.pointerId);
+    startY.current = e.clientY;
+    lockedRef.current = false;
   };
   const onMove = (e: React.PointerEvent) => {
-    if (startX.current == null) return;
-    setDx(e.clientX - startX.current);
+    if (startX.current == null || startY.current == null) return;
+    const ddx = e.clientX - startX.current;
+    const ddy = e.clientY - startY.current;
+    if (!lockedRef.current) {
+      if (Math.abs(ddx) < 10 && Math.abs(ddy) < 10) return; // too small to decide direction
+      if (Math.abs(ddy) >= Math.abs(ddx)) { startX.current = null; startY.current = null; return; } // vertical → let the page scroll
+      lockedRef.current = true; // horizontal intent → take over the gesture
+      setDragging(true);
+      (e.currentTarget as Element).setPointerCapture?.(e.pointerId);
+    }
+    setDx(ddx);
   };
   const onUp = () => {
     if (startX.current == null) return;
     const moved = dx;
     startX.current = null;
+    startY.current = null;
+    lockedRef.current = false;
     setDragging(false);
     if (moved > 60) answer("yes");
     else if (moved < -60) answer("no");
@@ -128,7 +143,7 @@ export default function SwipePoll({
           onPointerDown={onDown}
           onPointerMove={onMove}
           onPointerUp={onUp}
-          onPointerCancel={() => { startX.current = null; setDragging(false); setDx(0); }}
+          onPointerCancel={() => { startX.current = null; startY.current = null; lockedRef.current = false; setDragging(false); setDx(0); }}
           aria-live="polite"
         >
           <p className="text-lg font-semibold text-brand-900">{followId ? card.followUp!.prompt : card.prompt}</p>

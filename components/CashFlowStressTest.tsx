@@ -1,8 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { LeadData, VerticalConfig, AmountValue, BankStatementsValue, Option } from "@/lib/types";
-import { AMOUNT_OPTIONS, BANK_STATEMENTS_OPTIONS, US_STATES } from "@/lib/types";
+import type { LeadData, VerticalConfig, AmountValue, BankStatementsValue, Option, CreditScoreValue, YesNoValue } from "@/lib/types";
+import { AMOUNT_OPTIONS, BANK_STATEMENTS_OPTIONS, CREDIT_SCORE_OPTIONS, US_STATES, YES_NO_OPTIONS } from "@/lib/types";
+import { routeFit } from "@/lib/fitRouting";
 import { runStressTest, buildPrefill, fixFirst, type StressAnswers } from "@/lib/stressTest";
 import { saveApplicationPrefill } from "@/lib/application";
 import {
@@ -72,6 +73,10 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
   const [bankStatements, setBank] = useState<BankStatementsValue | undefined>();
   const [lastName, setLastName] = useState("");
   const [state, setState] = useState("");
+  // Routing signals folded in from the retired /find-your-fit quiz (drives HELOC / credit / invoice fit).
+  const [creditBand, setCreditBand] = useState<CreditScoreValue | undefined>();
+  const [ownsRealEstate, setOwnsRealEstate] = useState<YesNoValue | undefined>();
+  const [unpaidInvoices, setUnpaidInvoices] = useState<YesNoValue | undefined>();
 
   const startedRef = useRef(false);
   const shownRef = useRef(false);
@@ -139,8 +144,17 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
         /* ignore */
       }
     };
+    // beforeunload is unreliable on mobile; pagehide + visibilitychange catch app-switch / tab-close
+    // so a typed-but-not-submitted cell still lands as a partial lead.
     window.addEventListener("beforeunload", handler);
-    return () => window.removeEventListener("beforeunload", handler);
+    window.addEventListener("pagehide", handler);
+    const onVisHidden = () => { if (document.visibilityState === "hidden") handler(); };
+    document.addEventListener("visibilitychange", onVisHidden);
+    return () => {
+      window.removeEventListener("beforeunload", handler);
+      window.removeEventListener("pagehide", handler);
+      document.removeEventListener("visibilitychange", onVisHidden);
+    };
   }, [buildPayload, contact.phone, contact.email]);
 
   // Fallback capture: when someone books through the cal.com bubble or popup
@@ -307,8 +321,7 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
     if (submitting) return;
     const e: Record<string, string> = {};
     if (!contact.firstName.trim()) e.firstName = "Please add your first name.";
-    if (!contact.businessName.trim()) e.businessName = "Please add your business name.";
-    if (!phoneOk(contact.phone) && !emailOk(contact.email)) e.phone = "Add a phone or an email so we can send your plan.";
+    if (!phoneOk(contact.phone)) e.phone = "Add your best cell number so a specialist can reach you.";
     setErrors(e);
     if (Object.keys(e).length) {
       track("stresstest_validation_error", { vertical: vertical.slug, fields: Object.keys(e) });
@@ -336,11 +349,27 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
   };
 
   const saveEnrichment = async () => {
+    const ownsRE = ownsRealEstate === "yes" ? true : ownsRealEstate === "no" ? false : undefined;
+    const invoices = unpaidInvoices === "yes" ? true : unpaidInvoices === "no" ? false : undefined;
+    // Reuse the FinBiz product-routing brain to tag the best-fit product for the SDR.
+    const sa = answers as StressAnswers;
+    const route = routeFit({
+      useOfFunds: sa.useOfFunds,
+      monthlyRevenue: sa.monthlyRevenue,
+      timeInBusiness: sa.timeInBusiness,
+      creditBand,
+      ownsRealEstateEquity: ownsRE,
+      hasUnpaidInvoices: invoices,
+    });
     const extra: Partial<LeadData> = {
       ...(amountNeeded ? { amountNeeded } : {}),
       ...(bankStatements ? { canProvideBankStatements: bankStatements } : {}),
       ...(lastName.trim() ? { lastName: lastName.trim() } : {}),
       ...(state.trim() ? { state: state.trim() } : {}),
+      ...(creditBand ? { creditScoreBand: creditBand } : {}),
+      ...(typeof ownsRE === "boolean" ? { ownsRealEstateEquity: ownsRE } : {}),
+      ...(typeof invoices === "boolean" ? { hasUnpaidInvoices: invoices } : {}),
+      recommendedProduct: route.productId,
     };
     setEnrichDone(true);
     track("stresstest_enrichment_saved", { vertical: vertical.slug });
@@ -388,15 +417,9 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
                   Prefer to skip? Just leave your info{CALCOM_ENABLED ? " or book a call" : ""}
                 </button>
               </div>
-              <div className="mt-2">
-                <a
-                  href={`/apply/${vertical.slug}`}
-                  onClick={() => track("stresstest_cta", { vertical: vertical.slug, target: "apply", from: "intro" })}
-                  className="text-sm font-semibold text-accent-700 underline-offset-2 hover:underline"
-                >
-                  Ready to apply now? Start the full application →
-                </a>
-              </div>
+              {/* Intro express lane to /apply removed (Plan Phase 3): the quiz is the one
+                  front door. "Prefer to skip? Just leave your info" above is the only fast
+                  path, and it still routes through the lead-capture gate. */}
               <div className="mx-auto mt-5 max-w-md">
                 <DisclaimerBlock variant="line" />
               </div>
@@ -628,6 +651,9 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
                       <div className="mt-4 space-y-4">
                         <RadioCards legend={STRESS_ENRICH.amount} options={AMOUNT_OPTIONS} value={amountNeeded} onChange={(v: AmountValue) => setAmount(v)} columns={2} />
                         <RadioCards legend={STRESS_ENRICH.bank} options={BANK_STATEMENTS_OPTIONS} value={bankStatements} onChange={(v: BankStatementsValue) => setBank(v)} columns={3} />
+                        <RadioCards legend={STRESS_ENRICH.creditBand} options={CREDIT_SCORE_OPTIONS} value={creditBand} onChange={(v: CreditScoreValue) => setCreditBand(v)} columns={2} />
+                        <RadioCards legend={STRESS_ENRICH.ownsRealEstate} options={YES_NO_OPTIONS} value={ownsRealEstate} onChange={(v: YesNoValue) => setOwnsRealEstate(v)} columns={2} />
+                        <RadioCards legend={STRESS_ENRICH.unpaidInvoices} options={YES_NO_OPTIONS} value={unpaidInvoices} onChange={(v: YesNoValue) => setUnpaidInvoices(v)} columns={2} />
                         <div className="grid gap-4 sm:grid-cols-2">
                           <Select label={STRESS_ENRICH.state.label} value={state} onChange={setState} options={US_STATES} placeholder="Select state" autoComplete="address-level1" help={STRESS_ENRICH.state.help} />
                           <TextField label={STRESS_ENRICH.lastName.label} value={lastName} onChange={setLastName} autoComplete="family-name" />

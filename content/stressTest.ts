@@ -173,9 +173,9 @@ export const STRESS_CONTACT = {
   sub: "Tell us where to send it. A specialist pulls the options worth pursuing for a business like yours and reaches out.",
   fields: {
     firstName: { label: "First name", help: "So we know who we are talking to." },
-    businessName: { label: "Business name", help: "The name on your sales or deposits." },
-    phone: { label: "Best phone number", help: "How a specialist reaches you." },
-    email: { label: "Email", help: "We send a copy of your plan here." },
+    businessName: { label: "Business name (optional)", help: "The name on your sales or deposits." },
+    phone: { label: "Best cell number", help: "The number a specialist will call or text — this is the one we'll use." },
+    email: { label: "Email (optional)", help: "Where we send a copy of your plan." },
   },
   consent:
     "I agree that FundVella and a funding specialist can call and text me at this number, including by autodialer. This is not required to get help. Message and data rates may apply. Reply STOP anytime.",
@@ -202,6 +202,9 @@ export const STRESS_ENRICH = {
   sub: "Answer what you can. Skip anything you are not sure about.",
   amount: "How much are you looking for?",
   bank: "Can you share 3 months of business bank statements?",
+  creditBand: "Roughly, where's your personal credit?",
+  ownsRealEstate: "Do you own your home or commercial property?",
+  unpaidInvoices: "Is a good chunk of your cash stuck in unpaid invoices?",
   lastName: { label: "Last name (optional)", help: "" },
   state: { label: "What state is your business in?", help: "Helps us check what you can get." },
   saveLabel: "Save and finish",
