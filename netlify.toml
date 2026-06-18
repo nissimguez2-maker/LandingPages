@@ -29,7 +29,7 @@
     X-Frame-Options = "SAMEORIGIN"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
-    Content-Security-Policy-Report-Only = "default-src 'self'; script-src 'self' 'unsafe-inline' https://app.cal.com https://www.clarity.ms https://*.clarity.ms https://us-assets.i.posthog.com; style-src 'self' 'unsafe-inline' https://app.cal.com; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://us.i.posthog.com https://us-assets.i.posthog.com https://*.clarity.ms https://app.cal.com https://cal.com; frame-src https://app.cal.com https://cal.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'"
+    Content-Security-Policy-Report-Only = "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.clarity.ms https://*.clarity.ms https://us-assets.i.posthog.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://us.i.posthog.com https://us-assets.i.posthog.com https://*.clarity.ms; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'"
 
 # Long-cache the static media (filenames are stable).
 [[headers]]

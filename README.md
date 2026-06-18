@@ -41,7 +41,7 @@ app/
   page.tsx                 Home (index of all verticals)
   [vertical]/page.tsx      All landing pages (SSG) + FAQ JSON-LD
   thank-you/page.tsx       Neutral confirmation page (noindex)
-  api/lead/route.ts        PLACEHOLDER lead endpoint (no backend wired)
+  api/lead/route.ts        Lead endpoint — emits a signed event to n8n (→ Google Sheet)
   privacy · terms · disclosures   Legal pages (linked in the footer)
   sitemap.ts · robots.ts   Generated SEO routes
 components/
@@ -57,7 +57,7 @@ lib/
   completeness.ts          Form completion % + missing info
   analytics.ts · utm.ts    Vendor-neutral events + UTM capture
   stressTest.ts            Stress-test scoring math
-  site.ts · themes.ts · structuredData.ts · calcom.ts · types.ts
+  site.ts · themes.ts · structuredData.ts · types.ts
 ```
 
 ---
@@ -84,15 +84,15 @@ from the config — `generateStaticParams()` builds the new page on the next dep
 
 ---
 
-## 4. The lead form (wire your backend here)
+## 4. The lead form (how leads flow)
 
-`app/api/lead/route.ts` is a **placeholder**. The form (and the Cash-Flow Stress
-Test) POST their captures there; it currently just returns `{ ok: true }` so the
-flow completes. Build your backend from scratch by replacing the body of that
-route — e.g. forward the JSON payload to an n8n webhook, or call a CRM / email
-service. The payload shape is the `LeadData` type in `lib/types.ts`.
+The form (and the Cash-Flow Stress Test) POST to `app/api/lead/route.ts`, which
+scores the lead and emits a signed, idempotent `lead.captured` event to an n8n
+webhook (`APPLICATION_WEBHOOK_URL`). Your n8n workflow appends the lead to a
+**Google Sheet**, where the team calls/texts each lead manually. The payload
+shape is the `LeadData` type in `lib/types.ts`.
 
-Nothing else in this repo talks to a backend.
+No CRM and no booking tool are wired — the Google Sheet is the destination.
 
 ---
 

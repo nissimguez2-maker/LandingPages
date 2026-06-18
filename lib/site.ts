@@ -8,14 +8,6 @@ export const SITE_NAME = "FundVella";
 export const SITE_TAGLINE = "Fast working-capital reviews for real operating businesses.";
 
 /**
- * Cal.com booking link fallback. Either set NEXT_PUBLIC_CALCOM_LINK in Netlify,
- * or paste your handle here (e.g. "fundvella/fundvella-discovery-call" or a full
- * https://cal.com/... URL). When empty and no env var is set, the booking button
- * is hidden and the "a specialist will reach out" fallback shows instead.
- */
-export const CALCOM_LINK = "fundvella-specialist/discover-call";
-
-/**
  * Analytics (all free). Leave a value empty to keep that tool off.
  * PostHog host: US = https://us.i.posthog.com, EU = https://eu.i.posthog.com.
  * Clarity id comes from clarity.microsoft.com -> Get tracking code.

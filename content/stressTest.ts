@@ -186,9 +186,6 @@ export const STRESS_CONTACT = {
 
 export const STRESS_PAYOFF = {
   fixTitle: "Fix this first",
-  bookTitle: "Lock in your call",
-  bookSub: "Pick a time and a specialist will have your read in front of them. Booked beats waiting.",
-  bookLabel: "Grab a time now",
   callbackTitle: "A specialist will reach out",
   callbackSub: "They review the files worth pursuing and follow up using the details you gave.",
   enrichToggle: "Add a few details to speed up your call",

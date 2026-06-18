@@ -370,7 +370,7 @@ half-built for it (prequal form, Cash-Flow Stress Test, lead-scoring bands, webh
    Lead with "won't affect your credit."
 2. **"Am I Pre-Qualified?" eligibility checker** (mid-funnel, ~40% start-to-lead).
 3. **"Cash-Flow Stress Test"** (you have it) — 7 questions (proven optimum), personalized score +
-   recommendation, booking CTA on the results page.
+   recommendation + contact capture on the results page.
    **Gating:** value-first across all — show a useful partial result, gate the full/personalized
    detail immediately before results (peak investment), email-first then progressive-profile.
 
@@ -397,20 +397,19 @@ email (day 11) → breakup email (day 14, highest reply rate). Then long-term mo
 **Lead scoring (MCA weighting — "revenue is king"):** hard knockouts first (ineligible industry,
 <6mo time-in-business, <$5k/mo revenue → auto-red), then weight: **monthly revenue/deposits 30–35%**,
 time-in-business 20%, existing positions/stacking 15–20%, avg daily balance/NSFs 10–15%, credit band
-5–10%. Map to green (>80) / yellow (40–80) / red (<40). **Score in n8n** (HubSpot native scoring needs
-Pro/Enterprise) and write back a custom property.
+5–10%. Map to green (>80) / yellow (40–80) / red (<40). **Score in n8n** and write the band onto the
+lead's row in the Google Sheet so you work green/hot first.
 
 **n8n Lead Engine pipeline (event-driven, not batched):**
-`HMAC-verified webhook → respond 200 immediately → validate → normalize (E.164 phone, lowercase
-email) → idempotency key + dedupe → MCA knockout filter → weighted score → band → HubSpot
-search-before-create upsert (lifecycle: red=lead/yellow=MQL/green=SQL) + create rep Task →
-CONSENT-GATE (Wait/human-in-the-loop if consent missing or amount over ceiling; re-check idempotency
-on resume) → branch by band: GREEN = instant rep notify + prefilled Cal.com round-robin link <5 min;
-YELLOW = 15-min SLA + nurture; RED = drip → Cal.com booking webhooks (HMAC-verified:
-BOOKED/CANCELLED/NO_SHOW) → reporting sink.`
+`HMAC-verified webhook (the site already fires this) → respond 200 immediately → validate → normalize
+(E.164 phone, lowercase email) → idempotency key + dedupe → MCA knockout filter → weighted score →
+band → append a row to the Google Sheet (band/temperature in their own columns) → instant alert to you
+(SMS/Telegram/email) → you call or text green/hot leads within minutes → log to a reporting tab.`
+You contact every lead **manually** (call/text) straight from the Sheet — no CRM, no booking tool.
 
-**Free/cheap tools:** HubSpot (free tier), Cal.com (round-robin + query-param prefill), Microsoft
-Clarity, Resend (transactional). SMS via a 10DLC-registered provider (lending campaign declared).
+**Free/cheap tools:** Google Sheets (the destination), n8n (routing + scoring + alerts), Microsoft
+Clarity (form analytics), Resend (optional auto-acknowledgement email). Any outbound SMS needs a
+10DLC-registered, lending-declared number — but contact stays manual and consent-gated.
 
 **KPIs/benchmarks:** speed-to-lead (<5 min target), connect rate, book rate, show rate, lead→app,
 app→fund (instrument node-14 to build your *own* cohort benchmarks — published MCA funnel numbers are
@@ -446,11 +445,11 @@ bounce <2%, complaints <0.1%; sunset on no-click ~180 days; lead with value fram
 low-volume, separate domain** (legal under CAN-SPAM but the fastest way to torch your real domain's
 inbox placement).
 
-**n8n email pipeline:** `webhook (NURTURE_SECRET) → validate → HubSpot get-by-email (dedupe) →
-upsert (opt_in=pending) → Resend double-opt-in → on confirm: deliver magnet + add to ESP segmented
+**n8n email pipeline:** `webhook (NURTURE_SECRET) → validate → de-dupe against the subscriber Sheet/
+Data Table (opt_in=pending) → Resend double-opt-in → on confirm: deliver magnet + add to ESP segmented
 by industry → branched nurture → bi-weekly newsletter broadcast → ingest open/click/bounce webhooks →
 engagement score (on CLICKS, not opens — Apple MPP inflates opens) → suppression/unsub (permanent
-Data Table) → sunset job → HubSpot as source of truth. Human gate on any cold/outbound.`
+Data Table) → sunset job. The Google Sheet / Supabase is the source of truth. Human gate on any cold/outbound.`
 
 **Recommended $0 stack:** **Resend (transactional) + MailerLite (marketing/nurture) + Gmail
 (human 1:1 / gated cold)**, each on its own subdomain.
@@ -654,7 +653,7 @@ fit per-deal payouts).
 Apollo for titles) → dedupe (Airtable) → enrich + verify email (Hunter/NeverBounce, bounce <2%) →
 AI personalize (1 opener referencing a real detail + right partner pitch) → HUMAN APPROVE (batch ~50/
 day) → send from a SEPARATE outreach domain (not fundvella.com), ≤30–50/inbox/day → 1 email + 1–2
-follow-ups → track replies → positive → HubSpot partner pipeline.`
+follow-ups → track replies → positive → your partner tracker (Airtable/Google Sheet).`
 
 **Deliverability/compliance guardrails:** separate outreach domain with SPF/DKIM/DMARC + 2–4 wk
 warm-up; verify every email; CAN-SPAM footer + working unsubscribe; honor opt-outs; the human gate is
@@ -683,7 +682,7 @@ of reusable workers.
 3. **Agent layer** — n8n **AI Agent nodes** for judgment tasks (draft copy, classify leads, summarize
    mentions). Use the **AI Agent Tool node** so a supervisor agent calls specialist agents as tools.
 4. **Worker layer** — specialized sub-workflows, each doing ONE job (`publish-social`, `send-email`,
-   `index-url`, `enrich-lead`, `hubspot-upsert`), reusable across all agents. **Pass IDs, not
+   `index-url`, `enrich-lead`, `sheet-append`), reusable across all agents. **Pass IDs, not
    payloads** (a Supabase row ID, not the file body).
 5. **Approval gate + reporting** — one shared queue + a nightly rollup (job states, LLM cost, channel
    metrics, errors).
@@ -723,7 +722,7 @@ vault not plaintext `.env`; **don't give workers Supabase `service_role`** — s
 **Per-channel free/cheap APIs (cache responses in Supabase to protect free tiers):** IndexNow (free,
 no Google) · Google Indexing API (200/day) · GSC/GA (native) · Postiz self-hosted / Buffer (social
 scheduling) · Reddit API + F5Bot + Apify (listening) · Brevo 300/day / MailerLite / Resend / AWS SES
-(email) · Hunter / Apollo / People Data Labs (enrichment, small free tiers) · HubSpot (CRM) · Canva
+(email) · Hunter / Apollo / People Data Labs (enrichment, small free tiers) · Google Sheets (lead store) · Canva
 (creative).
 
 ---
@@ -757,8 +756,8 @@ All of them feed the **one human approval inbox** before anything public ships.
 **Phase 0 (Week 1–2) — Foundation & the leak first**
 - Stand up the n8n control plane: Supabase job/approval tables, the shared approval inbox, Error
   Workflow, HMAC verification, queue mode + backups.
-- **Build the Lead Engine (3.3)** — webhook → score → HubSpot → speed-to-lead <5 min → consent-gated
-  nurche → Cal.com. *Plug the bucket before adding water.*
+- **Build the Lead Engine (3.3)** — webhook → score → append to the Google Sheet → instant alert so you
+  call/text within minutes. *Plug the bucket before adding water.*
 - Lead-form: add the **separate consent checkboxes** + soft-pull trust copy; convert to multi-step if
   not already; add author/`reviewedBy` to pages.
 - Email infra: SPF/DKIM/DMARC, subdomains, Resend + MailerLite, double opt-in.
@@ -818,8 +817,8 @@ Hard knockouts → auto-RED before scoring: ineligible/prohibited industry · <6
 | Credit band | as low as 500–550 (least important) | 5–10% |
 | Requested amount vs revenue | sized to holdback capacity | 5% |
 
-Bands: **green >80 · yellow 40–80 · red <40.** Compute in n8n (HubSpot native scoring needs
-Pro/Enterprise), write back as a custom property, route green to <5-min speed-to-lead.
+Bands: **green >80 · yellow 40–80 · red <40.** Compute in n8n, write the band onto the lead's row in
+the Google Sheet, and work green/hot first with a <5-minute manual call/text.
 
 ---
 
@@ -832,7 +831,7 @@ Full source URLs are preserved in the research transcripts. Streams synthesized 
 2. **Content/Editorial SEO** — topic-cluster/topical-authority research, AlsoAsked/Answer Socrates,
    E-E-A-T/YMYL guidance, AI-content penalty analysis, interactive-content + lead-magnet benchmarks,
    link-building-for-finance data, n8n content-factory templates.
-3. **CRO / form optimization** — Venture Harbour, HubSpot 40k-page field study, Unbounce 2024
+3. **CRO / form optimization** — Venture Harbour, a large-scale 40k-page form-field study, Unbounce 2024
    Conversion Benchmark (Finance & Insurance ~8.8% lending), Reform/CXL trust-signal data,
    page-speed CRO, ICE/PIE prioritization, Microsoft Clarity.
 4. **Interactive tools / lead magnets** — Outgrow 2025 benchmark, Demand Metric/CMI, soft-pull
@@ -841,8 +840,8 @@ Full source URLs are preserved in the research transcripts. Streams synthesized 
    Leads," Velocify "Ultimate Contact Strategy"/"Faster is Better," SMS-vs-email response data.
 6. **Nurture + TCPA/CAN-SPAM/10DLC** — *IMC v. FCC* (1:1 vacatur), 47 CFR §64.1200(f) PEWC, FCC
    opt-out rule (Apr 2025), quiet-hours litigation, FTC CAN-SPAM guide, Twilio A2P 10DLC + lending.
-7. **Lead scoring + n8n/HubSpot/Cal.com** — HubSpot lead-scoring KB, MCA qualification weighting
-   (Crestmont/Nav/NerdWallet), n8n validate/dedupe/upsert + HITL patterns, Cal.com webhooks/prefill,
+7. **Lead scoring + n8n/Google Sheet** — lead-scoring weighting, MCA qualification factors
+   (Crestmont/Nav/NerdWallet), n8n validate/dedupe + HITL patterns, Sheet-append routing,
    MCA KPI benchmarks (TaskSuite/Master MCA — illustrative).
 8. **Email / owned audience** — FTC CAN-SPAM, Gmail/Yahoo 2024 bulk-sender rules, deliverability
    (SPF/DKIM/DMARC, warm-up, double opt-in), Resend/MailerLite/Brevo free tiers, finance spam triggers.
@@ -863,6 +862,6 @@ Full source URLs are preserved in the research transcripts. Streams synthesized 
     Reviews Rule, TikTok/Meta/Google financial-services ad policies, state disclosure laws.
 
 > **Next step:** This is the written game-plan you asked for. When you're ready to *build*, the n8n,
-> HubSpot, Supabase, Netlify, GitHub, and Canva MCP tools are connected — I'd start with the **Lead
+> Supabase, Netlify, GitHub, and Canva MCP tools are connected — I'd start with the **Lead
 > Engine (Part 3.3)** since it plugs the leak, then the **Programmatic SEO factory (Part 3.1)** to
 > open the traffic flywheel.

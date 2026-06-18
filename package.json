@@ -2,7 +2,7 @@
   "name": "mca-funding-landing-pages",
   "version": "1.0.0",
   "private": true,
-  "description": "Conversion-optimized MCA / SMB working-capital landing pages feeding one centralized HubSpot CRM.",
+  "description": "Conversion-optimized SMB working-capital landing pages; leads flow to a Google Sheet for manual follow-up.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

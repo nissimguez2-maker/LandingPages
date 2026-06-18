@@ -4,8 +4,9 @@
  * Was a placeholder that discarded every lead. Now it scores the lead
  * server-side (authoritative band, not the tamperable client one), builds the
  * shared leadProfile, and emits a signed, idempotent `lead.captured` event to
- * n8n. The client fires this 2-4x per visitor (beacon + contact + enrichment +
- * booking); the deterministic dedup key collapses those to one CRM record.
+ * n8n (which routes it to the Google Sheet the team works from). The client
+ * fires this 2-3x per visitor (beacon + contact + enrichment); the deterministic
+ * dedup key collapses those to one lead record.
  */
 
 import { NextResponse } from "next/server";
@@ -14,7 +15,6 @@ import { buildLeadProfile, redactSensitive, type ApplicationSubmission } from "@
 import { scoreLead } from "@/lib/leadScoring";
 import { leadDedupeKey, temperatureFor } from "@/lib/server/events";
 import { emit } from "@/lib/server/forward";
-import { upsertHubspotContact } from "@/lib/server/hubspot";
 import type { LeadData } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -52,11 +52,8 @@ export async function POST(req: Request): Promise<NextResponse> {
     stage,
   };
 
-  // Two pipes from one capture: the event bus (n8n) and the CRM upsert (HubSpot, tagged FundVella).
-  await Promise.all([
-    emit("lead.captured", leadDedupeKey(lead.email, lead.phone, lead.industry, stage), data),
-    upsertHubspotContact(lead, { brand: "FundVella", band: score.band, score: score.score, temperature, status: stage }),
-  ]);
+  // One signed, idempotent event to n8n, which routes the lead into the Google Sheet.
+  await emit("lead.captured", leadDedupeKey(lead.email, lead.phone, lead.industry, stage), data);
 
   return NextResponse.json({ ok: true });
 }
