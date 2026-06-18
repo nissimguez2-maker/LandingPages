@@ -1,6 +1,7 @@
 import type { VerticalConfig } from "@/lib/types";
 import CTAButton from "./CTAButton";
 import MediaFigure from "./MediaFigure";
+import { COMPLIANCE } from "@/content/compliance";
 
 const DEFAULT_CARD_POINTS = [
   "Reviewed on revenue & bank activity",
@@ -56,7 +57,7 @@ export default function HeroSection({ vertical }: { vertical: VerticalConfig }) 
             ))}
           </ul>
           <p className="mt-6 text-xs text-brand-200">
-            You may qualify. Approval depends on underwriting. No obligation to accept an offer.
+            {COMPLIANCE.mayQualify}
           </p>
         </div>
 

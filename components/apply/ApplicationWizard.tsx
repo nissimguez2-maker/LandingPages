@@ -286,7 +286,8 @@ export default function ApplicationWizard({
       }
 
       setLead(merged);
-      track(resumed ? "deepapp_resumed" : "deepapp_started", { vertical: slug });
+      const source = token ? "resume" : hasPrefill ? "stresstest" : hasDraft ? "draft" : "direct";
+      track(resumed ? "deepapp_resumed" : "deepapp_started", { vertical: slug, source });
     }
     void hydrate();
     return () => {
