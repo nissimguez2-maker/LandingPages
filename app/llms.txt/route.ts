@@ -24,7 +24,6 @@ export function GET() {
     "",
     `- [Small Business Funding (home)](${base}/): Working capital for almost any operating business, reviewed on revenue and bank activity, not credit alone.`,
     `- [Funding options](${base}/products): The funding options FundVella surfaces — revenue-based working capital (a purchase of future receivables priced by factor rate, not APR), line of credit, HELOC, term loan and SBA (real loans that carry an APR), equipment, bridge, and invoice factoring — plus a credit-repair path back if you're not fundable yet.`,
-    `- [Find your fit](${base}/find-your-fit): A quick five-question match that points you to the funding option that fits how your business earns. Not a credit check or an offer; a specialist confirms the fit. No obligation.`,
     `- [Credit runway](${base}/credit-runway): The not-yet path for files that aren't fundable yet — a credit-restoration partner reviews all three bureaus and disputes inaccurate or questionable items. Not a loan; no upfront fees, billed monthly in arrears, with a 3-business-day cancellation right. No score, deletion count, or outcome is promised.`,
     verticals,
     `- [Resources](${base}/resources): Plain-English guides to working capital, costs, qualifying, and choosing a funding option.`,
