@@ -75,6 +75,10 @@ export default function MobileMenu({ industries }: { industries: { slug: string;
               Funding options
             </Link>
 
+            <Link href="/find-your-fit" onClick={close} className="rounded-lg px-3 py-3 text-base font-semibold text-accent-700 hover:bg-accent-50">
+              Find your fit
+            </Link>
+
             <details className="group">
               <summary className="flex cursor-pointer items-center justify-between rounded-lg px-3 py-3 text-base font-semibold text-brand-900 hover:bg-brand-50">
                 Resources {caret}

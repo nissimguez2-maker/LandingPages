@@ -179,16 +179,21 @@ export default function ProductsPage() {
             </div>
           </section>
 
-          {/* Primary CTA → existing prequal anchor */}
+          {/* Primary CTA → find-your-fit router */}
           <section className="mt-14 rounded-2xl bg-brand-900 px-6 py-10 text-center sm:px-10">
             <h2 className="text-2xl font-bold text-white font-display">Not sure which one fits?</h2>
             <p className="mx-auto mt-3 max-w-xl text-brand-100">
-              Answer a few questions in about two minutes. A specialist reviews your file and matches you to the
-              option that fits your cash flow. No hard credit check, no obligation.
+              Answer five quick questions and we'll point you to the option that fits how your business earns. A
+              specialist confirms it. No hard credit check, no obligation.
             </p>
-            <Link href="/#estimate" className="btn-primary mt-6 inline-flex">
-              Check my funding
-            </Link>
+            <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <Link href="/find-your-fit" className="btn-primary inline-flex">
+                Find my fit
+              </Link>
+              <Link href="/#estimate" className="text-sm font-semibold text-brand-100 underline-offset-2 hover:text-white hover:underline">
+                Or check my funding
+              </Link>
+            </div>
           </section>
 
           <div className="mt-12">

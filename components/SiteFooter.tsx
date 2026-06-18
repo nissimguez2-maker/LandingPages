@@ -59,6 +59,16 @@ export default function SiteFooter() {
                 </Link>
               </li>
               <li>
+                <Link href="/find-your-fit" className="text-slate-600 hover:text-brand-700">
+                  Find your fit
+                </Link>
+              </li>
+              <li>
+                <Link href="/credit-runway" className="text-slate-600 hover:text-brand-700">
+                  Credit runway
+                </Link>
+              </li>
+              <li>
                 <Link href="/about" className="text-slate-600 hover:text-brand-700">
                   About
                 </Link>

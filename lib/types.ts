@@ -304,6 +304,14 @@ export interface LeadData {
   signatureName?: string;
   signedAt?: string; // ISO timestamp set at submit
 
+  // ── Find-your-fit router (Phase 3) ──────────────────────────────────────
+  /** Owner reports real-estate equity (drives the HELOC branch). Non-PII flag. */
+  ownsRealEstateEquity?: boolean;
+  /** Owner reports cash stuck in unpaid invoices/receivables (factoring branch). */
+  hasUnpaidInvoices?: boolean;
+  /** Product the fit router matched the owner to, for handoff + segmentation. */
+  recommendedProduct?: ProductId;
+
   // ── Deep application: lifecycle ─────────────────────────────────────────
   applicationId?: string;
   applicationStatus?: "started" | "in_progress" | "submitted";
