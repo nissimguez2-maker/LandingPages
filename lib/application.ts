@@ -88,6 +88,30 @@ export function formatZip(raw: string): string {
   return digitsOnly(raw).slice(0, 5);
 }
 
+/**
+ * Map the prequal amount BAND (AMOUNT_OPTIONS value) to a sensible, EDITABLE
+ * starting dollar figure for the deep-apply "capital requested" field, so the
+ * owner doesn't retype a number they already gave as a range. Returns a formatted
+ * "$50,000" string (or "" if the band is unknown). Always editable — it's a
+ * starting point, not a commitment.
+ */
+export function capitalFromAmountBand(band?: string): string {
+  switch (band) {
+    case "under_25k":
+      return formatCurrency("15000");
+    case "25k_50k":
+      return formatCurrency("35000");
+    case "50k_100k":
+      return formatCurrency("75000");
+    case "100k_250k":
+      return formatCurrency("150000");
+    case "250k_plus":
+      return formatCurrency("250000");
+    default:
+      return "";
+  }
+}
+
 /** True for exactly 5 digits. */
 export function isValidZip(v: string): boolean {
   return digitsOnly(v).length === 5;
@@ -124,7 +148,7 @@ export function isValidPhone(v: string): boolean {
 
 /* ── Step model ─────────────────────────────────────────────────────────── */
 
-export type ApplicationStepId = "business" | "funding" | "owner" | "documents" | "review";
+export type ApplicationStepId = "business" | "owner" | "review";
 
 export interface ApplicationStepDef {
   id: ApplicationStepId;
@@ -137,16 +161,16 @@ export interface ApplicationStepDef {
 }
 
 /**
- * Ordered by ascending sensitivity × sunk cost: easy business facts first, the
- * SSN deep in the owner step, bank statements last (an effort spike, never a
- * gate), then a single review + signature. This is the whole conversion thesis.
+ * Three steps, ordered by ascending sensitivity × sunk cost. Fewer clicks than
+ * the old five: the funding ask is merged into the business step, and the bank
+ * statements / optional docs are folded into the final review-and-sign screen so
+ * the owner never taps "Continue" just to reach an upload that's optional anyway.
+ * SSN never appears on screen 1 — it stays on the owner step, and it's optional.
  */
 export const APPLICATION_STEPS: readonly ApplicationStepDef[] = [
-  { id: "business", label: "Business", title: "About your business", subtitle: "Most of this is already filled in." },
-  { id: "funding", label: "Funding", title: "Your funding request", subtitle: "What you need, in numbers." },
-  { id: "owner", label: "Owner", title: "About you, the owner", subtitle: "Quick identity check. About a minute." },
-  { id: "documents", label: "Documents", title: "Recent bank statements", subtitle: "Connect your bank or upload — your choice." },
-  { id: "review", label: "Review & sign", title: "Review and sign", subtitle: "Confirm and sign." },
+  { id: "business", label: "Business", title: "Your business & funding", subtitle: "Most of this is already filled in." },
+  { id: "owner", label: "Owner", title: "About you, the owner", subtitle: "A quick identity check. About a minute." },
+  { id: "review", label: "Documents & sign", title: "Documents, review & sign", subtitle: "Add statements (or send them later), then confirm." },
 ] as const;
 
 /** Index of a step id within APPLICATION_STEPS. */
@@ -164,6 +188,7 @@ export function validateStep(step: ApplicationStepId, lead: LeadData): Record<st
 
   switch (step) {
     case "business":
+      // Business facts + the funding ask (merged from the old "funding" step).
       need("businessLegalName", "Add your legal business name.");
       if (!lead.entityType) e.entityType = "Pick your business type.";
       need("businessStreet", "Add your business street address.");
@@ -171,34 +196,39 @@ export function validateStep(step: ApplicationStepId, lead: LeadData): Record<st
       if (!lead.businessState || lead.businessState.trim().length !== 2) e.businessState = "Select the state.";
       if (lead.businessZip && !isValidZip(lead.businessZip)) e.businessZip = "ZIP must be 5 digits.";
       else if (!lead.businessZip) e.businessZip = "Add the ZIP code.";
-      break;
-    case "funding":
       need("capitalRequested", "How much capital are you looking for?");
+      // Use of funds: multi-select — at least one keeps the lead routable.
+      if (!lead.useOfFundsList || lead.useOfFundsList.length < 1) {
+        e.useOfFundsList = "Pick at least one — what will you use it for?";
+      }
       // EIN is deferrable (many owners don't have it memorized) — only validate format if given.
       if (lead.ein && !isValidEin(lead.ein)) e.ein = "An EIN is 9 digits, like 12-3456789.";
       break;
     case "owner":
       need("ownerFullName", "Add the owner's full legal name.");
-      need("ownerDob", "Add the owner's date of birth.");
-      need("ownerStreet", "Add the home street address.");
-      need("ownerCity", "Add the city.");
-      if (!lead.ownerState || lead.ownerState.trim().length !== 2) e.ownerState = "Select the state.";
-      if (lead.ownerZip && !isValidZip(lead.ownerZip)) e.ownerZip = "ZIP must be 5 digits.";
-      else if (!lead.ownerZip) e.ownerZip = "Add the ZIP code.";
-      if (!lead.creditScoreBand) e.creditScoreBand = "Pick the range that fits.";
-      // SSN: required to submit, but the owner can choose to give it to a specialist
-      // by phone instead. Never a hard dead-end.
-      if (!lead.ssnDeferred && !lead.ssnProvided) {
-        e.ssn = "Enter your SSN, or choose to give it by phone.";
+      // DOB is OPTIONAL — a specialist can take it on the call. Never gates submit.
+      // Owner address: when "same as business" is checked the fields are hidden and
+      // the business address is copied in at submit, so skip these checks entirely.
+      if (!lead.ownerAddressSameAsBusiness) {
+        need("ownerStreet", "Add the home street address.");
+        need("ownerCity", "Add the city.");
+        if (!lead.ownerState || lead.ownerState.trim().length !== 2) e.ownerState = "Select the state.";
+        if (lead.ownerZip && !isValidZip(lead.ownerZip)) e.ownerZip = "ZIP must be 5 digits.";
+        else if (!lead.ownerZip) e.ownerZip = "Add the ZIP code.";
       }
-      break;
-    case "documents":
-      // Never blocks — statements can be deferred to a specialist. Scoring is neutral on this.
+      if (!lead.creditScoreBand) e.creditScoreBand = "Pick the range that fits.";
+      // SSN is OPTIONAL — never a gate. The owner can share it now (soft check) or
+      // give it to a specialist by phone. No error either way.
       break;
     case "review":
-      if (!lead.creditAuthConsent) e.creditAuthConsent = "Please authorize the review to continue.";
+      // Documents are folded into this step but NEVER gate — statements can always
+      // be sent to a specialist. e-sign agreement is the one consent we ask for.
+      // The soft-credit-pull consent applies ONLY when an SSN was actually provided.
       if (!lead.esignConsent) e.esignConsent = "Please agree to sign electronically.";
-      need("signatureName", "Type your full legal name to sign.");
+      if (lead.ssnProvided && !lead.creditAuthConsent) {
+        e.creditAuthConsent = "To run the optional soft check, please authorize it — or remove your SSN.";
+      }
+      // Signature is OPTIONAL — submitting does not require a typed signature.
       break;
   }
   return e;
@@ -217,11 +247,9 @@ export function isStepComplete(step: ApplicationStepId, lead: LeadData): boolean
  */
 export const PROGRESS_BASELINE = 60;
 const STEP_WEIGHT: Record<ApplicationStepId, number> = {
-  business: 8,
-  funding: 8,
-  owner: 12,
-  documents: 6,
-  review: 6,
+  business: 16,
+  owner: 14,
+  review: 10,
 };
 
 /** 60..100 — frames the deep app as "finishing", not "starting". */
@@ -305,10 +333,15 @@ export interface LeadProfile {
 
 /** Compact, automation-friendly snapshot so downstream AI knows how to write. */
 export function buildLeadProfile(lead: LeadData): LeadProfile {
+  // Use-of-funds is multi-select on the deep apply form (useOfFundsList) and a
+  // single value from the prequal (useOfFunds). Prefer the richer list; fall back
+  // to the scalar so prequal-only leads still carry intent.
+  const uses = lead.useOfFundsList?.length ? lead.useOfFundsList : lead.useOfFunds ? [lead.useOfFunds] : [];
+  const intent = uses.length ? uses.join(", ") : undefined;
   return {
     vertical: lead.industry,
     industry: lead.natureOfBusiness || lead.industry,
-    intent: lead.useOfFunds,
+    intent,
     urgency: lead.urgency,
     amount: lead.capitalRequested || lead.amountNeeded,
     businessName: lead.businessLegalName || lead.businessName,

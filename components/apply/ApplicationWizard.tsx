@@ -1,10 +1,18 @@
 "use client";
 
 /**
- * The deep application — a 5-step, autosaving, resumable wizard that a qualified
+ * The deep application — a 3-step, autosaving, resumable wizard a qualified
  * prequal lead is handed off to. Ordered by ascending sensitivity × sunk cost:
- * business facts → funding ask + EIN → owner identity (SSN last) → bank
- * statements (last, never a gate) → review + e-sign.
+ *   1) Business facts + the funding ask (merged — one screen, fewer taps)
+ *   2) Owner identity (SSN + DOB are OPTIONAL; SSN never appears on screen 1)
+ *   3) Documents + review + e-sign (statements folded in; never a gate)
+ *
+ * Friction cuts vs. the old 5-step flow:
+ *   - One AddressAutocomplete fills street/city/state/zip from a single input;
+ *     "owner address same as business" hides the second address entirely.
+ *   - Entity type & credit band soft-advance focus on select.
+ *   - Capital + state arrive prefilled from the prequal.
+ *   - SSN, DOB and signature are optional — they never block submit.
  *
  * Raw SSN + signature image live only in local component state and the single
  * final submit POST; they are never written to the autosave/draft/analytics.
@@ -13,9 +21,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
+  AddressAutocomplete,
+  CheckCards,
+  Combobox,
   RadioCards,
-  Select,
   TextField,
+  type AddressValue,
 } from "@/components/prequal/Fields";
 import {
   FileUpload,
@@ -37,11 +48,11 @@ import { track } from "@/lib/analytics";
 import {
   APPLICATION_STEPS,
   type ApplicationSubmission,
+  capitalFromAmountBand,
   computeApplicationProgress,
   PROGRESS_BASELINE,
   formatCurrency,
   formatEin,
-  formatZip,
   isValidSsn,
   parseCurrency,
   readApplicationDraft,
@@ -54,6 +65,7 @@ import {
 import {
   CREDIT_SCORE_OPTIONS,
   ENTITY_TYPE_OPTIONS,
+  NATURE_OF_BUSINESS_OPTIONS,
   US_STATES,
   USE_OF_FUNDS_OPTIONS,
   YES_NO_OPTIONS,
@@ -107,6 +119,7 @@ export default function ApplicationWizard({
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const step = APPLICATION_STEPS[stepIdx];
+  const totalSteps = APPLICATION_STEPS.length;
   const progress = useMemo(() => computeApplicationProgress(lead), [lead]);
   const formRef = useRef<HTMLElement>(null);
 
@@ -157,6 +170,49 @@ export default function ApplicationWizard({
   const setField = <K extends keyof LeadData>(k: K, v: LeadData[K]) =>
     setLead((l) => ({ ...l, [k]: v }));
 
+  /**
+   * Soft "auto-advance" for a radio choice that isn't the last field on its
+   * screen (entity type, credit band): set the value, clear any error, then
+   * smooth-scroll the next field group into view so the owner doesn't hunt for
+   * it. This is the per-field analogue of the prequal's chooseAndAdvance — the
+   * selection itself moves the form forward — without skipping required fields.
+   */
+  const advanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
+  }, []);
+  /**
+   * `groupName` is the radio group's name (RadioCards uses slug(legend)). After
+   * selecting, we locate that group's <fieldset> and move focus/scroll to the
+   * next focusable form control after it — robust to generated field ids.
+   */
+  function chooseAndAdvance<K extends keyof LeadData>(k: K, v: LeadData[K], groupName: string) {
+    setField(k, v);
+    setErrors((e) => ({ ...e, [k as string]: "" }));
+    if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
+    advanceTimerRef.current = setTimeout(() => {
+      const root = formRef.current;
+      if (!root) return;
+      const radio = root.querySelector<HTMLElement>(`input[name="${groupName}"]`);
+      const fieldset = radio?.closest("fieldset");
+      if (!fieldset) return;
+      // Find the first focusable control that comes after this fieldset in DOM order.
+      const focusables = Array.from(
+        root.querySelectorAll<HTMLElement>("input:not([type=hidden]), select, textarea, [role=combobox]"),
+      );
+      const after = focusables.find(
+        (el) => !fieldset.contains(el) && fieldset.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING,
+      );
+      if (!after) return;
+      after.scrollIntoView({ behavior: "smooth", block: "center" });
+      try {
+        after.focus({ preventScroll: true });
+      } catch {
+        /* best effort */
+      }
+    }, 350);
+  }
+
   /* ── Mount: hydrate from a resume token, the prequal handoff, or a draft ─ */
   useEffect(() => {
     let cancelled = false;
@@ -183,10 +239,39 @@ export default function ApplicationWizard({
       }
 
       if (cancelled) return;
+
+      // ── Prequal → apply bridge: carry over what we already know ───────────
       if (!merged.ownerFullName && (merged.firstName || merged.lastName)) {
         merged.ownerFullName = [merged.firstName, merged.lastName].filter(Boolean).join(" ");
       }
       if (!merged.businessLegalName && merged.businessName) merged.businessLegalName = merged.businessName;
+
+      // Use-of-funds: the prequal captured a single value; fold it into the
+      // deep-apply multi-select so the owner sees their choice pre-checked.
+      if ((!merged.useOfFundsList || merged.useOfFundsList.length === 0) && merged.useOfFunds) {
+        merged.useOfFundsList = [merged.useOfFunds];
+      }
+      // Seed business + owner state from the single prequal `state`.
+      if (merged.state) {
+        if (!merged.businessState) merged.businessState = merged.state;
+        if (!merged.ownerState) merged.ownerState = merged.state;
+      }
+      // Seed a starting capital figure from the prequal amount band (editable).
+      if (!merged.capitalRequested) {
+        const seeded = capitalFromAmountBand(merged.amountNeeded);
+        if (seeded) merged.capitalRequested = seeded;
+      }
+      // Default "owner address same as business" ON for sole proprietors (their
+      // home and business address are usually the same), unless already set or
+      // an owner address was already captured.
+      if (
+        typeof merged.ownerAddressSameAsBusiness !== "boolean" &&
+        !merged.ownerStreet &&
+        merged.entityType === "sole_prop"
+      ) {
+        merged.ownerAddressSameAsBusiness = true;
+      }
+
       setLead(merged);
       track(resumed ? "deepapp_resumed" : "deepapp_started", { vertical: slug });
     }
@@ -264,7 +349,7 @@ export default function ApplicationWizard({
     }
   }
 
-  /* ── SSN ──────────────────────────────────────────────────────────────── */
+  /* ── SSN (optional) ───────────────────────────────────────────────────── */
   function onSsnChange(formatted: string) {
     setSsn(formatted);
     const valid = isValidSsn(formatted);
@@ -274,6 +359,8 @@ export default function ApplicationWizard({
       ssnProvided: valid,
       ssnLast4: valid ? ssnLast4(formatted) : undefined,
       ssnDeferred: false,
+      // Clearing the SSN withdraws the soft-pull authorization automatically.
+      creditAuthConsent: valid ? l.creditAuthConsent : false,
     }));
     if (valid && !wasValid) track("deepapp_ssn_completed", { vertical: slug });
     if (errors.ssn && valid) setErrors((e) => ({ ...e, ssn: "" }));
@@ -281,7 +368,7 @@ export default function ApplicationWizard({
 
   function onSsnDefer(deferred: boolean) {
     setSsn("");
-    setLead((l) => ({ ...l, ssnDeferred: deferred, ssnProvided: false, ssnLast4: undefined }));
+    setLead((l) => ({ ...l, ssnDeferred: deferred, ssnProvided: false, ssnLast4: undefined, creditAuthConsent: false }));
     if (deferred) setErrors((e) => ({ ...e, ssn: "" }));
   }
 
@@ -410,6 +497,57 @@ export default function ApplicationWizard({
   const voidedCheckSlot = makeDocSlot(setVoidedCheckUploads, "voidedCheckFiles", "voidedCheckDeferred", "voided_check");
   const ownerIdSlot = makeDocSlot(setOwnerIdUploads, "ownerIdFiles", "ownerIdDeferred", "owner_id");
 
+  /* ── Address bridges (one input fills street/city/state/zip) ──────────── */
+  const businessAddress: AddressValue = {
+    street: lead.businessStreet ?? "",
+    city: lead.businessCity ?? "",
+    state: lead.businessState ?? "",
+    zip: lead.businessZip ?? "",
+  };
+  function setBusinessAddress(a: AddressValue) {
+    setLead((l) => ({ ...l, businessStreet: a.street, businessCity: a.city, businessState: a.state, businessZip: a.zip }));
+    setErrors((e) => ({ ...e, businessStreet: "", businessCity: "", businessState: "", businessZip: "" }));
+  }
+  const ownerAddress: AddressValue = {
+    street: lead.ownerStreet ?? "",
+    city: lead.ownerCity ?? "",
+    state: lead.ownerState ?? "",
+    zip: lead.ownerZip ?? "",
+  };
+  function setOwnerAddress(a: AddressValue) {
+    setLead((l) => ({ ...l, ownerStreet: a.street, ownerCity: a.city, ownerState: a.state, ownerZip: a.zip }));
+    setErrors((e) => ({ ...e, ownerStreet: "", ownerCity: "", ownerState: "", ownerZip: "" }));
+  }
+  function setOwnerSameAsBusiness(checked: boolean) {
+    setLead((l) => {
+      if (checked) {
+        // Copy business → owner immediately so review + submit reflect it.
+        return {
+          ...l,
+          ownerAddressSameAsBusiness: true,
+          ownerStreet: l.businessStreet,
+          ownerCity: l.businessCity,
+          ownerState: l.businessState ?? l.ownerState,
+          ownerZip: l.businessZip,
+        };
+      }
+      return { ...l, ownerAddressSameAsBusiness: false };
+    });
+    if (checked) setErrors((e) => ({ ...e, ownerStreet: "", ownerCity: "", ownerState: "", ownerZip: "" }));
+  }
+
+  /* ── Use of funds (multi-select) ──────────────────────────────────────── */
+  const usesSelected = lead.useOfFundsList ?? [];
+  function setUses(next: UseOfFundsValue[]) {
+    setLead((l) => ({
+      ...l,
+      useOfFundsList: next,
+      // Drop the free-text note if "other" is no longer selected.
+      useOfFundsOther: next.includes("other") ? l.useOfFundsOther : "",
+    }));
+    if (next.length) setErrors((e) => ({ ...e, useOfFundsList: "" }));
+  }
+
   /* ── Navigation ───────────────────────────────────────────────────────── */
   function goNext() {
     const errs = validateStep(step.id, lead);
@@ -444,8 +582,22 @@ export default function ApplicationWizard({
     setSubmitError(null);
     track("deepapp_signed", { vertical: slug });
 
+    // If "owner address same as business" is on, copy at submit too (covers a late
+    // business-address edit). Mirror the first selected use-of-funds back to the
+    // scalar `useOfFunds` so scoring/automations that read a single value keep working.
+    const sameAddr = lead.ownerAddressSameAsBusiness
+      ? {
+          ownerStreet: lead.businessStreet,
+          ownerCity: lead.businessCity,
+          ownerState: lead.businessState,
+          ownerZip: lead.businessZip,
+        }
+      : {};
+
     const submission: ApplicationSubmission = {
       ...lead,
+      ...sameAddr,
+      useOfFunds: lead.useOfFundsList?.[0] ?? lead.useOfFunds,
       // Normalize capitalRequested to a clean dollar string and add a numeric
       // companion so automations receive a number without parsing "$" strings.
       capitalRequested: lead.capitalRequested,
@@ -509,126 +661,216 @@ export default function ApplicationWizard({
     switch (step.id) {
       case "business":
         return (
-          <SecureSection eyebrow={`Step 1 of 5`} title={step.title} subtitle={step.subtitle}>
+          <SecureSection eyebrow={`Step 1 of ${totalSteps}`} title={step.title} subtitle={step.subtitle}>
             <TextField label="Legal business name" value={lead.businessLegalName ?? ""} onChange={(v) => setField("businessLegalName", v)} autoComplete="organization" error={errors.businessLegalName} />
-            <TextField label="Doing business as (optional)" value={lead.businessDba ?? ""} onChange={(v) => setField("businessDba", v)} />
-            <RadioCards<EntityTypeValue> legend="Business type" options={ENTITY_TYPE_OPTIONS} value={lead.entityType} onChange={(v) => setField("entityType", v)} columns={3} error={errors.entityType} />
-            <TextField label="Nature of business (optional)" value={lead.natureOfBusiness ?? ""} onChange={(v) => setField("natureOfBusiness", v)} placeholder="e.g. Auto repair shop" />
-            <TextField label="Business street address" value={lead.businessStreet ?? ""} onChange={(v) => setField("businessStreet", v)} autoComplete="street-address" error={errors.businessStreet} />
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-6">
-              <div className="sm:col-span-3"><TextField label="City" value={lead.businessCity ?? ""} onChange={(v) => setField("businessCity", v)} autoComplete="address-level2" error={errors.businessCity} /></div>
-              <div className="sm:col-span-1"><Select label="State" value={lead.businessState ?? ""} onChange={(v) => setField("businessState", v)} options={US_STATES} placeholder="State" autoComplete="address-level1" error={errors.businessState} /></div>
-              <div className="sm:col-span-2"><TextField label="ZIP" value={lead.businessZip ?? ""} onChange={(v) => setField("businessZip", formatZip(v))} inputMode="numeric" autoComplete="postal-code" error={errors.businessZip} /></div>
-            </div>
-            <TextField label="Business start date" type="date" value={lead.dateOfIncorporation ?? ""} onChange={(v) => setField("dateOfIncorporation", v)} help="When the business started operating. A specialist can confirm the exact date later." />
-          </SecureSection>
-        );
+            <TextField
+              label="Trade name / DBA (if different from legal name)"
+              value={lead.businessDba ?? ""}
+              onChange={(v) => setField("businessDba", v)}
+              help="The name customers see, if different from your legal name."
+            />
+            <RadioCards<EntityTypeValue>
+              legend="Business type"
+              options={ENTITY_TYPE_OPTIONS}
+              value={lead.entityType}
+              onChange={(v) => chooseAndAdvance("entityType", v, "business-type")}
+              columns={3}
+              error={errors.entityType}
+            />
+            <Combobox
+              label="What your business does"
+              value={lead.natureOfBusiness ?? ""}
+              onChange={(v) => setField("natureOfBusiness", v)}
+              groups={NATURE_OF_BUSINESS_OPTIONS}
+              placeholder="e.g. Auto repair shop"
+              help="Type it or pick the closest — whatever you enter is fine."
+            />
 
-      case "funding":
-        return (
-          <SecureSection eyebrow={`Step 2 of 5`} title={step.title} subtitle={step.subtitle}>
-            <MaskedInput
-              label="How much capital are you looking for?"
-              value={lead.capitalRequested ?? ""}
-              onChange={(v) => setField("capitalRequested", v)}
-              format={formatCurrency}
-              placeholder="$50,000"
-              error={errors.capitalRequested}
-              why="A specific figure helps us match the right funder amount. It's a request, not a commitment."
+            <AddressAutocomplete
+              legend="Business address"
+              value={businessAddress}
+              onChange={setBusinessAddress}
+              usStates={US_STATES}
+              streetAutoComplete="street-address"
+              errors={{ street: errors.businessStreet, city: errors.businessCity, state: errors.businessState, zip: errors.businessZip }}
             />
-            <RadioCards<UseOfFundsValue> legend="What will you use it for?" options={USE_OF_FUNDS_OPTIONS} value={lead.useOfFunds} onChange={(v) => setField("useOfFunds", v)} columns={2} />
-            <MaskedInput
-              label="EIN / Tax ID (optional now)"
-              value={lead.ein ?? ""}
-              onChange={(v) => setField("ein", v)}
-              format={formatEin}
-              placeholder="12-3456789"
-              help="9-digit Tax ID from your IRS letter. Don't have it handy? Skip it — a specialist can confirm it."
-              error={errors.ein}
-              why="Funders use your EIN to confirm the business entity. It's a business identifier, not personal."
-            />
-            <RadioCards<YesNoValue> legend="Do you accept credit cards?" options={YES_NO_OPTIONS} value={lead.acceptsCreditCards} onChange={(v) => setField("acceptsCreditCards", v)} columns={2} />
-            <RadioCards<YesNoValue> legend="Any open advances or MCA positions?" options={YES_NO_OPTIONS} value={lead.openMcaPositions} onChange={(v) => setField("openMcaPositions", v)} columns={2} />
-            {lead.openMcaPositions === "yes" && (
-              <TextField label="How many open positions?" value={lead.openMcaPositionsCount ?? ""} onChange={(v) => setField("openMcaPositionsCount", v)} inputMode="numeric" />
-            )}
+            <TextField label="Business start date" type="date" value={lead.dateOfIncorporation ?? ""} onChange={(v) => setField("dateOfIncorporation", v)} help="When the business started operating. A specialist can confirm the exact date later." />
+
+            {/* ── Funding ask (merged from the old separate step) ─────────── */}
+            <div className="space-y-5 border-t border-slate-200 pt-5">
+              <MaskedInput
+                label="How much capital are you looking for?"
+                value={lead.capitalRequested ?? ""}
+                onChange={(v) => setField("capitalRequested", v)}
+                format={formatCurrency}
+                placeholder="$50,000"
+                error={errors.capitalRequested}
+                why="A specific figure helps us match the right funder amount. It's a request, not a commitment."
+              />
+              <CheckCards<UseOfFundsValue>
+                legend="What will you use it for?"
+                help="Pick all that apply."
+                options={USE_OF_FUNDS_OPTIONS}
+                values={usesSelected}
+                onChange={setUses}
+                columns={2}
+                error={errors.useOfFundsList}
+              />
+              {usesSelected.includes("other") && (
+                <TextField
+                  label="Tell us a bit more (optional)"
+                  value={lead.useOfFundsOther ?? ""}
+                  onChange={(v) => setField("useOfFundsOther", v)}
+                  placeholder="What you'd put the funds toward"
+                />
+              )}
+              <MaskedInput
+                label="EIN / Tax ID (optional now)"
+                value={lead.ein ?? ""}
+                onChange={(v) => setField("ein", v)}
+                format={formatEin}
+                placeholder="12-3456789"
+                help="9-digit Tax ID from your IRS letter. Don't have it handy? Skip it — a specialist can confirm it."
+                error={errors.ein}
+                why="Funders use your EIN to confirm the business entity. It's a business identifier, not personal."
+              />
+              <RadioCards<YesNoValue> legend="Do you accept credit cards?" options={YES_NO_OPTIONS} value={lead.acceptsCreditCards} onChange={(v) => setField("acceptsCreditCards", v)} columns={2} />
+              <RadioCards<YesNoValue> legend="Any open advances or MCA positions?" options={YES_NO_OPTIONS} value={lead.openMcaPositions} onChange={(v) => setField("openMcaPositions", v)} columns={2} />
+              {lead.openMcaPositions === "yes" && (
+                <TextField label="How many open positions?" value={lead.openMcaPositionsCount ?? ""} onChange={(v) => setField("openMcaPositionsCount", v)} inputMode="numeric" />
+              )}
+            </div>
           </SecureSection>
         );
 
       case "owner":
         return (
-          <SecureSection eyebrow={`Step 3 of 5`} title={step.title} subtitle={step.subtitle}>
+          <SecureSection eyebrow={`Step 2 of ${totalSteps}`} title={step.title} subtitle={step.subtitle}>
             <TextField label="Full legal name" value={lead.ownerFullName ?? ""} onChange={(v) => setField("ownerFullName", v)} autoComplete="name" error={errors.ownerFullName} />
-            <TextField label="Date of birth" type="date" value={lead.ownerDob ?? ""} onChange={(v) => setField("ownerDob", v)} error={errors.ownerDob} />
-            <TextField label="Home street address" value={lead.ownerStreet ?? ""} onChange={(v) => setField("ownerStreet", v)} autoComplete="street-address" error={errors.ownerStreet} />
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-6">
-              <div className="sm:col-span-3"><TextField label="City" value={lead.ownerCity ?? ""} onChange={(v) => setField("ownerCity", v)} autoComplete="address-level2" error={errors.ownerCity} /></div>
-              <div className="sm:col-span-1"><Select label="State" value={lead.ownerState ?? ""} onChange={(v) => setField("ownerState", v)} options={US_STATES} placeholder="State" autoComplete="address-level1" error={errors.ownerState} /></div>
-              <div className="sm:col-span-2"><TextField label="ZIP" value={lead.ownerZip ?? ""} onChange={(v) => setField("ownerZip", formatZip(v))} inputMode="numeric" autoComplete="postal-code" error={errors.ownerZip} /></div>
-            </div>
-            <TextField label="Your ownership %" value={lead.ownershipPercent ?? ""} onChange={(v) => setField("ownershipPercent", v)} inputMode="numeric" placeholder="100" />
-            <RadioCards<CreditScoreValue> legend="Roughly, your personal credit range" options={CREDIT_SCORE_OPTIONS} value={lead.creditScoreBand} onChange={(v) => setField("creditScoreBand", v)} columns={2} error={errors.creditScoreBand} />
-            <SsnField value={ssn} onChange={onSsnChange} onFocusOnce={() => track("deepapp_ssn_focused", { vertical: slug })} error={errors.ssn} deferred={lead.ssnDeferred} onDefer={onSsnDefer} />
-          </SecureSection>
-        );
 
-      case "documents":
-        return (
-          <SecureSection eyebrow="Step 4 of 5" title={step.title} subtitle={step.subtitle}>
-            {lead.bankConnected ? (
-              <div className="secure-surface flex items-center gap-2 p-4 text-sm font-medium text-brand-900">
-                <IconCheck className="h-4 w-4 flex-none text-accent-600" /> Bank connected securely. You&apos;re set for this step.
-              </div>
-            ) : (
-              <>
-                <PlaidLink
-                  applicationId={lead.applicationId}
-                  onConnected={(itemId) => {
-                    setLead((l) => ({ ...l, bankConnected: true, plaidItemId: itemId, bankStatementsDeferred: false }));
-                    track("deepapp_upload_succeeded", { vertical: slug, method: "plaid" });
-                  }}
+            <div>
+              <label className="flex cursor-pointer items-start gap-3 text-sm text-slate-600">
+                <input
+                  type="checkbox"
+                  checked={!!lead.ownerAddressSameAsBusiness}
+                  onChange={(e) => setOwnerSameAsBusiness(e.target.checked)}
+                  className="mt-0.5 h-5 w-5 flex-none rounded border-slate-300 text-brand-600 focus:ring-brand-500"
                 />
-                <div className="flex items-center gap-3 text-xs text-slate-500">
-                  <span className="h-px flex-1 bg-slate-200" /> or upload <span className="h-px flex-1 bg-slate-200" />
-                </div>
-                <FileUpload items={files} onPick={handlePick} onRemove={removeFile} deferred={!!lead.bankStatementsDeferred} onToggleDefer={toggleDocsDefer} />
-              </>
+                <span>
+                  Owner address same as business address
+                  <span className="mt-0.5 block text-xs text-slate-400">
+                    We&apos;ll use{" "}
+                    {lead.businessStreet ? (
+                      <span className="text-slate-500">
+                        {[lead.businessStreet, lead.businessCity, lead.businessState].filter(Boolean).join(", ")}
+                      </span>
+                    ) : (
+                      "your business address"
+                    )}
+                    .
+                  </span>
+                </span>
+              </label>
+            </div>
+
+            {!lead.ownerAddressSameAsBusiness && (
+              <AddressAutocomplete
+                legend="Home address"
+                value={ownerAddress}
+                onChange={setOwnerAddress}
+                usStates={US_STATES}
+                streetAutoComplete="street-address"
+                errors={{ street: errors.ownerStreet, city: errors.ownerCity, state: errors.ownerState, zip: errors.ownerZip }}
+              />
             )}
 
-            {/* Optional core-file extras (§3) — never required, fully deferrable. */}
-            <div className="space-y-3 pt-1">
-              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
-                Optional — speeds up funding if you have them handy
-              </p>
-              <OptionalDocUpload
-                title="Voided business check"
-                hint="A voided check from your business account confirms where funds get deposited. No worries if you don't have one now."
-                items={voidedCheckUploads}
-                onPick={voidedCheckSlot.onPick}
-                onRemove={voidedCheckSlot.onRemove}
-                deferred={!!lead.voidedCheckDeferred}
-                onToggleDefer={voidedCheckSlot.onToggleDefer}
-              />
-              <OptionalDocUpload
-                title="Owner ID / driver's license"
-                hint="A photo of your driver's license or state ID helps verify your identity faster. You can also send it to a specialist later."
-                items={ownerIdUploads}
-                onPick={ownerIdSlot.onPick}
-                onRemove={ownerIdSlot.onRemove}
-                deferred={!!lead.ownerIdDeferred}
-                onToggleDefer={ownerIdSlot.onToggleDefer}
-              />
-            </div>
+            <TextField label="Your ownership %" value={lead.ownershipPercent ?? ""} onChange={(v) => setField("ownershipPercent", v)} inputMode="numeric" placeholder="100" />
+            <RadioCards<CreditScoreValue>
+              legend="Roughly, your personal credit range"
+              options={CREDIT_SCORE_OPTIONS}
+              value={lead.creditScoreBand}
+              onChange={(v) => chooseAndAdvance("creditScoreBand", v, "roughly-your-personal-credit-range")}
+              columns={2}
+              error={errors.creditScoreBand}
+            />
+            <TextField
+              label="Date of birth (optional)"
+              type="date"
+              value={lead.ownerDob ?? ""}
+              onChange={(v) => setField("ownerDob", v)}
+              help="Optional — your specialist can confirm this on the call."
+            />
+            <SsnField
+              value={ssn}
+              onChange={onSsnChange}
+              onFocusOnce={() => track("deepapp_ssn_focused", { vertical: slug })}
+              error={errors.ssn}
+              deferred={lead.ssnDeferred}
+              onDefer={onSsnDefer}
+              consentSoftPull={!!lead.creditAuthConsent}
+              onConsentSoftPull={(v) => setField("creditAuthConsent", v)}
+            />
           </SecureSection>
         );
 
       case "review":
         return (
-          <SecureSection eyebrow={`Step 5 of 5`} title={step.title} subtitle={step.subtitle}>
-            <ReviewSummary lead={lead} ssn={ssn} files={files} onJump={setStepIdx} />
+          <SecureSection eyebrow={`Step 3 of ${totalSteps}`} title={step.title} subtitle={step.subtitle}>
+            {/* ── Documents folded into review (never a gate) ─────────────── */}
+            <div className="space-y-3">
+              <p className="text-sm font-semibold text-brand-900">Recent bank statements</p>
+              {lead.bankConnected ? (
+                <div className="secure-surface flex items-center gap-2 p-4 text-sm font-medium text-brand-900">
+                  <IconCheck className="h-4 w-4 flex-none text-accent-600" /> Bank connected securely. You&apos;re set for this step.
+                </div>
+              ) : (
+                <>
+                  <PlaidLink
+                    applicationId={lead.applicationId}
+                    onConnected={(itemId) => {
+                      setLead((l) => ({ ...l, bankConnected: true, plaidItemId: itemId, bankStatementsDeferred: false }));
+                      track("deepapp_upload_succeeded", { vertical: slug, method: "plaid" });
+                    }}
+                  />
+                  <div className="flex items-center gap-3 text-xs text-slate-500">
+                    <span className="h-px flex-1 bg-slate-200" /> or upload <span className="h-px flex-1 bg-slate-200" />
+                  </div>
+                  <FileUpload items={files} onPick={handlePick} onRemove={removeFile} deferred={!!lead.bankStatementsDeferred} onToggleDefer={toggleDocsDefer} />
+                </>
+              )}
+
+              {/* Optional core-file extras (§3) — never required, fully deferrable. */}
+              <div className="space-y-3 pt-1">
+                <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                  Optional — speeds up funding if you have them handy
+                </p>
+                <OptionalDocUpload
+                  title="Voided business check"
+                  hint="A voided check from your business account confirms where funds get deposited. No worries if you don't have one now."
+                  items={voidedCheckUploads}
+                  onPick={voidedCheckSlot.onPick}
+                  onRemove={voidedCheckSlot.onRemove}
+                  deferred={!!lead.voidedCheckDeferred}
+                  onToggleDefer={voidedCheckSlot.onToggleDefer}
+                />
+                <OptionalDocUpload
+                  title="Owner ID / driver's license"
+                  hint="A photo of your driver's license or state ID helps verify your identity faster. You can also send it to a specialist later."
+                  items={ownerIdUploads}
+                  onPick={ownerIdSlot.onPick}
+                  onRemove={ownerIdSlot.onRemove}
+                  deferred={!!lead.ownerIdDeferred}
+                  onToggleDefer={ownerIdSlot.onToggleDefer}
+                />
+              </div>
+            </div>
+
+            <div className="border-t border-slate-200 pt-5">
+              <p className="mb-3 text-sm font-semibold text-brand-900">Review your application</p>
+              <ReviewSummary lead={lead} ssn={ssn} files={files} onJump={setStepIdx} />
+            </div>
+
             <SignatureBlock
-              consentCredit={!!lead.creditAuthConsent}
-              onConsentCredit={(v) => setField("creditAuthConsent", v)}
               consentEsign={!!lead.esignConsent}
               onConsentEsign={(v) => setField("esignConsent", v)}
               signatureName={lead.signatureName ?? ""}
@@ -705,21 +947,33 @@ function ReviewSummary({
   files: UploadItem[];
   onJump: (i: number) => void;
 }) {
+  const useLabels = (lead.useOfFundsList ?? [])
+    .map((v) => USE_OF_FUNDS_OPTIONS.find((o) => o.value === v)?.label ?? v)
+    .join(", ");
   const rows: { label: string; value: string; step: number }[] = [
     { label: "Business", value: lead.businessLegalName || lead.businessName || "—", step: 0 },
-    { label: "Capital requested", value: lead.capitalRequested || "—", step: 1 },
-    { label: "Owner", value: lead.ownerFullName || "—", step: 2 },
-    { label: "SSN", value: lead.ssnDeferred ? "By phone with specialist" : ssn ? `•••-••-${ssn.replace(/\D/g, "").slice(-4)}` : "—", step: 2 },
-    { label: "Bank statements", value: lead.bankStatementsDeferred ? "Sending to specialist" : `${files.filter((f) => f.status !== "error").length} uploaded`, step: 3 },
+    { label: "Capital requested", value: lead.capitalRequested || "—", step: 0 },
+    { label: "Use of funds", value: useLabels || "—", step: 0 },
+    { label: "Owner", value: lead.ownerFullName || "—", step: 1 },
+    {
+      label: "SSN",
+      value: lead.ssnDeferred
+        ? "By phone with specialist"
+        : ssn
+          ? `•••-••-${ssn.replace(/\D/g, "").slice(-4)}`
+          : "Optional — skipped",
+      step: 1,
+    },
+    { label: "Bank statements", value: lead.bankStatementsDeferred ? "Sending to specialist" : `${files.filter((f) => f.status !== "error").length} uploaded`, step: 2 },
     {
       label: "Voided check",
       value: (lead.voidedCheckFiles?.length ?? 0) > 0 ? "Uploaded" : lead.voidedCheckDeferred ? "Sending later" : "Optional — not added",
-      step: 3,
+      step: 2,
     },
     {
       label: "Owner ID",
       value: (lead.ownerIdFiles?.length ?? 0) > 0 ? "Uploaded" : lead.ownerIdDeferred ? "Sending later" : "Optional — not added",
-      step: 3,
+      step: 2,
     },
   ];
   return (

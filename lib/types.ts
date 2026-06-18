@@ -72,9 +72,12 @@ export const USE_OF_FUNDS_OPTIONS = [
   { value: "equipment", label: "Equipment" },
   { value: "payroll", label: "Payroll" },
   { value: "expansion", label: "Expansion / new location" },
+  { value: "renovation", label: "Renovation / build-out" },
   { value: "marketing", label: "Marketing / growth" },
   { value: "working_capital", label: "General working capital" },
   { value: "debt_refinance", label: "Refinance existing debt" },
+  { value: "tax_payroll", label: "Taxes / payroll" },
+  { value: "seasonal", label: "Seasonal / bridge gap" },
   { value: "other", label: "Other" },
 ] as const satisfies readonly Option[];
 
@@ -83,6 +86,110 @@ export const BANK_STATEMENTS_OPTIONS = [
   { value: "no", label: "No" },
   { value: "not_sure", label: "Prefer to discuss" },
 ] as const satisfies readonly Option[];
+
+/**
+ * Seed list for the "What your business does" Combobox. Grouped to match the
+ * site's 16 verticals plus the common MCA trades a specialist sees. Stored as a
+ * FREE-TEXT string on LeadData.natureOfBusiness — the owner may type anything;
+ * these are only suggestions to speed selection. Labels are plain trade names a
+ * merchant recognizes, never internal jargon.
+ */
+export interface OptionGroup {
+  group: string;
+  options: readonly string[];
+}
+
+export const NATURE_OF_BUSINESS_OPTIONS: readonly OptionGroup[] = [
+  {
+    group: "Food & hospitality",
+    options: [
+      "Restaurant",
+      "Bar / nightclub",
+      "Café / coffee shop",
+      "Bakery",
+      "Food truck",
+      "Catering",
+    ],
+  },
+  {
+    group: "Trucking & transportation",
+    options: [
+      "Trucking / freight carrier",
+      "Owner-operator (trucking)",
+      "Courier / last-mile delivery",
+      "Moving company",
+      "Logistics / dispatch",
+    ],
+  },
+  {
+    group: "Construction & trades",
+    options: [
+      "General contractor",
+      "Roofing",
+      "Concrete / masonry",
+      "Electrician",
+      "HVAC",
+      "Plumbing",
+      "Painting",
+      "Flooring",
+    ],
+  },
+  {
+    group: "Auto & equipment",
+    options: ["Auto repair shop", "Body / collision shop", "Tire shop", "Car wash", "Equipment rental"],
+  },
+  {
+    group: "Health & medical",
+    options: [
+      "Medical practice",
+      "Dental practice",
+      "Chiropractic",
+      "Physical therapy",
+      "Veterinary clinic",
+      "Home health care",
+      "Pharmacy",
+    ],
+  },
+  {
+    group: "Beauty & wellness",
+    options: ["Hair / nail salon", "Barbershop", "Med spa / aesthetics", "Gym / fitness studio", "Yoga / Pilates studio"],
+  },
+  {
+    group: "Retail & e-commerce",
+    options: [
+      "Retail store / boutique",
+      "Convenience store",
+      "Liquor store",
+      "Grocery / market",
+      "E-commerce / online seller",
+      "Gas station",
+    ],
+  },
+  {
+    group: "Home & property services",
+    options: ["Cleaning / janitorial", "Landscaping / lawn care", "Tree service", "Pest control", "Property management"],
+  },
+  {
+    group: "Professional & business services",
+    options: [
+      "Law firm / legal services",
+      "Accounting / bookkeeping",
+      "Marketing / advertising agency",
+      "Consulting",
+      "Staffing / recruiting",
+      "Real estate / brokerage",
+      "Insurance agency",
+    ],
+  },
+  {
+    group: "Manufacturing & wholesale",
+    options: ["Manufacturing", "Wholesale / distribution", "Printing / signage"],
+  },
+  {
+    group: "Other",
+    options: ["Daycare / childcare", "Event / entertainment", "Nonprofit", "Other"],
+  },
+];
 
 /* ── Step 3: contact capture ────────────────────────────────────────────── */
 
@@ -240,7 +347,25 @@ export interface LeadData {
   existingDebt?: ExistingDebtValue;
   paymentBurden?: PaymentBurdenValue;
   recentNsfs?: NsfValue;
+  /**
+   * Use of funds.
+   *
+   * The prequal (Cash-Flow Stress Test / Find-your-fit) captures a SINGLE
+   * use-of-funds and writes it here — that single value also feeds the protected
+   * lead-scoring engine (`PRODUCTIVE_USES.has(lead.useOfFunds)`) and the protected
+   * stress-test prefill bridge, both of which require a single string. The deep
+   * /apply form instead lets the owner pick MANY uses; that multi-select lives in
+   * `useOfFundsList` (below). At apply hydration the seeded single value is folded
+   * into `useOfFundsList` so the owner sees their prequal choice pre-selected, and
+   * at submit the first selected list value is mirrored back here so scoring and
+   * automations that read the scalar keep working. Treat `useOfFundsList` as the
+   * source of truth on the apply form.
+   */
   useOfFunds?: UseOfFundsValue;
+  /** Deep-apply multi-select use of funds (array). Source of truth on /apply. */
+  useOfFundsList?: UseOfFundsValue[];
+  /** Free text shown when "other" is among the selected uses of funds. */
+  useOfFundsOther?: string;
   canProvideBankStatements?: BankStatementsValue;
 
   // Step 3 — contact
@@ -256,8 +381,6 @@ export interface LeadData {
 
   // Step 4 — optional deeper info
   website?: string;
-  currentFunderName?: string;
-  currentBalanceOwed?: string;
   notes?: string;
 
   // ── Deep application: business ──────────────────────────────────────────
@@ -265,14 +388,12 @@ export interface LeadData {
   businessDba?: string;
   ein?: string; // formatted "12-3456789" — a business identifier, not personal PII
   entityType?: EntityTypeValue;
-  natureOfBusiness?: string;
-  productService?: string;
+  natureOfBusiness?: string; // free text; seeded by NATURE_OF_BUSINESS_OPTIONS
   businessStreet?: string;
   businessCity?: string;
   businessState?: string;
   businessZip?: string;
   dateOfIncorporation?: string; // ISO yyyy-mm-dd
-  ownershipLengthYears?: string;
   capitalRequested?: string; // specific figure the owner types (distinct from the amountNeeded band)
   acceptsCreditCards?: YesNoValue;
   openMcaPositions?: YesNoValue;
@@ -281,6 +402,9 @@ export interface LeadData {
   // ── Deep application: owner ─────────────────────────────────────────────
   ownerFullName?: string;
   ownerDob?: string; // ISO yyyy-mm-dd
+  /** When true, owner home address equals the business address (copied at submit;
+   *  owner address fields are hidden in the UI). Default-checked for sole props. */
+  ownerAddressSameAsBusiness?: boolean;
   ownerStreet?: string;
   ownerCity?: string;
   ownerState?: string;

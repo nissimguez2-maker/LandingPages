@@ -320,6 +320,8 @@ export function SsnField({
   error,
   deferred,
   onDefer,
+  consentSoftPull,
+  onConsentSoftPull,
 }: {
   value: string;
   onChange: (formatted: string) => void;
@@ -327,6 +329,9 @@ export function SsnField({
   error?: string;
   deferred?: boolean;
   onDefer?: (deferred: boolean) => void;
+  /** Soft-credit-pull authorization — shown ONLY once an SSN has been entered. */
+  consentSoftPull?: boolean;
+  onConsentSoftPull?: (v: boolean) => void;
 }) {
   const [revealed, setRevealed] = useState(false);
   const [focused, setFocused] = useState(false);
@@ -337,12 +342,12 @@ export function SsnField({
     return (
       <div className="secure-surface p-4">
         <p className="flex items-center gap-2 text-sm font-medium text-brand-900">
-          <IconCheck className="h-4 w-4 text-accent-600" /> A specialist will take your SSN by phone.
+          <IconCheck className="h-4 w-4 text-accent-600" /> Your specialist can take this on the call.
         </p>
         <p className="mt-1 text-xs text-slate-500">
-          We&apos;ll verify your identity on the call — nothing to enter here.{" "}
+          Totally fine to skip — there&apos;s nothing to enter here.{" "}
           <button type="button" onClick={() => onDefer?.(false)} className="font-semibold text-brand-700 underline">
-            Enter it here instead
+            Add it now instead
           </button>
         </p>
       </div>
@@ -350,15 +355,17 @@ export function SsnField({
   }
 
   const shown = revealed || focused ? formatSsn(value) : maskSsnDisplay(value);
+  const hasSsn = (value || "").replace(/\D/g, "").length === 9;
 
   return (
     <label className="block" htmlFor={id}>
       <span className="flex items-center justify-between">
         <span className="flex items-center text-sm font-semibold text-brand-900">
-          Social Security Number
+          Social Security Number <span className="ml-1 font-normal text-slate-500">(optional)</span>
           <Tooltip label="?">
-            You saw your check with no credit pull — that was real. This only verifies your identity (KYC) to release
-            funds. No hard pull, no score impact.
+            Used to confirm your identity. If you add it and check the box below, we can also run an OPTIONAL soft credit
+            check — a soft inquiry that does not affect your credit score. We never run a hard credit pull without telling
+            you first.
           </Tooltip>
         </span>
         <span className="lock-note">
@@ -366,8 +373,15 @@ export function SsnField({
         </span>
       </span>
 
+      {/* Value-exchange framing — honest, compliant, and never penalizes skipping. */}
+      <p className="mt-1.5 text-xs leading-relaxed text-slate-500">
+        Optional — totally fine to skip, your specialist can take this on the call. Share it now and we can run a soft
+        check (no impact to your credit score) and have your file fully prepped, so the moment we call you&apos;re ready
+        to move.
+      </p>
+
       <div
-        className={`mt-1.5 flex items-center rounded-lg border bg-white shadow-sm transition focus-within:ring-2 ${
+        className={`mt-2 flex items-center rounded-lg border bg-white shadow-sm transition focus-within:ring-2 ${
           error ? "border-red-400 focus-within:ring-red-200" : "border-slate-300 focus-within:border-brand-500 focus-within:ring-brand-100"
         }`}
       >
@@ -388,7 +402,7 @@ export function SsnField({
           }}
           onBlur={() => setFocused(false)}
           onChange={(e) => onChange(formatSsn(e.target.value))}
-          aria-label="Social Security Number"
+          aria-label="Social Security Number (optional)"
           aria-invalid={!!error}
           placeholder="•••-••-••••"
           className="w-full bg-transparent px-3 py-3 text-base tabular-nums tracking-[0.08em] text-slate-900 placeholder:tracking-normal placeholder:text-slate-400 focus:outline-none sm:text-sm"
@@ -404,13 +418,24 @@ export function SsnField({
         </button>
       </div>
 
-      {/* One short line; the full reconciliation lives in the tap-to-open "?" so a reader doesn't stall. */}
+      {/* Accurate one-liner: identity by default; the soft check is opt-in below. */}
       <p className="mt-1.5 flex items-center gap-1.5 text-xs text-slate-500">
         <IconShield className="h-3.5 w-3.5 flex-none text-accent-600" />
-        Soft check to verify you. No hard pull, no score impact.
+        Used to verify your identity. Any credit check is soft only — no score impact.
       </p>
 
       {error && <span className="mt-1 block text-sm text-red-700">{error}</span>}
+
+      {/* Soft-pull authorization — applies ONLY when an SSN has actually been entered. */}
+      {hasSsn && onConsentSoftPull && (
+        <div className="mt-3 secure-surface p-3">
+          <Checkbox
+            checked={!!consentSoftPull}
+            onChange={onConsentSoftPull}
+            label="You may run an optional soft credit check using my SSN to help prep my file. I understand a soft check does not affect my credit score, and that no hard credit pull will be run without separate notice."
+          />
+        </div>
+      )}
 
       {onDefer && (
         <button
@@ -418,7 +443,7 @@ export function SsnField({
           onClick={() => onDefer(true)}
           className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-brand-700 hover:text-brand-900"
         >
-          <IconPhone className="h-3.5 w-3.5" /> Rather not type it here? A specialist can take it with you
+          <IconPhone className="h-3.5 w-3.5" /> Rather not type it here? Your specialist can take it on the call
         </button>
       )}
     </label>
@@ -717,8 +742,6 @@ export function OptionalDocUpload({
 
 export function SignatureBlock({
   disclosure,
-  consentCredit,
-  onConsentCredit,
   consentEsign,
   onConsentEsign,
   signatureName,
@@ -726,8 +749,6 @@ export function SignatureBlock({
   errors,
 }: {
   disclosure?: React.ReactNode;
-  consentCredit: boolean;
-  onConsentCredit: (v: boolean) => void;
   consentEsign: boolean;
   onConsentEsign: (v: boolean) => void;
   signatureName: string;
@@ -741,10 +762,12 @@ export function SignatureBlock({
         <div className="max-h-52 overflow-y-auto rounded-xl border border-slate-200 bg-slate-50/60 p-4 text-sm leading-relaxed text-slate-600">
           {disclosure ?? (
             <p>
-              By signing, you authorize <strong className="text-brand-900">FundVella</strong> and its funding partners to
-              verify the information you provided and review the bank statements you shared, for the sole purpose of
-              evaluating this application. Submitting does not obligate you to accept any offer. This electronic signature
-              has the same effect as a written one.
+              By submitting, you authorize <strong className="text-brand-900">FundVella</strong> and its funding partners
+              to verify the information you provided and review the bank statements you shared, for the sole purpose of
+              evaluating this application. <strong className="text-brand-900">FundVella is not a lender</strong> and does
+              not make approval decisions — approval depends on underwriting by third parties. Submitting does not obligate
+              you to accept any offer. If you typed your name below, this electronic signature has the same effect as a
+              written one.
             </p>
           )}
         </div>
@@ -756,22 +779,16 @@ export function SignatureBlock({
 
       <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
         <Checkbox
-          checked={consentCredit}
-          onChange={onConsentCredit}
-          label="I authorize FundVella and its funding partners to verify my identity and the information in this application."
-        />
-        {errors.creditAuthConsent && <p className="text-sm text-red-700">{errors.creditAuthConsent}</p>}
-        <Checkbox
           checked={consentEsign}
           onChange={onConsentEsign}
-          label="I agree to sign electronically and certify that the information I provided is accurate."
+          label="I authorize FundVella and its funding partners to verify my identity and the information in this application, and I certify that it is accurate. I understand there is no obligation to accept any offer."
         />
         {errors.esignConsent && <p className="text-sm text-red-700">{errors.esignConsent}</p>}
       </div>
 
       <div className="secure-surface p-4">
         <label className="block text-sm font-semibold text-brand-900" htmlFor="sig-name">
-          Type your full legal name to sign
+          Type your full legal name to sign <span className="font-normal text-slate-500">(optional)</span>
         </label>
         <input
           id="sig-name"
@@ -793,7 +810,7 @@ export function SignatureBlock({
           </p>
         )}
         <div className="mt-2 flex items-center justify-between text-xs text-slate-500">
-          <span>Electronic signature</span>
+          <span>Electronic signature — optional, your specialist can finalize on the call</span>
           <span className="lock-note">{today}</span>
         </div>
         {errors.signatureName && <p className="mt-1 text-sm text-red-700">{errors.signatureName}</p>}
