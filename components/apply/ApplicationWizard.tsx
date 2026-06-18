@@ -219,10 +219,23 @@ export default function ApplicationWizard({
     async function hydrate() {
       const prefill = readApplicationPrefill();
       const draft = readApplicationDraft();
+      const token = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("app") : null;
+
+      // Continuation-only: /apply is the room you enter AFTER the funding check, not a cold
+      // front door. A direct hit with no prequal prefill, no saved draft, and no resume token
+      // is sent through the one front door (the quiz), where the lead is captured before the
+      // heavy application — so we never show a blank "you're 60% done" form. (Plan Phase 3.)
+      // The route stays alive for ?app= resume links and ad/bookmark edge cases.
+      const hasPrefill = Object.keys(prefill).length > 0;
+      const hasDraft = !!draft && Object.keys(draft).length > 0;
+      if (!hasPrefill && !hasDraft && !token) {
+        if (typeof window !== "undefined") window.location.replace(`/${slug}#estimate`);
+        return;
+      }
+
       let merged: LeadData = { industry: slug, applicationStatus: "in_progress", ...prefill, ...(draft ?? {}) };
       let resumed = Boolean(draft);
 
-      const token = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("app") : null;
       if (token) {
         try {
           const res = await fetch(`/api/application?app=${encodeURIComponent(token)}`);
@@ -316,6 +329,7 @@ export default function ApplicationWizard({
                 abandoned: true,
                 dropStep: APPLICATION_STEPS[stepRef.current].id,
                 furthestStep: APPLICATION_STEPS[furthestRef.current].id,
+                formCompletionPercentage: computeApplicationProgress(l),
                 signals,
               }),
             ],

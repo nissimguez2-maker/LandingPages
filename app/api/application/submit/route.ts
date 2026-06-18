@@ -12,7 +12,7 @@ import { NextResponse } from "next/server";
 
 import { buildLeadProfile, digitsOnly, redactSensitive, type ApplicationSubmission } from "@/lib/application";
 import { scoreLead } from "@/lib/leadScoring";
-import { temperatureFor } from "@/lib/server/events";
+import { leadDedupeKey, temperatureFor } from "@/lib/server/events";
 import { emit } from "@/lib/server/forward";
 import { encryptSecret } from "@/lib/server/secure";
 import { STREAMS } from "@/lib/streams";
@@ -48,9 +48,12 @@ export async function POST(req: Request): Promise<NextResponse> {
   const score = scoreLead(body);
   const temperature = temperatureFor(body.urgency);
   const stream = STREAMS.fundvella;
+  // Key on the PERSON (email/phone), the same family as the prequal `lead.captured` — so a
+  // deep-app submission reconciles with the quiz lead into ONE record, instead of a second,
+  // orphaned one keyed on a random token. (Plan Phase 2: one person = one lead.)
   await emit(
     "application.submitted",
-    `app:${id}:submitted`,
+    leadDedupeKey(body.email, body.phone, body.industry, "submitted"),
     {
       ...safe,
       leadBrand: stream.leadBrand,

@@ -388,15 +388,9 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
                   Prefer to skip? Just leave your info{CALCOM_ENABLED ? " or book a call" : ""}
                 </button>
               </div>
-              <div className="mt-2">
-                <a
-                  href={`/apply/${vertical.slug}`}
-                  onClick={() => track("stresstest_cta", { vertical: vertical.slug, target: "apply", from: "intro" })}
-                  className="text-sm font-semibold text-accent-700 underline-offset-2 hover:underline"
-                >
-                  Ready to apply now? Start the full application →
-                </a>
-              </div>
+              {/* Intro express lane to /apply removed (Plan Phase 3): the quiz is the one
+                  front door. "Prefer to skip? Just leave your info" above is the only fast
+                  path, and it still routes through the lead-capture gate. */}
               <div className="mx-auto mt-5 max-w-md">
                 <DisclaimerBlock variant="line" />
               </div>

@@ -35,29 +35,16 @@ export default function HeroSection({ vertical }: { vertical: VerticalConfig }) 
           {hook && <p className="mt-4 text-base leading-relaxed text-brand-200">{hook}</p>}
           <p className="mt-3 max-w-xl text-lg leading-relaxed text-brand-100">{vertical.heroSubheadline}</p>
 
+          {/* One front door: the funding check. (Plan Phase 3 — the "Find your fit"
+              second quiz and the "Apply directly" express lane were removed: both
+              bypassed the lead-capture gate, and the express lane dropped your hottest
+              visitor onto a blank application. The hero now offers a single action.) */}
           <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
             <CTAButton label={vertical.cta.primary} target="#estimate" location="hero" vertical={vertical.slug} />
-            {/* One primary action (the check). Secondary path: not sure which option
-                fits? The fit finder routes them by how the business earns. */}
-            <a
-              href="/find-your-fit"
-              className="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg border border-white/30 px-4 py-2 text-sm font-semibold text-white transition hover:border-white/60 hover:bg-white/10"
-            >
-              Not sure which fits? Find your fit →
-            </a>
           </div>
           {/* Micro-trust cue right under the primary CTA (no fake urgency). */}
           <p className="mt-3 text-xs font-medium text-brand-100">
             About 2 minutes · no credit check · no obligation.
-          </p>
-          {/* Express lane: a ready buyer skips the check and applies directly. */}
-          <p className="mt-2 text-sm">
-            <a
-              href={`/apply/${vertical.slug}`}
-              className="inline-flex min-h-[44px] items-center gap-1.5 font-semibold text-white/90 underline-offset-4 hover:text-white hover:underline"
-            >
-              Ready now? Apply directly →
-            </a>
           </p>
 
           <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-brand-100">
