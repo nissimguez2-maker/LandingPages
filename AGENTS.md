@@ -22,7 +22,7 @@ no documents needed. Never fabricate testimonials, stats, or logos.
 ## Primary user task
 1. **Prequalify** — owner answers a few questions on a landing page (about two
    minutes; no hard credit check, no obligation).
-2. **Specialist review** — if the file looks viable, the owner shares ~3-4 months
+2. **Specialist review** — if the file looks viable, the owner shares ~3 months
    of business bank statements; a real funding specialist reviews it.
 3. **Review options** — if underwriting supports the file, the specialist contacts
    the owner to review options that fit their cash flow.

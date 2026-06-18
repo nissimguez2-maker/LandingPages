@@ -71,7 +71,7 @@ export const HOW_IT_WORKS_STEPS = [
   },
   {
     title: "Share recent bank statements if the file looks viable",
-    description: "If the basics line up, share 3 to 4 months of business bank statements for a proper review.",
+    description: "If the basics line up, share 3 months of business bank statements for a proper review.",
   },
   {
     title: "Review available options if underwriting supports the file",
@@ -136,7 +136,7 @@ const baseFaqs = (): FAQItem[] => [
   {
     question: "What do I need to get started?",
     answer:
-      "Just a quick prequalification. If the file looks viable, recent business bank statements (usually 3 to 4 months) help move it forward.",
+      "Just a quick prequalification. If the file looks viable, recent business bank statements (usually 3 months) help move it forward.",
   },
   {
     question: "Will checking my readiness affect my credit?",
@@ -156,7 +156,7 @@ const baseFitTable = (): FitRow[] => [
   { label: "Monthly revenue", goodFit: "Around $10k+ in monthly deposits", mayNeedReview: "Low or inconsistent deposits" },
   { label: "Bank activity", goodFit: "Regular deposits, few negative days", mayNeedReview: "Frequent NSFs or negative days" },
   { label: "Existing financing", goodFit: "No or manageable current advances", mayNeedReview: "Multiple stacked advances" },
-  { label: "Documents", goodFit: "Can share 3 to 4 months of bank statements", mayNeedReview: "Unable to provide statements" },
+  { label: "Documents", goodFit: "Can share 3 months of bank statements", mayNeedReview: "Unable to provide statements" },
 ];
 
 const baseGoodFit = (): string[] => [
@@ -209,7 +209,7 @@ export const landingPages: VerticalConfig[] = [
       "Open 6+ months with steady card-batch deposits",
       "Roughly $15k+ a month across card and cash",
       "Mostly positive balances between batches",
-      "Can share 3 to 4 months of statements",
+      "Can share 3 months of statements",
     ],
     reviewCriteria: [
       "Open under 3 months",
@@ -222,7 +222,7 @@ export const landingPages: VerticalConfig[] = [
       { label: "Monthly deposits", goodFit: "~$15k+ in card + cash", mayNeedReview: "Thin or erratic batches" },
       { label: "Bank activity", goodFit: "Recovers between slow weeks", mayNeedReview: "Frequent NSFs / negative days" },
       { label: "Existing advances", goodFit: "None or one manageable", mayNeedReview: "Multiple stacked advances" },
-      { label: "Statements", goodFit: "3 to 4 months ready", mayNeedReview: "Can't share statements" },
+      { label: "Statements", goodFit: "3 months ready", mayNeedReview: "Can't share statements" },
     ],
     faqs: [
       {
@@ -319,7 +319,7 @@ export const landingPages: VerticalConfig[] = [
       "Hauling 6+ months with regular settlements",
       "Steady broker/factoring deposits",
       "Balances recover between checks",
-      "Can share 3 to 4 months of statements",
+      "Can share 3 months of statements",
     ],
     reviewCriteria: [
       "Under 3 months under authority",
@@ -332,7 +332,7 @@ export const landingPages: VerticalConfig[] = [
       { label: "Monthly settlements", goodFit: "Regular broker/factoring deposits", mayNeedReview: "Sparse or one-off loads" },
       { label: "Bank activity", goodFit: "Recovers between settlements", mayNeedReview: "Frequent NSFs / negative days" },
       { label: "Existing advances", goodFit: "None or one manageable", mayNeedReview: "Multiple stacked advances" },
-      { label: "Statements", goodFit: "3 to 4 months ready", mayNeedReview: "Can't share statements" },
+      { label: "Statements", goodFit: "3 months ready", mayNeedReview: "Can't share statements" },
     ],
     faqs: [
       {
@@ -429,7 +429,7 @@ export const landingPages: VerticalConfig[] = [
       "Operating 6+ months across jobs",
       "Deposits land with each draw / completion",
       "Balances recover between draws",
-      "Can share 3 to 4 months of statements",
+      "Can share 3 months of statements",
     ],
     reviewCriteria: [
       "Under 3 months in business",
@@ -442,7 +442,7 @@ export const landingPages: VerticalConfig[] = [
       { label: "Monthly deposits", goodFit: "Draws/completions landing steadily", mayNeedReview: "One job, no history" },
       { label: "Bank activity", goodFit: "Recovers between draws", mayNeedReview: "Frequent NSFs / negative days" },
       { label: "Existing advances", goodFit: "None or one manageable", mayNeedReview: "Multiple stacked advances" },
-      { label: "Statements", goodFit: "3 to 4 months ready", mayNeedReview: "Can't share statements" },
+      { label: "Statements", goodFit: "3 months ready", mayNeedReview: "Can't share statements" },
     ],
     faqs: [
       {
@@ -538,7 +538,7 @@ export const landingPages: VerticalConfig[] = [
       "Selling 6+ months with steady settlements",
       "Consistent processor + marketplace volume",
       "Refunds/chargebacks in normal range",
-      "Can share 3 to 4 months of statements",
+      "Can share 3 months of statements",
     ],
     reviewCriteria: [
       "Under 3 months selling",
@@ -551,7 +551,7 @@ export const landingPages: VerticalConfig[] = [
       { label: "Monthly volume", goodFit: "Steady processor + bank deposits", mayNeedReview: "Thin or one-off spikes" },
       { label: "Chargebacks", goodFit: "Within normal range", mayNeedReview: "Elevated dispute rate" },
       { label: "Existing advances", goodFit: "None or one manageable", mayNeedReview: "Multiple stacked advances" },
-      { label: "Statements", goodFit: "3 to 4 months ready", mayNeedReview: "Can't share statements" },
+      { label: "Statements", goodFit: "3 months ready", mayNeedReview: "Can't share statements" },
     ],
     faqs: [
       {
@@ -648,7 +648,7 @@ export const landingPages: VerticalConfig[] = [
       "Open 6+ months with steady tickets",
       "Consistent shop deposits week to week",
       "Balances hold through parts COD",
-      "Can share 3 to 4 months of statements",
+      "Can share 3 months of statements",
     ],
     reviewCriteria: [
       "Open under 3 months",
@@ -661,7 +661,7 @@ export const landingPages: VerticalConfig[] = [
       { label: "Monthly deposits", goodFit: "Steady ticket revenue", mayNeedReview: "Sparse or erratic tickets" },
       { label: "Bank activity", goodFit: "Holds through parts COD", mayNeedReview: "Frequent NSFs / negative days" },
       { label: "Existing advances", goodFit: "None or one manageable", mayNeedReview: "Multiple stacked advances" },
-      { label: "Statements", goodFit: "3 to 4 months ready", mayNeedReview: "Can't share statements" },
+      { label: "Statements", goodFit: "3 months ready", mayNeedReview: "Can't share statements" },
     ],
     faqs: [
       {
@@ -757,7 +757,7 @@ export const landingPages: VerticalConfig[] = [
       "Practice operating 6+ months",
       "Steady monthly collections over time",
       "Balances hold through reimbursement lag",
-      "Can share 3 to 4 months of statements",
+      "Can share 3 months of statements",
     ],
     reviewCriteria: [
       "Practice under 3 months old",
@@ -770,7 +770,7 @@ export const landingPages: VerticalConfig[] = [
       { label: "Monthly collections", goodFit: "Steady across payers", mayNeedReview: "Thin or highly variable" },
       { label: "Bank activity", goodFit: "Holds through 60-day lag", mayNeedReview: "Frequent NSFs / negative days" },
       { label: "Existing advances", goodFit: "None or one manageable", mayNeedReview: "Multiple stacked advances" },
-      { label: "Statements", goodFit: "3 to 4 months ready", mayNeedReview: "Can't share statements" },
+      { label: "Statements", goodFit: "3 months ready", mayNeedReview: "Can't share statements" },
     ],
     faqs: [
       {
@@ -867,7 +867,7 @@ export const landingPages: VerticalConfig[] = [
       "Practice operating 6+ months",
       "Steady monthly collections",
       "Balances hold between production and pay",
-      "Can share 3 to 4 months of statements",
+      "Can share 3 months of statements",
     ],
     reviewCriteria: [
       "Practice under 3 months old",
@@ -880,7 +880,7 @@ export const landingPages: VerticalConfig[] = [
       { label: "Monthly collections", goodFit: "Steady month to month", mayNeedReview: "Thin or highly variable" },
       { label: "Bank activity", goodFit: "Holds through the lag", mayNeedReview: "Frequent NSFs / negative days" },
       { label: "Existing advances", goodFit: "None or one manageable", mayNeedReview: "Multiple stacked advances" },
-      { label: "Statements", goodFit: "3 to 4 months ready", mayNeedReview: "Can't share statements" },
+      { label: "Statements", goodFit: "3 months ready", mayNeedReview: "Can't share statements" },
     ],
     faqs: [
       {
@@ -977,7 +977,7 @@ export const landingPages: VerticalConfig[] = [
       "Open 6+ months with steady bookings",
       "Consistent appointment deposits",
       "Balances recover after slow weeks",
-      "Can share 3 to 4 months of statements",
+      "Can share 3 months of statements",
     ],
     reviewCriteria: [
       "Open under 3 months",
@@ -990,7 +990,7 @@ export const landingPages: VerticalConfig[] = [
       { label: "Monthly deposits", goodFit: "Steady appointment revenue", mayNeedReview: "Thin or erratic bookings" },
       { label: "Bank activity", goodFit: "Recovers after slow weeks", mayNeedReview: "Frequent NSFs / negative days" },
       { label: "Existing advances", goodFit: "None or one manageable", mayNeedReview: "Multiple stacked advances" },
-      { label: "Statements", goodFit: "3 to 4 months ready", mayNeedReview: "Can't share statements" },
+      { label: "Statements", goodFit: "3 months ready", mayNeedReview: "Can't share statements" },
     ],
     faqs: [
       {
@@ -1087,7 +1087,7 @@ export const landingPages: VerticalConfig[] = [
       "Open 6+ months with steady sales",
       "Consistent processor + bank deposits",
       "Balances recover after restocks",
-      "Can share 3 to 4 months of statements",
+      "Can share 3 months of statements",
     ],
     reviewCriteria: [
       "Open under 3 months",
@@ -1100,7 +1100,7 @@ export const landingPages: VerticalConfig[] = [
       { label: "Monthly deposits", goodFit: "Steady sales + processor volume", mayNeedReview: "Thin or one-season only" },
       { label: "Bank activity", goodFit: "Recovers after restocks", mayNeedReview: "Frequent NSFs / negative days" },
       { label: "Existing advances", goodFit: "None or one manageable", mayNeedReview: "Multiple stacked advances" },
-      { label: "Statements", goodFit: "3 to 4 months ready", mayNeedReview: "Can't share statements" },
+      { label: "Statements", goodFit: "3 months ready", mayNeedReview: "Can't share statements" },
     ],
     faqs: [
       {
@@ -1197,7 +1197,7 @@ export const landingPages: VerticalConfig[] = [
       "Operating 6+ months",
       "Steady service + install deposits",
       "Balances hold between peaks",
-      "Can share 3 to 4 months of statements",
+      "Can share 3 months of statements",
     ],
     reviewCriteria: [
       "Under 3 months in business",
@@ -1210,7 +1210,7 @@ export const landingPages: VerticalConfig[] = [
       { label: "Monthly deposits", goodFit: "Service + install revenue", mayNeedReview: "One-season or sparse jobs" },
       { label: "Bank activity", goodFit: "Holds between peaks", mayNeedReview: "Frequent NSFs / negative days" },
       { label: "Existing advances", goodFit: "None or one manageable", mayNeedReview: "Multiple stacked advances" },
-      { label: "Statements", goodFit: "3 to 4 months ready", mayNeedReview: "Can't share statements" },
+      { label: "Statements", goodFit: "3 months ready", mayNeedReview: "Can't share statements" },
     ],
     faqs: [
       {
@@ -1306,7 +1306,7 @@ export const landingPages: VerticalConfig[] = [
       "Operating 6+ months",
       "Steady recurring-contract deposits",
       "Balances hold through net-term gaps",
-      "Can share 3 to 4 months of statements",
+      "Can share 3 months of statements",
     ],
     reviewCriteria: [
       "Under 3 months in business",
@@ -1319,7 +1319,7 @@ export const landingPages: VerticalConfig[] = [
       { label: "Monthly deposits", goodFit: "Recurring-contract revenue", mayNeedReview: "One-off jobs only" },
       { label: "Bank activity", goodFit: "Holds through net-30/60", mayNeedReview: "Frequent NSFs / negative days" },
       { label: "Existing advances", goodFit: "None or one manageable", mayNeedReview: "Multiple stacked advances" },
-      { label: "Statements", goodFit: "3 to 4 months ready", mayNeedReview: "Can't share statements" },
+      { label: "Statements", goodFit: "3 months ready", mayNeedReview: "Can't share statements" },
     ],
     faqs: [
       {
@@ -1430,7 +1430,7 @@ export const landingPages: VerticalConfig[] = [
       { label: "Monthly deposits", goodFit: "Steady despite credit history", mayNeedReview: "Low or inconsistent deposits" },
       { label: "Bank activity", goodFit: "Mostly positive balances", mayNeedReview: "Frequent NSFs / negative days" },
       { label: "Existing advances", goodFit: "None or one manageable", mayNeedReview: "Multiple stacked advances" },
-      { label: "Statements", goodFit: "3 to 4 months ready", mayNeedReview: "Can't share statements" },
+      { label: "Statements", goodFit: "3 months ready", mayNeedReview: "Can't share statements" },
     ],
     faqs: [
       {

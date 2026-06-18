@@ -30,7 +30,7 @@ export default function ThankYou({ verticalTitle }: { verticalTitle?: string }) 
           <div className="mt-6 grid w-full gap-4 text-left sm:grid-cols-3">
             {[
               { t: "We may reach out", d: "A specialist may contact you using the details you provided." },
-              { t: "Have statements ready", d: "3 to 4 months of business bank statements help. Clean files can move faster." },
+              { t: "Have statements ready", d: "3 months of business bank statements help. Clean files can move faster." },
               { t: "No obligation", d: "There's no obligation to accept any offer, and payments must fit cash flow." },
             ].map((c) => (
               <div key={c.t} className="rounded-xl border border-slate-200 bg-white p-5 shadow-card">

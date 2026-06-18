@@ -201,7 +201,7 @@ export const STRESS_ENRICH = {
   title: "Speed up your call (optional)",
   sub: "Answer what you can. Skip anything you are not sure about.",
   amount: "How much are you looking for?",
-  bank: "Can you share 3 to 4 months of business bank statements?",
+  bank: "Can you share 3 months of business bank statements?",
   lastName: { label: "Last name (optional)", help: "" },
   state: { label: "What state is your business in?", help: "Helps us check what you can get." },
   saveLabel: "Save and finish",

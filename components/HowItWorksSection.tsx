@@ -5,7 +5,7 @@ const STEPS = [
   },
   {
     title: "Share recent bank statements if the file looks viable",
-    description: "If the basics line up, share 3 to 4 months of business bank statements so the file can be reviewed properly.",
+    description: "If the basics line up, share 3 months of business bank statements so the file can be reviewed properly.",
   },
   {
     title: "Review available options if underwriting supports the file",

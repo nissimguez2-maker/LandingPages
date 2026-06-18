@@ -43,7 +43,7 @@ export const guidesDomain: ResourceArticle[] = [
       },
       {
         type: "p",
-        text: "The standard ask is three to four months of business bank statements, all pages. That window is long enough to show a real pattern and short enough to reflect how your business is running right now. If you want to see how this fits the whole process, the [working capital guide](/resources/working-capital-guide) walks through what happens after you share statements.",
+        text: "The standard ask is three months of business bank statements, all pages. That window is long enough to show a real pattern and short enough to reflect how your business is running right now. If you want to see how this fits the whole process, the [working capital guide](/resources/working-capital-guide) walks through what happens after you share statements.",
       },
       { type: "h2", text: "Average monthly deposits" },
       {
@@ -78,7 +78,7 @@ export const guidesDomain: ResourceArticle[] = [
       {
         type: "ul",
         items: [
-          "A few NSFs across three to four months: usually manageable.",
+          "A few NSFs across three months: usually manageable.",
           "Frequent NSFs or many negative days: a closer look, and possibly a smaller offer.",
           "An explainable one-off (a single missed transfer): worth a sentence of context.",
         ],
@@ -97,7 +97,7 @@ export const guidesDomain: ResourceArticle[] = [
       {
         type: "ol",
         items: [
-          "Send complete statements, all pages, for three to four recent months.",
+          "Send complete statements, all pages, for three recent months.",
           "Use your real business account, not a personal one, so deposits read as revenue.",
           "Keep owner transfers and loan proceeds out of the same account where you can, so they do not look like sales.",
           "Be ready to explain any negative days or existing advances in a sentence or two.",
@@ -116,7 +116,7 @@ export const guidesDomain: ResourceArticle[] = [
       {
         question: "How many months of bank statements do I need?",
         answer:
-          "Three to four months of business bank statements, all pages, is the standard ask. That window is long enough to show a real deposit pattern and recent enough to reflect how the business is running now.",
+          "Three months of business bank statements, all pages, is the standard ask. That window is long enough to show a real deposit pattern and recent enough to reflect how the business is running now.",
       },
       {
         question: "What matters more, my total deposits or my balance?",
@@ -281,7 +281,7 @@ export const guidesDomain: ResourceArticle[] = [
         type: "ol",
         items: [
           "A short application: basic facts about the business and owner so a specialist can match you to the right option.",
-          "Three to four months of business bank statements, all pages: the heart of the review, where deposits, balance, and activity are read.",
+          "Three months of business bank statements, all pages: the heart of the review, where deposits, balance, and activity are read.",
           "Government-issued photo ID and proof of ownership: confirms you are who you say and that you can sign for the business.",
           "A voided business check or bank letter: confirms the account where funds would land and payments would come from.",
           "Your EIN (employer identification number): the business tax ID that ties the file to the legal entity.",
@@ -345,7 +345,7 @@ export const guidesDomain: ResourceArticle[] = [
       {
         question: "What documents do I need to apply for business funding?",
         answer:
-          "The core list is a short application, three to four months of business bank statements (all pages), a government-issued photo ID with proof of ownership, a voided business check, and your EIN. Some files also need processing statements, tax returns, or AR aging.",
+          "The core list is a short application, three months of business bank statements (all pages), a government-issued photo ID with proof of ownership, a voided business check, and your EIN. Some files also need processing statements, tax returns, or AR aging.",
       },
       {
         question: "Why do you need a voided check?",
@@ -454,7 +454,7 @@ export const guidesDomain: ResourceArticle[] = [
       {
         type: "ol",
         items: [
-          "Gather three to four months of business bank statements, all pages, showing draws and completions across jobs.",
+          "Gather three months of business bank statements, all pages, showing draws and completions across jobs.",
           "Be ready to explain the draw timing so gaps read as normal, not as missed revenue.",
           "Know your existing advances; stacked positions reduce what a new payment can realistically support.",
           "Have a clear use of funds tied to a specific job or backlog.",

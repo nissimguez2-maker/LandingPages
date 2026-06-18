@@ -4,7 +4,7 @@ import MediaFigure from "./MediaFigure";
 
 const DEFAULT_CARD_POINTS = [
   "Reviewed on revenue & bank activity",
-  "Share 3 to 4 months of statements if it looks viable",
+  "Share 3 months of statements if it looks viable",
   "A specialist follows up, no obligation",
 ];
 

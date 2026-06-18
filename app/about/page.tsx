@@ -70,7 +70,7 @@ export default function AboutPage() {
             <Section heading="How the review works">
               <p>
                 Most operating businesses can be reviewed on revenue and bank activity, not credit alone. A specialist
-                typically looks at three to four months of business bank statements, your time in business, and how
+                typically looks at three months of business bank statements, your time in business, and how
                 steadily money moves through your account. The goal is a payment that fits your cash flow, not one that
                 fights it.
               </p>

@@ -341,7 +341,7 @@ export const guidesContent: ResourceArticle[] = [
       { type: "h2", text: "What you need to get reviewed" },
       {
         type: "p",
-        text: "Getting started is light. A short prequalification comes first, and if the basics line up, recent business bank statements, usually three to four months, help move the file forward. A specialist reviews the file rather than an instant algorithm.",
+        text: "Getting started is light. A short prequalification comes first, and if the basics line up, recent business bank statements, usually three months, help move the file forward. A specialist reviews the file rather than an instant algorithm.",
       },
       {
         type: "callout",
@@ -559,7 +559,7 @@ export const guidesContent: ResourceArticle[] = [
           "Keep deposits in your business account so your real revenue shows up, instead of running sales through personal accounts.",
           "Cut down NSFs and negative days in the weeks before you apply; a clean recent run helps.",
           "Avoid stacking another advance on top of existing ones right before a review.",
-          "Have three to four months of business bank statements ready so the file can move without delay.",
+          "Have three months of business bank statements ready so the file can move without delay.",
           "Be clear about what the money is for, since a productive use of funds strengthens the picture.",
         ],
       },

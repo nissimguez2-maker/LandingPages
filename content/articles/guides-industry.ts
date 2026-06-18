@@ -187,7 +187,7 @@ export const guidesIndustry: ResourceArticle[] = [
         type: "ol",
         items: [
           "Start a quick prequalification. Starting is free and does not trigger a hard credit pull.",
-          "Share three to four months of business bank statements so a funder can read the card-batch and cash deposit pattern, including the busy season that came before the slow one.",
+          "Share three months of business bank statements so a funder can read the card-batch and cash deposit pattern, including the busy season that came before the slow one.",
           "A specialist reviews the file. Seasonality is expected in food service and read in context, not penalized, so a slow January does not count against you on its own.",
           "If the file is viable, review the available options, including the amount, the structure, and the full payback, before you decide anything.",
         ],
@@ -304,7 +304,7 @@ export const guidesIndustry: ResourceArticle[] = [
         type: "ol",
         items: [
           "Prequalify early, before the supplier deadline forces a rushed decision. Starting is free and does not trigger a hard credit pull.",
-          "Share three to four months of statements so a funder can see processor, marketplace, and bank deposits together.",
+          "Share three months of statements so a funder can see processor, marketplace, and bank deposits together.",
           "A specialist reviews the file and sizes options on your volume and bank activity, with peak-season ramps read in context.",
           "If viable, review the amount, the factor rate, and the full payback, then decide whether the math works for your margins.",
         ],
@@ -415,7 +415,7 @@ export const guidesIndustry: ResourceArticle[] = [
         type: "ol",
         items: [
           "Prequalify the day the truck goes down. Starting is free and does not trigger a hard credit pull.",
-          "Share three to four months of statements so a funder can see your settlement and deposit pattern, factoring included.",
+          "Share three months of statements so a funder can see your settlement and deposit pattern, factoring included.",
           "A specialist reviews the file, reading lumpy weeks and a one-off repair in context rather than as a problem.",
           "If viable, review the amount, the factor rate, and the full payback before you authorize the fix or the fuel.",
         ],
