@@ -144,8 +144,17 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
         /* ignore */
       }
     };
+    // beforeunload is unreliable on mobile; pagehide + visibilitychange catch app-switch / tab-close
+    // so a typed-but-not-submitted cell still lands as a partial lead.
     window.addEventListener("beforeunload", handler);
-    return () => window.removeEventListener("beforeunload", handler);
+    window.addEventListener("pagehide", handler);
+    const onVisHidden = () => { if (document.visibilityState === "hidden") handler(); };
+    document.addEventListener("visibilitychange", onVisHidden);
+    return () => {
+      window.removeEventListener("beforeunload", handler);
+      window.removeEventListener("pagehide", handler);
+      document.removeEventListener("visibilitychange", onVisHidden);
+    };
   }, [buildPayload, contact.phone, contact.email]);
 
   // Fallback capture: when someone books through the cal.com bubble or popup
@@ -312,8 +321,7 @@ export default function CashFlowStressTest({ vertical }: { vertical: VerticalCon
     if (submitting) return;
     const e: Record<string, string> = {};
     if (!contact.firstName.trim()) e.firstName = "Please add your first name.";
-    if (!contact.businessName.trim()) e.businessName = "Please add your business name.";
-    if (!phoneOk(contact.phone) && !emailOk(contact.email)) e.phone = "Add a phone or an email so we can send your plan.";
+    if (!phoneOk(contact.phone)) e.phone = "Add your best cell number so a specialist can reach you.";
     setErrors(e);
     if (Object.keys(e).length) {
       track("stresstest_validation_error", { vertical: vertical.slug, fields: Object.keys(e) });

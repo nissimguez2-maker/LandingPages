@@ -910,7 +910,7 @@ export default function ApplicationWizard({
       <div className="grid gap-8 lg:grid-cols-[220px_minmax(0,640px)] lg:gap-12">
         <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">
           <Stepper steps={APPLICATION_STEPS} current={stepIdx} progress={progress} baseline={PROGRESS_BASELINE} />
-          <div className="hidden lg:block">
+          <div className="block">
             <TrustPanel email={contactEmail} />
           </div>
         </aside>
