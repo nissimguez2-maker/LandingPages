@@ -5,6 +5,9 @@
 Every change to products, terms, qualification, routing, or funding copy must conform to it.
 It is the public-safe extract of the business's master funding doc.
 
+**Continuity — read first:** `docs/STATUS.md` tracks the current build state, the **external** n8n →
+Google Sheet + Telegram leads pipeline (which lives outside this repo), and the open next-steps.
+
 **Boundary (load-bearing):** The site is **FundVella**. Never surface the underlying funder
 brand, any rep/person name, or any parent entity in shipped content. Never publish internal
 sales scripts, objection handling, or lead-sourcing/discretion reasoning — those are not part
