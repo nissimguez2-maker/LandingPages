@@ -33,7 +33,7 @@ export default function HeroSection({ vertical }: { vertical: VerticalConfig }) 
               {vertical.heroHeadline}
             </span>
           </h1>
-          {hook && <p className="mt-4 text-base leading-relaxed text-brand-200">{hook}</p>}
+          {hook && <p className="mt-4 max-w-xl text-lg leading-relaxed text-brand-100">{hook}</p>}
           <p className="mt-3 max-w-xl text-lg leading-relaxed text-brand-100">{vertical.heroSubheadline}</p>
 
           {/* One front door: the funding check. (Plan Phase 3 — the "Find your fit"
@@ -43,21 +43,9 @@ export default function HeroSection({ vertical }: { vertical: VerticalConfig }) 
           <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
             <CTAButton label={vertical.cta.primary} target="#estimate" location="hero" vertical={vertical.slug} />
           </div>
-          {/* Micro-trust cue right under the primary CTA (no fake urgency). */}
-          <p className="mt-3 text-xs font-medium text-brand-100">
-            About 2 minutes · no credit check · no obligation.
-          </p>
-
-          <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-brand-100">
-            {vertical.heroHighlights.map((h) => (
-              <li key={h} className="inline-flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-accent-400" aria-hidden="true" />
-                {h}
-              </li>
-            ))}
-          </ul>
-          <p className="mt-6 text-xs text-brand-200">
-            {COMPLIANCE.mayQualify}
+          {/* One harmonized line under the CTA: friendly cue + the legal rail, single style. */}
+          <p className="mt-3 max-w-xl text-xs leading-relaxed text-brand-200">
+            About 2 minutes · no credit check. {COMPLIANCE.mayQualify}
           </p>
         </div>
 
